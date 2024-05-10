@@ -92,13 +92,16 @@ model Course {
   name        String
   courseCode  String
   description String?
+  enrollments CourseEnrollment[] 
 }
 
 model CourseEnrollment {
   id           String    @id @default(cuid())
-  user         User      @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   dateEnrolled DateTime
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId     String
 }
 
 model Friendship {
