@@ -1,5 +1,5 @@
-import "./globals.css";
-
+import "@/app/globals.css";
+import { Logo } from "@/components/ui/logo"
 
 export default function LoginLayout({
   children,
@@ -8,6 +8,7 @@ export default function LoginLayout({
 }>) {
   return (
     <main>
+        <div className="absolute top-[24px] left-[24px]"><Logo /></div>
         {children}
     </main>
   );
