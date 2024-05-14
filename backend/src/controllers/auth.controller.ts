@@ -41,11 +41,13 @@ export default class AuthController {
         const name: string = req.body.name;
         const email: string = req.body.email;
         const password: string = req.body.password;
+        /* 
         const confirmedPassword: string = req.body.confirmedPassword; // Can potentially be removed
         if (confirmedPassword !== password) {
             console.error('User submitted a password different from the confirmed password');
             res.status(400).json({error: "Bad Request"});
         }
+        */
         try {
             const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
             const token = createJWT(user);

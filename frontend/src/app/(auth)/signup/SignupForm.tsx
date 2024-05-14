@@ -15,23 +15,38 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import Divider from "../ui/divider"
-import GoogleButton from "./googleButton"
+import Divider from "../../../components/ui/divider"
+import GoogleButton from "../../../components/Auth/googleButton"
+import { cookies } from "next/headers"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
     name: z.string().min(1, "Required"),
     password: z.string().min(1, 'Required').min(8, 'Password must have at least 8 characters'),
     verifyPassword: z.string().min(1, 'Required')
-})
+}).refine(schema => schema.password == schema.verifyPassword, { message: 'Passwords do not match', path: ['verifyPassword'] })
 
 const SignupForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
+        defaultValues: {
+            email: '',
+            name: '',
+            password: '',
+            verifyPassword: ''
+        }
     })
     
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        const response = await fetch('http://localhost:8000/api/v1/auth/signup', 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(values),
+                next: { revalidate: false }
+            })
     }
 
     return (
