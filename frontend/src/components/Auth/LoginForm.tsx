@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Divider from "../ui/divider"
-import GoogleButton from "../ui/googleButton"
+import GoogleButton from "./googleButton"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
