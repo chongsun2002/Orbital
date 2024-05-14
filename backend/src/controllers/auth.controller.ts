@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
-import { RequestHandler } from "express";
+import { RequestHandler,  } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
 
 /**
