@@ -44,6 +44,6 @@ export const createJWT = (user: User): string => {
     return "Bearer " + signedJWT;
 }
 
-export const passportStrategyFunction = (passport: any) => {
+export const passportConfig = (passport: any) => {
     passport.use(strategy);
 }
