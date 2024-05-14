@@ -38,6 +38,6 @@ export const createJWT = (user) => {
     const signedJWT = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: JWTDuration, algorithm: "RS256" });
     return "Bearer " + signedJWT;
 };
-export const passportStrategyFunction = (passport) => {
+export const passportConfig = (passport) => {
     passport.use(strategy);
 };
