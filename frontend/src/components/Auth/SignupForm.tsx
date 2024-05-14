@@ -15,24 +15,19 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { FcGoogle } from "react-icons/fc"
+import Divider from "../ui/divider"
+import GoogleButton from "../ui/googleButton"
 
 const formSchema = z.object({
-    email: z.string().min(1).email('Invalid email'),
-    name: z.string().min(1),
-    password: z.string().min(1).min(8, 'Password must have at least 8 characters'),
-    verifyPassword: z.string().min(1)
+    email: z.string().min(1, 'Required').email('Invalid email'),
+    name: z.string().min(1, "Required"),
+    password: z.string().min(1, 'Required').min(8, 'Password must have at least 8 characters'),
+    verifyPassword: z.string().min(1, 'Required')
 })
 
 const SignupForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            email: '',
-            name: '',
-            password: '',
-            verifyPassword: ''
-        }
     })
     
     function onSubmit(values: z.infer<typeof formSchema>) {
@@ -54,6 +49,7 @@ const SignupForm = () => {
                             <FormControl>
                                 <Input type='email' className="w-full" placeholder="example@gmail.com" {...field} />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -66,6 +62,7 @@ const SignupForm = () => {
                             <FormControl>
                                 <Input className="w-full" placeholder="Your name" {...field} />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -78,6 +75,7 @@ const SignupForm = () => {
                             <FormControl>
                                 <Input className="w-full" placeholder="Your password" {...field} />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -90,17 +88,14 @@ const SignupForm = () => {
                             <FormControl>
                                 <Input className="w-full" placeholder="Re-enter password" {...field} />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
                 <Button type="submit" className="w-full">Sign up with email</Button>
             </form>
-            <div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow
-            before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400 text-[#828282] text-center font-sans
-            text-[16px]/[24px] font-[400]">or continue with</div>
-            <Button type="button" className="bg-[#E6E6E6] text-black w-full">
-                <FcGoogle className="mr-2 h-4 w-4" />Google
-            </Button>
+            <Divider message='or continue with' />
+            <GoogleButton />
             <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400]'>By clicking continue, you agree to our 
                 <a href='' className='text-black'> Terms of Service</a> and 
                 <a href='' className='text-black'> Privacy Policy</a>
