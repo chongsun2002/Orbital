@@ -15,8 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import Divider from "../../../components/ui/divider"
-import GoogleButton from "../../../components/Auth/googleButton"
+import Divider from '@/components/ui/divider'
+import GoogleButton from '@/components/Auth/googleButton'
 import { cookies } from "next/headers"
 
 const formSchema = z.object({
