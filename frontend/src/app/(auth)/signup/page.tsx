@@ -1,5 +1,5 @@
 import React from 'react'
-import SignupForm from "./SignupForm"
+import SignupForm from "@/components/Auth/SignupForm"
 import { Button } from '@/components/ui/button'
 import { FcGoogle } from "react-icons/fc"
 
