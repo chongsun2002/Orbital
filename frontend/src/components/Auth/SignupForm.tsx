@@ -17,7 +17,8 @@ import {
 import { Input } from "@/components/ui/input"
 import Divider from '@/components/ui/divider'
 import GoogleButton from '@/components/Auth/googleButton'
-import { cookies } from "next/headers"
+import { redirectHome } from "../../lib/generalActions"
+import { signup, User } from "../../lib/authActions"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -38,16 +39,9 @@ const SignupForm = () => {
     })
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await fetch('http://localhost:8000/api/v1/auth/signup', 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(values),
-                next: { revalidate: false }
-            })
-        console.log(response.json())
+        const user: User = await signup(values);
+        localStorage.setItem('userData', JSON.stringify(user));
+        redirectHome();
     }
 
     return (

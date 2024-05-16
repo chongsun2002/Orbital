@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Navbar from "@/components/ui/navbar";
 
-export default function Home() {
+export default async function Home() {
   return (
     <Navbar />
   )}

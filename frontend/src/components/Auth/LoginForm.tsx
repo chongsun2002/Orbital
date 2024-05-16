@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Divider from "../ui/divider"
 import GoogleButton from "./googleButton"
+import { login, User } from "../../lib/authActions"
+import { redirectHome } from "../../lib/generalActions"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -34,15 +36,9 @@ const LoginForm = () => {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await fetch('http://localhost:8000/api/v1/auth/login', 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(values),
-                next: { revalidate: false }
-            })
+        const user: User = await login(values);
+        localStorage.setItem('userData', JSON.stringify(user));
+        redirectHome();
     }
 
     return (
@@ -81,7 +77,7 @@ const LoginForm = () => {
             <Divider message='or continue with' />
             <GoogleButton />
             <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400]'>
-                If you don't have an account, 
+                If you don&apos;t have an account, 
                 <Link href='/signup' className='text-black'> sign up here.</Link>
             </div>
         </Form>
