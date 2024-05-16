@@ -26,9 +26,3 @@ export async function createSession(user: User) {
         path: '/',
     });
 }
-
-export async function endSession() {
-    cookies().delete('JWT');
-    cookies().delete('userName');
-    cookies().delete('userImage');
-}

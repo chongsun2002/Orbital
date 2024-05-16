@@ -1,4 +1,5 @@
 "use server"
+import { redirectHome } from "./generalActions";
 import { createSession, endSession } from "./session";
 
 export type User = {
@@ -65,4 +66,5 @@ export async function signup(values: signupParams) : Promise<void> {
 
 export async function logout() : Promise<void> {
     await endSession();
+    redirectHome();
 }
