@@ -47,6 +47,7 @@ const SignupForm = () => {
                 body: JSON.stringify(values),
                 next: { revalidate: false }
             })
+        console.log(response.json())
     }
 
     return (
