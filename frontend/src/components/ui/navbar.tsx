@@ -2,6 +2,7 @@ import Link from "next/link"
 import * as React from "react"
 import { Logo } from "./logo"
 import { Button } from './button'
+import { cookies } from "next/headers"
 
 const Navbar = () => {
     return(
@@ -11,9 +12,13 @@ const Navbar = () => {
                 <Link href='/course_matching'>Course Matching</Link>
                 <Link href='/find_friends'>Find Friends</Link>
                 <Link href='/activities'>Join Activities</Link>
-                <Button asChild>
-                    <Link href="/login" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Sign in</Link>
-                </Button>
+                {cookies().get('Token') 
+                    ? <Button asChild>
+                            <Link href="/logout" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Log Out</Link>
+                        </Button> 
+                    : <Button asChild>
+                            <Link href="/login" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Sign In</Link>
+                        </Button>}
             </div>   
         </div>
     )

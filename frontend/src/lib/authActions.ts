@@ -1,4 +1,5 @@
 "use server"
+import { createSession, endSession } from "./session";
 
 export type User = {
     name: string;
@@ -26,7 +27,7 @@ type loginResponse = {
     token: string;
 }
 
-export async function login(values: loginParams) : Promise<User> {
+export async function login(values: loginParams) : Promise<void> {
     const response: Response = await fetch('http://localhost:8000/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -41,10 +42,10 @@ export async function login(values: loginParams) : Promise<User> {
         image: responseBody.user.image,
         token: responseBody.token,
     };
-    return user;
+    createSession(user);
 }
 
-export async function signup(values: signupParams) : Promise<User> {
+export async function signup(values: signupParams) : Promise<void> {
     const response: Response = await fetch('http://localhost:8000/api/v1/auth/signup', {
         method: 'POST',
         headers: {
@@ -59,5 +60,9 @@ export async function signup(values: signupParams) : Promise<User> {
         image: responseBody.user.image,
         token: responseBody.token,
     };
-    return user;
+    await createSession(user);
+}
+
+export async function logout() : Promise<void> {
+    await endSession();
 }

@@ -18,8 +18,8 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Divider from "../ui/divider"
 import GoogleButton from "./googleButton"
-import { login, User } from "../../lib/authActions"
-import { redirectHome } from "../../lib/generalActions"
+import { login } from "../../lib/authActions"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -27,6 +27,8 @@ const formSchema = z.object({
 })
 
 const LoginForm = () => {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -35,14 +37,16 @@ const LoginForm = () => {
         }
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        const user: User = await login(values);
-        localStorage.setItem('userData', JSON.stringify(user));
-        redirectHome();
+    async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        try {
+            await login(values);
+            router.push('/');
+        } catch (error) {
+            console.error("error logging in");
+        }
     }
 
     return (
-
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full items-center gap-[12px]">
                 <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px]">Login with your email</div>
@@ -66,7 +70,7 @@ const LoginForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Your password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Your password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

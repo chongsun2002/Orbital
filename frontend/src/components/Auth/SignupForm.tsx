@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input"
 import Divider from '@/components/ui/divider'
 import GoogleButton from '@/components/Auth/googleButton'
 import { redirectHome } from "../../lib/generalActions"
-import { signup, User } from "../../lib/authActions"
+import { signup} from "../../lib/authActions"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -28,6 +29,8 @@ const formSchema = z.object({
 }).refine(schema => schema.password == schema.verifyPassword, { message: 'Passwords do not match', path: ['verifyPassword'] })
 
 const SignupForm = () => {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -38,14 +41,12 @@ const SignupForm = () => {
         }
     })
     
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        const user: User = await signup(values);
-        localStorage.setItem('userData', JSON.stringify(user));
-        redirectHome();
+    async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        await signup(values);
+        router.push('/');
     }
 
     return (
-
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full items-center gap-[12px]">
                 <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px]">Create an account</div>
