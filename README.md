@@ -21,7 +21,7 @@ Once you've installed postgreSQL, boot up pgAdmin and sign in to your account. T
      ```
 
 ## Running the app
-1. In a separate terminal, under directory `Adventus/backend`, run `node index.js`.
+1. In a separate terminal, under directory `Adventus/backend`, run `npm tsc` (or any other typescript transpilier, ensuring that the tsconfig file is used), followed by `node index.js` to start the backend server. For developers, when you are coding on your IDE, change the "module" in tsconfig to "CommonJS". When trasnpilling, change it back to "ESNext". This is due to ESM incompatability of some modules we are using and just a temporary getaround.
 2. In the terminal, under directory `Adventus/frontend`, run `npm run dev`. Take note of the address shown (for us, it's "http://localhost:3000")
 3. In your browser of choice, type in "localhost:3000/" (or the address you were given) in your address bar and enter. 
 4. You should see the homepage of our app Adventus!
