@@ -62,7 +62,7 @@ export default class AuthController {
         try {
             const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
             const token = createJWT(user);
-            res.status(200).json({user: user, token: token});
+            res.status(200).json({user: this.#sanitizeUser(user), token: token});
             return;
         } catch (error) {
             console.error(`Unexpected Error creating User ${error}`);
