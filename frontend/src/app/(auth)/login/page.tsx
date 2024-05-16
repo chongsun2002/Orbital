@@ -1,7 +1,5 @@
 import React from 'react'
 import LoginForm from "@/components/Auth/LoginForm"
-import { Button } from '@/components/ui/button'
-import { FcGoogle } from "react-icons/fc"
 
 const LoginPage = () => {
     return (

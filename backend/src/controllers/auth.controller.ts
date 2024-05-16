@@ -10,13 +10,24 @@ import { createJWT } from "../configs/JWTpassport.js";
  */
 
 export default class AuthController {
+    static #sanitizeUser(user: User) : User {
+        // Fields that should not be exposed when request is sent back;
+        delete user.password;
+        delete user.id;
+        delete user.email;
+        delete user.emailVerified;
+        delete user.createdAt;
+        delete user.updatedAt;
+        return user;
+    }
+
     static apiLogin: RequestHandler = async (req, res, next) => {
         const email: string = req.body.email;
         const password: string = req.body.password;
         try {
             const user: User = await AuthDAO.authenticate({email: email, password: password});
             const token = createJWT(user);
-            res.status(200).json({user: user, token: token});
+            res.status(200).json({user: this.#sanitizeUser(user), token: token});
             return;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
