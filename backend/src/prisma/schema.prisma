@@ -110,7 +110,7 @@ model CourseEnrollment {
 model Activity {
   id                String    @id @default(cuid()) 
   title             String
-  description       String
+  description       String?
   startTime         DateTime 
   endTime           DateTime
   organiser         User      @relation("Organiser", fields: [organiserId], references: [id], onDelete: Cascade)
@@ -118,6 +118,7 @@ model Activity {
   numOfParticipants Int
   participants      User[]    @relation("Participant")
 }
+
 model Friendship {
   // User 1 is the requestor of the friendship, User 2 is the receipient of the request.
   // This remains even after the friendship status is Friends
