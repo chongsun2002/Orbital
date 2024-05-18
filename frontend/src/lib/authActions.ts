@@ -1,6 +1,5 @@
 "use server"
-import { redirectHome } from "./generalActions";
-import { createSession, endSession } from "./session";
+import { createSession } from "./session";
 
 export type User = {
     name: string;
@@ -28,7 +27,7 @@ type loginResponse = {
     token: string;
 }
 
-export async function login(values: loginParams) : Promise<void> {
+export async function login(values: loginParams) : Promise<number> {
     const response: Response = await fetch('http://localhost:8000/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -38,15 +37,21 @@ export async function login(values: loginParams) : Promise<void> {
         next: { revalidate: false }
     });
     const responseBody: loginResponse = await response.json();
-    const user: User = {
-        name: responseBody.user.name,
-        image: responseBody.user.image,
-        token: responseBody.token,
-    };
-    createSession(user);
+    try {
+        const user: User = {
+            name: responseBody.user.name,
+            image: responseBody.user.image,
+            token: responseBody.token,
+        };
+        await createSession(user);
+    } catch (error) {
+        console.error(error)
+    } finally {
+        return response.status;
+    }
 }
 
-export async function signup(values: signupParams) : Promise<void> {
+export async function signup(values: signupParams) : Promise<number> {
     const response: Response = await fetch('http://localhost:8000/api/v1/auth/signup', {
         method: 'POST',
         headers: {
@@ -56,15 +61,16 @@ export async function signup(values: signupParams) : Promise<void> {
         next: { revalidate: false }
     });
     const responseBody: loginResponse = await response.json();
-    const user: User = {
-        name: responseBody.user.name,
-        image: responseBody.user.image,
-        token: responseBody.token,
-    };
-    await createSession(user);
-}
-
-export async function logout() : Promise<void> {
-    await endSession();
-    redirectHome();
+    try {
+        const user: User = {
+            name: responseBody.user.name,
+            image: responseBody.user.image,
+            token: responseBody.token,
+        };
+        await createSession(user);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        return response.status;
+    }
 }
