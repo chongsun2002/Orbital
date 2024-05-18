@@ -65,8 +65,21 @@ export default class AuthController {
             res.status(200).json({user: this.#sanitizeUser(user), token: token});
             return;
         } catch (error) {
-            console.error(`Unexpected Error creating User ${error}`);
-            res.status(500).json({error: (error as Error).message});
+            if (error instanceof PrismaClientKnownRequestError) {
+                if ((error as PrismaClientKnownRequestError).code === "P2002") {
+                    console.error(`User supplied duplicate credentials ${email}, ${name}`);
+                    res.status(400).json({error: (error as Error).message});
+                    return;
+                } else {
+                    console.error(`Unexpected Prisma Error creating User ${error}`);
+                    res.status(500).json({error: (error as Error).message});
+                    return;
+                }
+            } else {
+                console.error(`Unexpected Error creating User ${error}`);
+                res.status(500).json({error: (error as Error).message});
+                return;
+            }
         }
     }
 }

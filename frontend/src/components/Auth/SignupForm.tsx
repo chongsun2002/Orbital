@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input"
 import Divider from '@/components/ui/divider'
 import GoogleButton from '@/components/Auth/googleButton'
-import { redirectHome } from "../../lib/generalActions"
 import { signup} from "../../lib/authActions"
 import { useRouter } from "next/navigation"
 
@@ -40,10 +39,28 @@ const SignupForm = () => {
             verifyPassword: ''
         }
     })
+
+    const { setError } = form;
     
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
-        await signup(values);
-        router.push('/');
+        try {
+            const responseCode: number = await signup(values);
+            switch(responseCode) {
+                case 400:
+                    setError('verifyPassword', { type: "400", message: "Email has already been taken." });
+                    break;
+                case 200:
+                    router.push('/');
+                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
+                    break;
+                default:
+                    setError('verifyPassword', { type: "500", message: "Oops, something went wrong! Try again later." });
+            }
+        } catch (error) {
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('verifyPassword', formError)
+            console.error(error)
+        }
     }
 
     return (
@@ -84,7 +101,7 @@ const SignupForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Your password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Your password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -97,7 +114,7 @@ const SignupForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Verify password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Re-enter password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Re-enter password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

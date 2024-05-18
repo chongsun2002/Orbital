@@ -37,12 +37,26 @@ const LoginForm = () => {
         }
     })
 
+    const { setError } = form;
+
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
-            await login(values);
-            router.push('/');
+            const responseCode: number = await login(values);
+            switch(responseCode) {
+                case 401:
+                    setError('password', { type: "401", message: "Incorrect email or password." });
+                    break;
+                case 200:
+                    router.push('/');
+                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
+                    break;
+                default:
+                    setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
+            }
         } catch (error) {
-            console.error("error logging in");
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('password', formError)
+            console.error(error)
         }
     }
 
