@@ -27,6 +27,7 @@ export default class AuthController {
         try {
             const user: User = await AuthDAO.authenticate({email: email, password: password});
             const token = createJWT(user);
+            console.log(token)
             res.status(200).json({user: this.#sanitizeUser(user), token: token});
             return;
         } catch (error) {

@@ -1,51 +1,49 @@
 "use server"
+
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createSession } from "./session";
 
 interface ActivityDetails {
     title: string,
     description?: string,
-    startTime: Date,
-    endTime: Date,
+    date: {
+        from: Date,
+        to: Date
+    },
+    startTime: string,
+    endTime: string,
     numOfParticipants: number
 }
 
-type createResponse = {
-    activityId: string;
-}
-
 export async function createActivity(details: ActivityDetails) {
+    const startDateTime = details.date.from;
+    startDateTime.setHours(Number(details.startTime.split(':')[0]))
+    startDateTime.setMinutes(Number(details.startTime.split(':')[1]))
+
+    const endDateTime = details.date.to;
+    endDateTime.setHours(Number(details.endTime.split(':')[0]))
+    endDateTime.setMinutes(Number(details.endTime.split(':')[1]))
+    const params = {
+        title: details.title,
+        description: details.description, 
+        startTime: startDateTime,
+        endTime: endDateTime,
+        numOfParticipants: details.numOfParticipants, 
+    }
+
+    const jwt = cookies().get('JWT')
+    if (jwt === undefined) {
+        redirect('/')
+    }
+
     const response: Response = await fetch('http://localhost:8000/api/v1/activities/create', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': jwt.value
         },
-        body: JSON.stringify(details),
+        body: JSON.stringify(params),
         next: { revalidate: false }
     });
-    return response;
-}
-
-export async function signup(values: signupParams) : Promise<number> {
-    const response: Response = await fetch('http://localhost:8000/api/v1/auth/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values),
-        next: { revalidate: false }
-    });
-    const responseBody: loginResponse = await response.json();
-    try {
-        const user: User = {
-            name: responseBody.user.name,
-            image: responseBody.user.image,
-            token: responseBody.token,
-        };
-        await createSession(user);
-    } catch (error) {
-        console.error(error);
-    } finally {
-        return response.status;
-    }
+    return response.json();
 }
