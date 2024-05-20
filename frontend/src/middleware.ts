@@ -13,6 +13,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/', request.url))
     }
 
+    if (request.nextUrl.pathname.startsWith('/activity/create') && !cookieStore.get('JWT')) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
     if (request.nextUrl.pathname.startsWith('/logout')) {
         const response: NextResponse = NextResponse.redirect(new URL('/success', request.url));
         response.cookies.delete('JWT');

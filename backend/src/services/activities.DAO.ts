@@ -1,6 +1,5 @@
 import { prisma } from '../../index.js'
 import type { User, Activity } from "@prisma/client"
-import AuthDAO from './authDAO.js'
 
 interface ActivityDetails {
     title: string,

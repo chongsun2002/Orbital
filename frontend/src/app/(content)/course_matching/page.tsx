@@ -5,7 +5,7 @@ import CourseCard from "@/components/CourseMatching/CourseCard"
 const courseMatching = () => {
     return(
         <div>
-            <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px] ml-[80px] mb-[80px]">
+            <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px] mt-[56px] ml-[80px] mb-[80px]">
                 Course Matching
             </div>
             <div className='flex bg-[#DEDEDE] justify-evenly items-center h-[650px]'>
