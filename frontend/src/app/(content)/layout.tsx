@@ -1,4 +1,5 @@
 import Navbar from "@/components/ui/navbar";
+import { cookies } from "next/headers";
 
 export default function ContentLayout({
   children,
@@ -7,7 +8,7 @@ export default function ContentLayout({
 }>) {
   return (
     <main>
-        <div><Navbar /></div>
+        <Navbar userName={cookies().get('userName')?.value || ""}/>
         {children}
     </main>
   );
