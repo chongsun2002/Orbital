@@ -1,4 +1,3 @@
-import "@/app/globals.css";
 import Navbar from "@/components/ui/navbar";
 
 export default function ContentLayout({

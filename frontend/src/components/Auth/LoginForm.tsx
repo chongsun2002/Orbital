@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Divider from "../ui/divider"
 import GoogleButton from "./googleButton"
+import { login } from "../../lib/authActions"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -25,6 +27,8 @@ const formSchema = z.object({
 })
 
 const LoginForm = () => {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -33,20 +37,30 @@ const LoginForm = () => {
         }
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await fetch('http://localhost:8000/api/v1/auth/login', 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(values),
-                next: { revalidate: false }
-            })
+    const { setError } = form;
+
+    async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        try {
+            const responseCode: number = await login(values);
+            switch(responseCode) {
+                case 401:
+                    setError('password', { type: "401", message: "Incorrect email or password." });
+                    break;
+                case 200:
+                    router.push('/');
+                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
+                    break;
+                default:
+                    setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
+            }
+        } catch (error) {
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('password', formError)
+            console.error(error)
+        }
     }
 
     return (
-
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full items-center gap-[12px]">
                 <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px]">Login with your email</div>
@@ -70,7 +84,7 @@ const LoginForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Your password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Your password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -81,7 +95,7 @@ const LoginForm = () => {
             <Divider message='or continue with' />
             <GoogleButton />
             <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400]'>
-                If you don't have an account, 
+                If you don&apos;t have an account, 
                 <Link href='/signup' className='text-black'> sign up here.</Link>
             </div>
         </Form>
