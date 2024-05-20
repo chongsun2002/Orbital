@@ -17,7 +17,8 @@ import {
 import { Input } from "@/components/ui/input"
 import Divider from '@/components/ui/divider'
 import GoogleButton from '@/components/Auth/googleButton'
-import { cookies } from "next/headers"
+import { signup} from "../../lib/authActions"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -27,6 +28,8 @@ const formSchema = z.object({
 }).refine(schema => schema.password == schema.verifyPassword, { message: 'Passwords do not match', path: ['verifyPassword'] })
 
 const SignupForm = () => {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,22 +39,31 @@ const SignupForm = () => {
             verifyPassword: ''
         }
     })
+
+    const { setError } = form;
     
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await fetch('http://localhost:8000/api/v1/auth/signup', 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(values),
-                next: { revalidate: false }
-            })
-        console.log(response.json())
+    async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        try {
+            const responseCode: number = await signup(values);
+            switch(responseCode) {
+                case 400:
+                    setError('verifyPassword', { type: "400", message: "Email has already been taken." });
+                    break;
+                case 200:
+                    router.push('/');
+                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
+                    break;
+                default:
+                    setError('verifyPassword', { type: "500", message: "Oops, something went wrong! Try again later." });
+            }
+        } catch (error) {
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('verifyPassword', formError)
+            console.error(error)
+        }
     }
 
     return (
-
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full items-center gap-[12px]">
                 <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px]">Create an account</div>
@@ -89,7 +101,7 @@ const SignupForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Your password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Your password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -102,7 +114,7 @@ const SignupForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Verify password</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Re-enter password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Re-enter password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
