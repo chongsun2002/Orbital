@@ -1,4 +1,3 @@
-import "@/app/globals.css";
 import { Logo } from "@/components/ui/logo"
 
 export default function LoginLayout({

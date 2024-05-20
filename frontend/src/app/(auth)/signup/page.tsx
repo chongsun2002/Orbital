@@ -1,7 +1,7 @@
 import React from 'react'
 import SignupForm from "@/components/Auth/SignupForm"
-import { Button } from '@/components/ui/button'
-import { FcGoogle } from "react-icons/fc"
+import { cookies } from 'next/headers';
+import { redirectHome } from '@/lib/generalActions';
 
 const SignupPage = () => {
     return (
