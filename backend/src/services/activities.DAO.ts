@@ -34,6 +34,9 @@ export default class ActivitiesDAO {
                         id: activity.id
                     }
                 }
+            },
+            include: {
+                organisedActivities: true
             }
         })
         return activity;
@@ -52,10 +55,25 @@ export default class ActivitiesDAO {
     }
 
     /**
+     * This function allows searches for activities with the specified string in the title and then applies pagination
+     */
+    static async searchActivity(search: string, pageNum: number) : Promise<Activity> {
+        const find = await prisma.activity.findMany({
+            skip: 9 * pageNum,
+            take: 9,
+            where: {
+                title: {
+                    contains: search
+                }
+            }
+        })
+    }
+
+    /**
     * This function adds a user to an existing activity as a participant
     * TODO: Check if this updates the User's joined activities as well
     */
-    static async addParticipant(activityId: string, userId: string) : Promise<Activity> {
+    static async addParticipant(activityId: string, userId: string) : Promise<Activity | void> {
         const update = await prisma.activity.update({
             where: {
                 id: activityId
@@ -68,6 +86,17 @@ export default class ActivitiesDAO {
                 }
             }
         });
+
+        //FOR TESTING
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+               inActivities: true                 
+            }
+        })
+        console.log(user);
         return update;
     }
 
@@ -102,4 +131,50 @@ export default class ActivitiesDAO {
         })
         return del
     }
-};
+
+    /**
+     * This function checks if the user with the specified user id is the creator and organiser of the activity. 
+     * @param activityId id of the activity
+     * @param userId id of the user 
+     * @returns true if the user is the creator of the activity, false otherwise 
+     */
+    static async checkIfOwner(activityId: string, userId: string): Promise<boolean> {
+        const find = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                _count: {
+                    select: {
+                        organisedActivities: {
+                            where: { id: activityId }
+                        }
+                    }
+                }
+            }
+        })
+        return find._count.organisedActivities > 0;
+    }
+
+    /**
+     * This function checks if the activity can still accept more participants. 
+     * @param activityId id of the activity
+     * @returns true if the activity is not full, false if it is full 
+     */
+    static async countParticipants(activityId: string) : Promise<boolean> {
+        const participantCount = await prisma.activity.findUnique({ 
+            where: {
+                id: activityId
+            },
+            select: {
+                _count: {
+                    select: {
+                        participants: true
+                    }
+                },
+                numOfParticipants: true
+            }
+        }) 
+        return participantCount._count.participants < participantCount.numOfParticipants;
+    }
+}
