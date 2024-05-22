@@ -3,5 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function Home() {
   return (
-    <Navbar userName={cookies().get('userName')?.value || ""}/>
+    <div>
+      <Navbar userName={cookies().get('userName')?.value || ""}/>
+    </div>
   )}
