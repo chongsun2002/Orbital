@@ -2,9 +2,6 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import ActivitiesDAO from "../services/activities.DAO.js";
 import { User, Activity } from "@prisma/client";
 import { RequestHandler  } from "express";
-import jwt from 'jsonwebtoken'
-import fs from 'fs'
-import path from 'path'
 
 export default class ActivitiesController {
     static apiCreateActivity : RequestHandler = async (req, res, next) => {
@@ -14,20 +11,7 @@ export default class ActivitiesController {
         const endTime = req.body.endTime
         const numOfParticipants = req.body.numOfParticipants
 
-        const publicKeyFilePath = path.join(process.cwd(), 'src', 'configs', 'id_rsa_pub.pem');
-        const PUB_KEY = fs.readFileSync(publicKeyFilePath, 'utf-8');
-        const token: string | undefined = req.header('Authorization')
-        if (token === undefined) {
-            console.error('User is not signed in')
-            res.status(400) 
-            return
-        }
-        const payload = jwt.verify(token, PUB_KEY)
-        if (payload === undefined) {
-            console.error('JWT is invalid')
-            res.status(401)
-            return
-        }
+        const user: User = req.user;
         try {
             const activity: Activity = await ActivitiesDAO.createActivity({
                 title: title,
@@ -35,7 +19,7 @@ export default class ActivitiesController {
                 startTime: startTime,
                 endTime: endTime,
                 numOfParticipants: numOfParticipants
-            }, payload.sub)
+            }, user.id)
             res.status(200).json({activityId: activity.id})
             return
         } catch (error) {
