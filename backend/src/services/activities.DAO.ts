@@ -51,7 +51,7 @@ export default class ActivitiesDAO {
                 id: activityId
             }
         })
-        return get
+        return get;
     }
 
     /**
@@ -59,14 +59,29 @@ export default class ActivitiesDAO {
      */
     static async searchActivity(search: string, pageNum: number) : Promise<Activity> {
         const find = await prisma.activity.findMany({
-            skip: 9 * pageNum,
+            skip: 9 * (pageNum - 1),
             take: 9,
-            where: {
-                title: {
-                    contains: search
+            orderBy: {
+                _relevance: {
+                    fields: ['title', 'description'],
+                    search: search.split(' ').join(' & '),
+                    sort: 'desc'
                 }
             }
         })
+        return find;
+    }
+
+    /**
+     * This function displays all activities, paginated, without a search input 
+     * @param pageNum The page number that the user is on 
+     */
+    static async displayActivities(pageNum: number) : Promise<Activity> {
+        const all = await prisma.activity.findMany({
+            skip: 9 * (pageNum - 1),
+            take: 9
+        })
+        return all;
     }
 
     /**
@@ -86,18 +101,6 @@ export default class ActivitiesDAO {
                 }
             }
         });
-
-        //FOR TESTING
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId
-            },
-            select: {
-               inActivities: true                 
-            }
-        })
-        console.log(user);
-        return update;
     }
 
     /**
