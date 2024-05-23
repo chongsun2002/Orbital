@@ -96,4 +96,17 @@ export default class ActivitiesController {
             return;
         }
     }
+
+    static apiDisplayActivities: RequestHandler = async (req, res, next) => {
+        const pageNum: number = req.body.pageNum;
+        try {
+            const activities: Activity = await ActivitiesDAO.displayActivities(pageNum);
+            res.status(200).json({activities: activities});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error creating activity ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
 }
