@@ -1,17 +1,18 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import ActivitiesDAO from "../services/activities.DAO.js";
 import { User, Activity } from "@prisma/client";
 import { RequestHandler  } from "express";
-import { prisma } from "../../index.js";
 
 export default class ActivitiesController {
+    /**
+     * This function allows the suer to create an activity with the specified details.
+     * @returns The created activity 
+     */
     static apiCreateActivity : RequestHandler = async (req, res, next) => {
         const title = req.body.title
         const description = req.body.description
         const startTime = req.body.startTime
         const endTime = req.body.endTime
         const numOfParticipants = req.body.numOfParticipants
-
         const user: User = req.user;
         try {
             const activity: Activity = await ActivitiesDAO.createActivity({
@@ -30,6 +31,10 @@ export default class ActivitiesController {
         } 
     }
 
+    /**
+     * This function allows the user to search for activities with a specified search string
+     * @returns The activities which match the search string 
+     */
     static apiSearchActivity: RequestHandler = async (req, res, next) => {
         const searchString: string = req.body.searchString;
         const pageNum: number = req.body.pageNum;
