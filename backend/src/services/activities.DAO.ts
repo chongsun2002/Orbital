@@ -61,9 +61,11 @@ export default class ActivitiesDAO {
         const find = await prisma.activity.findMany({
             skip: 9 * (pageNum - 1),
             take: 9,
-            where: {
-                title: {
-                    contains: search
+            orderBy: {
+                _relevance: {
+                    fields: ['title', 'description'],
+                    search: search.split(' ').join(' & '),
+                    sort: 'desc'
                 }
             }
         })
