@@ -19,10 +19,14 @@ import { useRouter } from "next/navigation"
 import { createActivity } from "@/lib/activityActions"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { format } from "date-fns"
-import { Calendar } from "../ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Textarea } from "../ui/textarea"
+import dynamic from 'next/dynamic'
+// import { Calendar } from "../ui/calendar"
+const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
+    loading: () => <p>Loading...</p>
+}); // Using dynamic import to make initial render faster.
 
 const formSchema = z.object({
     title: z.string().min(1, 'Required'),
@@ -68,10 +72,9 @@ const CreateActivityForm = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
-            const response: { activityId: string }= await createActivity(values);
+            const response: { activityId: string } = await createActivity(values);
             const id = response.activityId
-            console.log(id)
-            router.push('/activity/' + id)
+            router.push('/activities/' + id)
         } catch (error) {
             const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
             setError('numOfParticipants', formError)

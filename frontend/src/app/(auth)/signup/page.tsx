@@ -1,7 +1,5 @@
 import React from 'react'
 import SignupForm from "@/components/Auth/SignupForm"
-import { cookies } from 'next/headers';
-import { redirectHome } from '@/lib/generalActions';
 
 const SignupPage = () => {
     return (

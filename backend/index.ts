@@ -23,12 +23,14 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/activities", activitiesRouter);
-app.use("*", (req: Request, res: Response) => 
-    res.status(404).json({ error: "404 Not Found"}));
 
 app.get("/healthz", (req: Request, res: Response) => {
     res.send('Server OK');
 })
+
+app.use("*", (req: Request, res: Response) => 
+    res.status(404).json({ error: "404 Not Found"}));
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

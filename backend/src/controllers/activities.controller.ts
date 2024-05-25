@@ -1,6 +1,6 @@
 import ActivitiesDAO from "../services/activities.DAO.js";
 import { User, Activity } from "@prisma/client";
-import { RequestHandler  } from "express";
+import { RequestHandler } from "express";
 
 export default class ActivitiesController {
     /**
@@ -35,13 +35,33 @@ export default class ActivitiesController {
      * This function allows the user to search for activities with a specified search string
      * @returns The activities which match the search string 
      */
-    static apiSearchActivity: RequestHandler = async (req, res, next) => {
-        const searchString: string = req.body.searchString;
-        const pageNum: number = req.body.pageNum;
-
+    static apiSearchActivities: RequestHandler = async (req, res, next) => {
+        const rawSearch: any = req.query.search;
+        const rawPageNum: any = req.query.pageNum;
+        const searchString: string = typeof rawSearch === 'string' ? rawSearch : "";
+        const pageNum: number = typeof rawPageNum === 'string' ? parseInt(rawPageNum, 10) : 1;
+        
         try {
-            const activity: Activity = await ActivitiesDAO.searchActivity(searchString, pageNum);
-            res.status(200).json({activities: activity});            
+            const activities: Activity[] = await ActivitiesDAO.searchActivities(searchString, pageNum);
+            res.status(200).json({activities: activities});            
+            return;
+        } catch (error) {
+            console.error(`Unexpected error creating activity ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiSearchActivity: RequestHandler = async (req, res, next) => {
+        const rawId: any = req.query.id;
+        const id: string = typeof rawId === 'string' ? rawId : "";
+        try {
+            const activity: Activity = await ActivitiesDAO.searchActivity(id);
+            if (!activity) {
+                res.status(404).json({error: "Could not find activity in database."});
+            } else {
+                res.status(200).json({activity: activity});
+            }
             return;
         } catch (error) {
             console.error(`Unexpected error creating activity ${error}`);

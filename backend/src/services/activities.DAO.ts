@@ -24,7 +24,7 @@ export default class ActivitiesDAO {
                 organiserId: organiserId 
             }
         })
-        const user = await prisma.user.update({
+        await prisma.user.update({
             where: {
                 id: organiserId
             },
@@ -57,7 +57,7 @@ export default class ActivitiesDAO {
     /**
      * This function allows searches for activities with the specified string in the title and then applies pagination
      */
-    static async searchActivity(search: string, pageNum: number) : Promise<Activity> {
+    static async searchActivities(search: string, pageNum: number) : Promise<Activity[]> {
         const find = await prisma.activity.findMany({
             skip: 9 * (pageNum - 1),
             take: 9,
@@ -66,6 +66,29 @@ export default class ActivitiesDAO {
                     fields: ['title', 'description'],
                     search: search.split(' ').join(' & '),
                     sort: 'desc'
+                }
+            },
+            include: {
+                organiser: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+        return find;
+    }
+
+    static async searchActivity(id: string) : Promise<Activity> {
+        const find = await prisma.activity.findUnique({
+            where: {
+                id: id,
+            },
+            include: {
+                organiser: {
+                    select: {
+                        name: true
+                    }
                 }
             }
         })
@@ -101,6 +124,7 @@ export default class ActivitiesDAO {
                 }
             }
         });
+        return update;
     }
 
     /**
@@ -119,7 +143,7 @@ export default class ActivitiesDAO {
                 }
             }
         })
-        return update
+        return update;
     }
 
     /**
@@ -132,7 +156,7 @@ export default class ActivitiesDAO {
                 id: activityId
             }
         })
-        return del
+        return del;
     }
 
     /**
