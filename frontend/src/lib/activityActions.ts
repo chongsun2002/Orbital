@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { API_URL } from "./utils";
 
 interface ActivityDetails {
     title: string,
@@ -35,15 +36,58 @@ export async function createActivity(details: ActivityDetails) {
     if (jwt === undefined) {
         redirect('/')
     }
-
-    const response: Response = await fetch('http://localhost:8000/api/v1/activities/create', {
+    const url = new URL('api/v1/activities/create', API_URL)
+    const response: Response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': jwt.value
         },
         body: JSON.stringify(params),
-        next: { revalidate: false }
+        next: { revalidate: false },
+        cache: 'no-cache'
     });
     return response.json();
+}
+
+export interface ActivityListDetails {
+    id: string;
+    title: string;
+    description?: string; 
+    startTime: string;
+    endTime: string;
+    organiserId: string;
+    numOfParticipants: number
+    organiser: {
+        name: string;
+    }
+}
+
+export async function getActivities(search: string, pageNum: number): Promise<{ activities: ActivityListDetails[] }> {
+    const params = new URLSearchParams({
+        search: search,
+        pageNum: pageNum.toString()
+    });
+    const url = new URL('api/v1/activities/searchactivities', API_URL);
+    url.search = params.toString();
+    const response: Response = await fetch(url.toString(), {
+        method: 'GET',
+        cache: 'no-cache'
+    });
+    const responseBody = await response.json();
+    return responseBody;
+}
+
+export async function getActivity(id: string): Promise<{ activity: ActivityListDetails }> {
+    const params = new URLSearchParams({
+        id: id,
+    })
+    const url = new URL('api/v1/activities/searchactivity', API_URL);
+    url.search = params.toString();
+    const response: Response = await fetch(url.toString(), {
+        method: 'GET',
+        cache: 'no-cache'
+    })
+    const responseBody = await response.json();
+    return responseBody;
 }

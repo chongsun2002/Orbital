@@ -1,7 +1,8 @@
 "use server"
 import { createSession } from "./session";
+import { API_URL } from "./utils";
 
-export type User = {
+export interface User {
     name: string;
     image: string;
     token: string;
@@ -19,7 +20,7 @@ interface signupParams {
     verifyPassword: string;
 }
 
-type loginResponse = {
+interface loginResponse {
     user: {
         name: string,
         image: string,
@@ -28,7 +29,8 @@ type loginResponse = {
 }
 
 export async function login(values: loginParams) : Promise<number> {
-    const response: Response = await fetch('http://localhost:8000/api/v1/auth/login', {
+    const url = new URL('api/v1/auth/login', API_URL)
+    const response: Response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -52,7 +54,8 @@ export async function login(values: loginParams) : Promise<number> {
 }
 
 export async function signup(values: signupParams) : Promise<number> {
-    const response: Response = await fetch('http://localhost:8000/api/v1/auth/signup', {
+    const url = new URL('api/v1/auth/signup', API_URL);
+    const response: Response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
