@@ -7,6 +7,7 @@ import { passportConfig } from "./src/configs/JWTpassport.js";
 import passport from "passport"
 import courseRouter from "./src/routes/courses.routes.js";
 import activitiesRouter from "./src/routes/activities.routes.js";
+import friendsRouter from "./src/routes/friends.routes.js";
 
 export const prisma: PrismaClient = new PrismaClient();
 export const app: Express = express();
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/activities", activitiesRouter);
+app.use("/api/v1/friends", friendsRouter);
 
 app.get("/healthz", (req: Request, res: Response) => {
     res.send('Server OK');
