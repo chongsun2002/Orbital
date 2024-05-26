@@ -50,7 +50,7 @@ const formSchema = z.object({
     endDateTime.setHours(Number(schema.endTime.split(':')[0]))
     endDateTime.setMinutes(Number(schema.endTime.split(':')[1]))
     return startDateTime < endDateTime
-}, { message: 'The start time must be before the start time', path: ['startTime'] })
+}, { message: 'The start time must be before the end time', path: ['startTime'] })
 
 const CreateActivityForm = () => {
     const router = useRouter();
