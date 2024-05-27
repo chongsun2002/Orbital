@@ -14,6 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { createActivity } from "@/lib/activityActions"
@@ -40,7 +47,13 @@ const formSchema = z.object({
     numOfParticipants: z.coerce.number({
         required_error: "Required",
         invalid_type_error: "Must be a positive number"
-    }).int().positive("Must be a positive number")
+    }).int().positive("Must be a positive number"),
+    category: z.string({
+        required_error: "Please select a category"
+    }),
+    location: z.string({
+        required_error: "Please select a location"
+    })
 }).refine(schema => {
     const startDateTime = schema.date.from;
     startDateTime.setHours(Number(schema.startTime.split(':')[0]))
@@ -77,7 +90,7 @@ const CreateActivityForm = () => {
             router.push('/activities/' + id)
         } catch (error) {
             const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
-            setError('numOfParticipants', formError)
+            setError('category', formError)
             console.error(error)
         }
     }
@@ -202,6 +215,55 @@ const CreateActivityForm = () => {
                         </FormItem>
                     )}
                 />
+                <div className="flex flex-col w-full gap-3">
+                    <FormField
+                        control={form.control}
+                        name="location"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Location</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a location" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="nus">Nus</SelectItem>
+                                            <SelectItem value="ntu">Ntu</SelectItem>
+                                            <SelectItem value="anywhere">Anywhere</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a category" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="study">Study</SelectItem>
+                                            <SelectItem value="sports">Sports</SelectItem>
+                                            <SelectItem value="dining">Dining</SelectItem>
+                                            <SelectItem value="leisure">Leisure</SelectItem>
+                                            <SelectItem value="others">Others</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                    />
+                </div>
                 <Button type="submit" className="w-full">Create Activity!</Button>
             </form>
         </Form>

@@ -34,10 +34,10 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ id, title, description, sta
                 <img src="/testimage.png"></img>
             </CardContent>
             <CardFooter>
-                <div className="flex flex-col">
+                <div className="flex flex-col w-full">
                     <p>Date: {format(startTime, "EEEE, d MMMM, yyyy")} {isFuture(startTime) ? "(In " : "("}{formatDistanceToNow(startTime)}{isFuture(startTime) ? ")" : " ago)"}</p>
                     <CardDescription className="line-clamp-1">{description}</CardDescription>
-                    <Button className="my-3">
+                    <Button className="my-4">
                         <Link href={`/activities/${id}`}>Find Out More...</Link>
                     </Button>
                 </div>

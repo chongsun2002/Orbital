@@ -17,7 +17,7 @@ datasource db {
 model User {
   // Auth JS schema requirements
   id            String          @id @default(cuid())
-  name          String?
+  name          String
   email         String          @unique
   emailVerified DateTime?
   image         String?
@@ -112,6 +112,20 @@ model CourseEnrollment {
   courseId     String
 }
 
+enum ActivityLocation {
+  NUS
+  NTU
+  ANYWHERE
+}
+
+enum ActivityCategory {
+  STUDY
+  SPORTS
+  DINING
+  LEISURE
+  OTHERS
+}
+
 model Activity {
   id                String    @id @default(cuid()) 
   title             String
@@ -121,6 +135,8 @@ model Activity {
   organiser         User      @relation("Organiser", fields: [organiserId], references: [id], onDelete: Cascade)
   organiserId       String
   numOfParticipants Int
+  category          ActivityCategory
+  location          ActivityLocation
   participants      User[]    @relation("Participant")
 }
 
