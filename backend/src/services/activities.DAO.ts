@@ -1,5 +1,5 @@
 import { prisma } from '../../index.js'
-import type { User, Activity } from "@prisma/client"
+import type { User, Activity, ActivityCategory, ActivityLocation } from "@prisma/client"
 
 interface ActivityDetails {
     title: string,
@@ -7,6 +7,8 @@ interface ActivityDetails {
     startTime: Date,
     endTime: Date,
     numOfParticipants: number
+    category: string
+    location: string
 }
 
 export default class ActivitiesDAO {
@@ -21,7 +23,9 @@ export default class ActivitiesDAO {
                 startTime: details.startTime,
                 endTime: details.endTime,
                 numOfParticipants: details.numOfParticipants,
-                organiserId: organiserId 
+                category: details.category as ActivityCategory,
+                location: details.location as ActivityLocation,
+                organiserId: organiserId
             }
         })
         await prisma.user.update({
@@ -57,8 +61,42 @@ export default class ActivitiesDAO {
     /**
      * This function allows searches for activities with the specified string in the title and then applies pagination
      */
-    static async searchActivities(search: string, pageNum: number) : Promise<Activity[]> {
+    static async searchActivities(search: string, pageNum: number, category: string | undefined, date: string | undefined, location: string | undefined) : Promise<Activity[]> {
+        const where: any = {
+            AND: []
+        }
+        if (category) {
+            where.AND.push({
+                category: category.toUpperCase() as ActivityCategory
+            });
+        }
+
+        if (location) {
+            where.AND.push({
+                location: location.toUpperCase() as ActivityLocation
+            });
+        }
+
+        const now = new Date();
+        if (date) {
+            if (date === 'past') {
+                where.AND.push({
+                    endTime: { lt: now }
+                });
+            } else if (date === 'future') {
+                where.AND.push({
+                    startTime: { gt: now }
+                });
+            } else if (date === 'happening') {
+                where.AND.push({
+                    startTime: { lte: now },
+                    endTime: { gte: now }
+                });
+            }
+        }
+
         const find = await prisma.activity.findMany({
+            where,
             skip: 9 * (pageNum - 1),
             take: 9,
             orderBy: {
@@ -79,7 +117,7 @@ export default class ActivitiesDAO {
         return find;
     }
 
-    static async searchActivity(id: string) : Promise<Activity> {
+    static async searchActivity(id: string) : Promise<Activity | null> {
         const find = await prisma.activity.findUnique({
             where: {
                 id: id,
@@ -95,16 +133,22 @@ export default class ActivitiesDAO {
         return find;
     }
 
-    /**
-     * This function displays all activities, paginated, without a search input 
-     * @param pageNum The page number that the user is on 
-     */
-    static async displayActivities(pageNum: number) : Promise<Activity> {
-        const all = await prisma.activity.findMany({
-            skip: 9 * (pageNum - 1),
-            take: 9
+    static async checkActivityEnrollment(activityId: string, userId: string): Promise<boolean> {
+        const find = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                _count: {
+                    select: {
+                        inActivities: {
+                            where: { id: activityId }
+                        }
+                    }
+                }
+            }
         })
-        return all;
+        return find ? find._count.inActivities > 0 : false;
     }
 
     /**
@@ -180,7 +224,7 @@ export default class ActivitiesDAO {
                 }
             }
         })
-        return find._count.organisedActivities > 0;
+        return find ? find._count.organisedActivities > 0 : false;
     }
 
     /**
@@ -188,20 +232,41 @@ export default class ActivitiesDAO {
      * @param activityId id of the activity
      * @returns true if the activity is not full, false if it is full 
      */
-    static async countParticipants(activityId: string) : Promise<boolean> {
-        const participantCount = await prisma.activity.findUnique({ 
+    static async getActivityParticipants(activityId: string) : Promise<string[]> {
+        const activity = await prisma.activity.findUnique({ 
             where: {
                 id: activityId
             },
             select: {
-                _count: {
+                participants: {
                     select: {
-                        participants: true
+                        name: true
                     }
-                },
-                numOfParticipants: true
+                }
             }
-        }) 
-        return participantCount._count.participants < participantCount.numOfParticipants;
+        })
+        return activity?.participants.map(participant => participant.name) ?? [];
     }
+
+        /**
+     * This function checks if the activity can still accept more participants. 
+     * @param activityId id of the activity
+     * @returns true if the activity is not full, false if it is full 
+     */
+        static async countParticipants(activityId: string) : Promise<boolean> {
+            const participantCount = await prisma.activity.findUnique({ 
+                where: {
+                    id: activityId
+                },
+                select: {
+                    _count: {
+                        select: {
+                            participants: true
+                        }
+                    },
+                    numOfParticipants: true
+                }
+            }) 
+            return participantCount ? participantCount._count.participants < participantCount.numOfParticipants : false;
+        }
 }

@@ -14,6 +14,8 @@ interface ActivityDetails {
     startTime: string,
     endTime: string,
     numOfParticipants: number
+    category: string,
+    location: string
 }
 
 export async function createActivity(details: ActivityDetails) {
@@ -30,11 +32,13 @@ export async function createActivity(details: ActivityDetails) {
         startTime: startDateTime,
         endTime: endDateTime,
         numOfParticipants: details.numOfParticipants, 
+        category: details.category,
+        location: details.location,
     }
 
     const jwt = cookies().get('JWT')
     if (jwt === undefined) {
-        redirect('/')
+        redirect('/login')
     }
     const url = new URL('api/v1/activities/create', API_URL)
     const response: Response = await fetch(url, {
@@ -63,10 +67,13 @@ export interface ActivityListDetails {
     }
 }
 
-export async function getActivities(search: string, pageNum: number): Promise<{ activities: ActivityListDetails[] }> {
+export async function getActivities(search: string, pageNum: number, category: string, date: string, location: string): Promise<{ activities: ActivityListDetails[] }> {
     const params = new URLSearchParams({
         search: search,
-        pageNum: pageNum.toString()
+        pageNum: pageNum.toString(),
+        category: category,
+        date: date,
+        location: location
     });
     const url = new URL('api/v1/activities/searchactivities', API_URL);
     url.search = params.toString();
@@ -80,7 +87,7 @@ export async function getActivities(search: string, pageNum: number): Promise<{ 
 
 export async function getActivity(id: string): Promise<{ activity: ActivityListDetails }> {
     const params = new URLSearchParams({
-        id: id,
+        activityId: id,
     })
     const url = new URL('api/v1/activities/searchactivity', API_URL);
     url.search = params.toString();
@@ -88,6 +95,90 @@ export async function getActivity(id: string): Promise<{ activity: ActivityListD
         method: 'GET',
         cache: 'no-cache'
     })
+    const responseBody = await response.json();
+    return responseBody;
+}
+
+export async function joinActivity(id: string) {
+    const jwt = cookies().get('JWT')
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const url = new URL('api/v1/activities/join', API_URL);
+    const response: Response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || "",
+            cache: 'no-cache'
+        },
+        body: JSON.stringify({activityId: id}),
+    });
+    const responseBody = await response.json();
+    return responseBody;
+}
+
+export async function unjoinActivity(id: string) {
+    const jwt = cookies().get('JWT')
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const url = new URL('api/v1/activities/unjoin', API_URL);
+    const response: Response = await fetch(url.toString(), {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || "",
+            cache: 'no-cache'
+        },
+        body: JSON.stringify({activityId: id}),
+    });
+    const responseBody = await response.json();
+    return responseBody;
+}
+
+export async function checkActivityEnrollment(id: string) : Promise<boolean> {
+    const jwt = cookies().get('JWT')
+    const params = new URLSearchParams({
+        activityId: id
+    })
+    const url = new URL('api/v1/activities/checkenrollment', API_URL)
+    url.search = params.toString();
+    const response: Response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || ""
+        },
+        cache: 'no-cache'
+    });
+    const responseStatus: number = response.status;
+    if (responseStatus !== 200) {
+        return false;
+    }
+    const responseBody = await response.json();
+    return responseBody.enrolled;
+}
+
+export interface EnrolledList {
+    enrolledNames: string[]
+}
+
+export async function getActivityParticipants(id: string): Promise<EnrolledList> {
+    const jwt = cookies().get('JWT')
+    const params = new URLSearchParams({
+        activityId: id
+    })
+    const url = new URL('api/v1/activities/getparticipants', API_URL)
+    url.search = params.toString();
+    const response: Response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || ""
+        },
+        cache: 'no-cache'
+    });
     const responseBody = await response.json();
     return responseBody;
 }
