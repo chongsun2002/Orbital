@@ -1,5 +1,6 @@
 import React from "react"
-import { ActivityListDetails, checkActivityEnrollment, getActivityParticipants } from "@/lib/activityActions"
+import { checkActivityEnrollment, getActivityParticipants } from "@/lib/activityActions"
+import { SearchedActivity } from "@/lib/types/activityTypes";
 import { getActivity } from "@/lib/activityActions";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import ActivitiesEnrollment from "@/components/Activities/ActivitiesEnrollment";
 import ActivitiesParticipants from "@/components/Activities/ActivitiesParticipants";
 
 const activity = async ({ params }: { params : { id: string } }) => {
-    let activityData: ActivityListDetails | undefined;
+    let activityData: SearchedActivity  | undefined;
     try {
         activityData = (await getActivity(params.id)).activity;
     } catch (error) {
