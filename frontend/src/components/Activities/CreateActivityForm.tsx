@@ -30,6 +30,8 @@ import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Textarea } from "../ui/textarea"
 import dynamic from 'next/dynamic'
+import { locationFilters, categoryFilters } from "@/lib/constants/activityConstants"
+import { CreatedActivityDetails } from "@/lib/types/activityTypes"
 // import { Calendar } from "../ui/calendar"
 const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
     loading: () => <p>Loading...</p>
@@ -85,7 +87,8 @@ const CreateActivityForm = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
-            const response: { activityId: string } = await createActivity(values);
+            const response: CreatedActivityDetails = await createActivity(values);
+            console.log(response)
             const id = response.activityId
             router.push('/activities/' + id)
         } catch (error) {
@@ -229,9 +232,9 @@ const CreateActivityForm = () => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="nus">Nus</SelectItem>
-                                            <SelectItem value="ntu">Ntu</SelectItem>
-                                            <SelectItem value="anywhere">Anywhere</SelectItem>
+                                            {locationFilters.map((location, index) => 
+                                                <SelectItem value={location.value} key={index}>{location.name}</SelectItem>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 <FormMessage />
@@ -252,11 +255,9 @@ const CreateActivityForm = () => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="study">Study</SelectItem>
-                                            <SelectItem value="sports">Sports</SelectItem>
-                                            <SelectItem value="dining">Dining</SelectItem>
-                                            <SelectItem value="leisure">Leisure</SelectItem>
-                                            <SelectItem value="others">Others</SelectItem>
+                                            {categoryFilters.map((category, index) => 
+                                                <SelectItem value={category.value} key={index}>{category.name}</SelectItem>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 <FormMessage />
