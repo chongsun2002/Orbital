@@ -28,9 +28,6 @@ export default class AuthDAO {
      * This function creates a user in the database
      */
     static async createUser(credentials: Credentials) : Promise<User> {
-        console.log(credentials.name);
-        console.log(credentials.password);
-        console.log(credentials.email);
         const user: User = await prisma.user.create({data: {
             name: credentials.name,
             email: credentials.email,

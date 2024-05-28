@@ -7,6 +7,7 @@ import ActivitiesPagination from "@/components/Activities/ActivitiesPagination"
 import { ActivitiesListProps } from "@/components/Activities/ActivitiesList"
 import { getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
+import { Logo } from "@/components/ui/logo"
 
 const activities = async ({
     searchParams,
@@ -14,14 +15,20 @@ const activities = async ({
     searchParams?: {
         query?: string;
         page?: string;
+        date?: string;
+        location?: string;
+        category?: string;
     }
 }) => {
     const query: string = searchParams?.query || '';
     const currentPage: number = Number(searchParams?.page) || 1;
+    const date: string = searchParams?.date || '';
+    const location: string = searchParams?.location || '';
+    const category: string = searchParams?.category || '';
     let activitiesData: ActivitiesListProps | undefined;
 
     try {
-        activitiesData = await getActivities(query, currentPage);
+        activitiesData = await getActivities(query, currentPage, category, date, location);
     } catch (error) {
         activitiesData = undefined;
     }
@@ -41,7 +48,13 @@ const activities = async ({
                     </Button>
                 </div>
 
-                <p>Error loading activities. Please try again later.</p>
+                <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
+                    <Logo/>
+                    <h2>Could not load activitie. Try again later.</h2>
+                    <Button>
+                        <Link href="/">Return Home</Link>
+                    </Button>
+                </div>
             </div>
         )
     }
