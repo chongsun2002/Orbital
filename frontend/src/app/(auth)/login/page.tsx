@@ -1,7 +1,5 @@
 import React from 'react'
 import LoginForm from "@/components/Auth/LoginForm"
-import { cookies } from "next/headers"
-import { redirectHome } from '@/lib/generalActions'
 
 const LoginPage = () => {
     return (
