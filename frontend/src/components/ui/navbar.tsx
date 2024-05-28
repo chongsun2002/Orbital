@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({userName}) => {
                 ? <Button asChild>
                       <Link href="/login" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Sign In</Link>
                   </Button> 
-                    : "Welcome, " + userName}
+                    : <Link href='/user'>{ "Welcome, " + userName }</Link> }
                 {userName === "" ? <div></div> 
                 : <Button asChild>
                       <Link href="/logout" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Log Out</Link>
