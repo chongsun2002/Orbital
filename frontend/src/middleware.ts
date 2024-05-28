@@ -1,6 +1,7 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getUserId } from './lib/generalActions';
  
 export async function middleware(request: NextRequest) {
     const cookieStore: RequestCookies = request.cookies;
@@ -24,4 +25,8 @@ export async function middleware(request: NextRequest) {
         response.cookies.delete('image');
         return response;
     }
-  }
+    
+    if (request.nextUrl.pathname.startsWith('/user') && !cookieStore.get('JWT')) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+}

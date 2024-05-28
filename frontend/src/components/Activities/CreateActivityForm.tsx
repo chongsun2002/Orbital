@@ -63,7 +63,9 @@ const CreateActivityForm = () => {
             startTime: '',
             endTime: '',
 
-            /** To prevent changing an uncontrolled input to be controlled  */
+            /** 
+             * To prevent changing an uncontrolled input to be controlled error 
+             * @ts-ignore */
             numOfParticipants: ''
         }
     })

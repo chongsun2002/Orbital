@@ -83,4 +83,10 @@ export default class AuthController {
             }
         }
     }
+
+    static apiGetUserId: RequestHandler = async (req, res, next) => {
+        const user: User = req.user;
+        res.status(200).json({id: user.id});
+        return;
+    }
 }

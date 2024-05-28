@@ -114,7 +114,11 @@ export default class FriendsDAO {
             },
             select: {
                 friends: {
-                    select: { id: true }
+                    select: { 
+                        id: true,
+                        name: true,
+                        image: true
+                    }
                 }
             }
         });
