@@ -6,7 +6,7 @@ import SelectFilter from "./SelectFilter";
 const ActivitiesFilter: React.FC = () => {
     const categoryFilter = ["study", "sports", "dining", "leisure", "others"]; // Meant to be lower case!
     const dateFilter = ["happening", "past", "future"];
-    const locationFilter = ["nearby", "NUS", "NTU", "anywhere"];
+    const locationFilter = ["nus", "ntu", "anywhere"];
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
