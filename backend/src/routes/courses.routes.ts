@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import AuthController from "../controllers/auth.controller.js";
 import passport from "passport";
 
 const courseRouter: Router = express.Router();

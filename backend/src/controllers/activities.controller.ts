@@ -1,33 +1,23 @@
-import { createActivity, searchActivities, searchActivity, checkActivityEnrollment, addParticipant, removeParticipant,
-    deleteActivity, checkIfOwner, countParticipants, getActivityParticipants } from "../services/activities.DAO"
+import ActivitiesDAO from "../services/activities.DAO.js";
 import { User, Activity } from "@prisma/client";
 import { RequestHandler } from "express";
 
 export default class ActivitiesController {
     /**
-     * This function allows the user to create an activity with the specified details.
-     * Expected fields in the req body:
-     * @param title Title of the activity
-     * @param description Description of the activity, optional
-     * @param startTime Start Date of the activity
-     * @param endTime End Date of the activity
-     * @param numOfParticipants Maximum number of participants for the activity
-     * @param category Category of the activity
-     * @param location Location where the activity will be held 
-     * @returns The created activity in the body of the response
+     * This function allows the suer to create an activity with the specified details.
+     * @returns The created activity 
      */
     static apiCreateActivity : RequestHandler = async (req, res, next) => {
-        const title: string = req.body.title
-        const description: string | undefined = typeof req.body.description === 'string' ? req.body.description : undefined;
-        const startTime: Date = req.body.startTime
-        const endTime: Date = req.body.endTime
-        const numOfParticipants: number = req.body.numOfParticipants
+        const title = req.body.title
+        const description = req.body.description
+        const startTime = req.body.startTime
+        const endTime = req.body.endTime
+        const numOfParticipants = req.body.numOfParticipants
         const category: string = req.body.category
         const location: string = req.body.location
         const user: User = req.user;
-        const userId: string = user.id;
         try {
-            const activity: Activity = await createActivity({
+            const activity: Activity = await ActivitiesDAO.createActivity({
                 title: title,
                 description: description,
                 startTime: startTime,
@@ -35,9 +25,8 @@ export default class ActivitiesController {
                 numOfParticipants: numOfParticipants,
                 location: location?location.toUpperCase():location,
                 category: category?category.toUpperCase():category
-            }, userId)
-            const activityId: string = activity.id;
-            res.status(200).json({activityId: activityId});
+            }, user.id)
+            res.status(200).json({activityId: activity.id})
             return
         } catch (error) {
             console.error(`Unexpected error creating activity ${error}`)
@@ -48,13 +37,7 @@ export default class ActivitiesController {
 
     /**
      * This function allows the user to search for activities with a specified search string
-     * Expected fields in teh request query:
-     * @param rawSearch The search string that the users input
-     * @param rawPageNum The page number the user is on
-     * @param rawCategory The category the user is filtering for
-     * @param rawDate User wants to see activities happening on this date
-     * @param rawLocation User wants to see activities at this location
-     * @returns The activities which match the search filters are returned in the body of the response
+     * @returns The activities which match the search string 
      */
     static apiSearchActivities: RequestHandler = async (req, res, next) => {
         const rawSearch: any = req.query.search;
@@ -69,7 +52,7 @@ export default class ActivitiesController {
         const date: string | undefined = typeof rawDate === 'string' ? rawDate : undefined;
         
         try {
-            const activities: Activity[] = await searchActivities(searchString, pageNum,category, date, location);
+            const activities: Activity[] = await ActivitiesDAO.searchActivities(searchString, pageNum,category, date, location);
             res.status(200).json({activities: activities});            
             return;
         } catch (error) {
@@ -79,17 +62,11 @@ export default class ActivitiesController {
         }
     }
 
-    /**
-     * This function lets us find an activity from its unique id.
-     * Expected fields in the request query:
-     * @param rawId: The id of the activity we are searching for. 
-     * @returns The activity's details in the body of the response.
-     */
     static apiSearchActivity: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
-            const activity: Activity | null = await searchActivity(id);
+            const activity: Activity | null = await ActivitiesDAO.searchActivity(activityId);
             if (!activity) {
                 res.status(404).json({error: "Could not find activity in database."});
             } else {
@@ -103,26 +80,18 @@ export default class ActivitiesController {
         }
     }
 
-    /**
-     * This function allows us to add a user to an existing activity as a participant, if the activity hsa not yet
-     * reached maximum capacity.
-     * Expected fields in the request body:
-     * @param activityId The id of the activity
-     * @returns The activity in the response body, if the operation was successful. 
-     */
     static apiAddParticipant: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: User = req.user;
-        const userId: string = user.id;
-        if (!(await countParticipants(activityId))) {
+        if (!(await ActivitiesDAO.countParticipants(activityId))) {
             console.error("Activity is full!");
             res.status(406).json({error: "Activity is full!"});
             return;
         }
         try {
-            const activity: Activity = await addParticipant(activityId, userId);
-            res.status(200).json({activities: activity});            
+            const activity: Activity = await ActivitiesDAO.addParticipant(activityId, user.id);
+            res.status(200).json({activity: activity});            
             return;
         } catch (error) {
             console.error(`Unexpected error creating activity ${error}`)
@@ -131,20 +100,13 @@ export default class ActivitiesController {
         }
     }
 
-    /**
-     * This function allows us to remove a currently enrolled user from an existing activity.
-     * Expected fields in the request body:
-     * @param activityId The id of the activity
-     * @returns The activity in the response body, if the operation was successful. 
-     */
     static apiRemoveParticipant: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: User = req.user;
-        const userId: string = user.id;
         try {
-            const activity: Activity = await removeParticipant(activityId, userId);
-            res.status(200).json({activities: activity});            
+            const activity: Activity = await ActivitiesDAO.removeParticipant(activityId, user.id);
+            res.status(200).json({activity: activity});            
             return;
         } catch (error) {
             console.error(`Unexpected error creating activity ${error}`);
@@ -153,19 +115,12 @@ export default class ActivitiesController {
         }
     }
 
-    /**
-     * This operation checks if the currently logged-in user is a participant of an activity.
-     * Expected fields in the request query:
-     * @param rawId The id of the activity we are querying 
-     * @returns A boolean representing whether or not the user is enrolled, in the body of the response
-     */
     static apiCheckActivityEnrollment: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: User = req.user;
-        const userId: string = user.id;
         try {
-            const isEnrolled: boolean = await checkActivityEnrollment(activityId, userId);
+            const isEnrolled: Boolean = await ActivitiesDAO.checkActivityEnrollment(activityId, user.id);
             res.status(200).json({enrolled: isEnrolled});
             return;
         } catch (error) {
@@ -175,17 +130,11 @@ export default class ActivitiesController {
         }
     }
 
-    /**
-     * This function allows us to check all the participants in an activity. 
-     * Expected params in the request query:
-     * @param rawId The id of the activity
-     * @returns The names of the participants in the body of the response
-     */
     static apiGetActivityParticipants: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
-            const enrolledNames: string[] = await getActivityParticipants(activityId);
+            const enrolledNames: string[] = await ActivitiesDAO.getActivityParticipants(activityId);
             res.status(200).json({enrolledNames: enrolledNames});
             return;
         } catch (error) {
@@ -213,25 +162,18 @@ export default class ActivitiesController {
         }
      }
 
-    /**
-     * This function allows a user to delete an activity if they are the original creator of the activity. 
-     * Expected fields in the request body:
-     * @param activityId The id of the activity
-     * @returns The deleted activity in the body of the response
-     */
     static apiDeleteActivity: RequestHandler = async (req, res, next) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: User = req.user;
-        const userId: string = user.id;
-        if (!(await checkIfOwner(activityId, userId))) {
+        if (!(await ActivitiesDAO.checkIfOwner(activityId, user.id))) {
             console.error("User is not the creator of this activity");
             res.status(403).json({error: "User is not the creator of this activity"});
             return;
         }    
         try {
-            const activity: Activity = await deleteActivity(activityId);
-            res.status(200).json({activities: activity});            
+            const activity: Activity = await ActivitiesDAO.deleteActivity(activityId);
+            res.status(200).json({activity: activity});            
             return;
         } catch (error) {
             console.error(`Unexpected error creating activity ${error}`);

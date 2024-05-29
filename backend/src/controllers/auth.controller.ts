@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { authenticate, createUser, getUser } from "../services/authDAO.js"
+import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
 import { RequestHandler,  } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
@@ -25,7 +25,7 @@ export default class AuthController {
         const email: string = req.body.email;
         const password: string = req.body.password;
         try {
-            const user: User = await authenticate({email: email, password: password});
+            const user: User = await AuthDAO.authenticate({email: email, password: password});
             const token = createJWT(user);
             console.log(token)
             res.status(200).json({user: this.#sanitizeUser(user), token: token});
@@ -61,7 +61,7 @@ export default class AuthController {
         }
         */
         try {
-            const user: User = await createUser({name: name, email: email, password: password});
+            const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
             const token = createJWT(user);
             res.status(200).json({user: this.#sanitizeUser(user), token: token});
             return;
