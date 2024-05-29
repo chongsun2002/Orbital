@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getUserId } from './lib/generalActions';
  
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
     const cookieStore: RequestCookies = request.cookies;
 
     if (request.nextUrl.pathname.startsWith('/signup') && cookieStore.get('JWT')) {
