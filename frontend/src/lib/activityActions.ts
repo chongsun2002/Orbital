@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { redirect } from "next/navigation";
 import { API_URL } from "./utils";
-import { CreateActivityDetails, SearchedActivity, Activity, CreatedActivityDetails, EnrolledList } from "./types/activityTypes";
+import { CreateActivityDetails, SearchedActivity, Activity, CreatedActivityDetails, EnrolledList, UpdateActivityDetails } from "./types/activityTypes";
 
 // Methods to interact with backend
 
@@ -45,9 +45,11 @@ export async function createActivity(details: CreateActivityDetails): Promise<Cr
             'Authorization': jwt.value
         },
         body: JSON.stringify(params),
-        next: { revalidate: false },
         cache: 'no-cache'
     });
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
     return response.json();
 }
 
@@ -75,8 +77,10 @@ export async function getActivities(search: string, pageNum: number, category: s
         method: 'GET',
         cache: 'no-cache'
     });
-    const responseBody = await response.json();
-    return responseBody;
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return response.json();
 }
 
 /**
@@ -85,15 +89,14 @@ export async function getActivities(search: string, pageNum: number, category: s
  * @returns 
  */
 export async function getActivity(id: string): Promise<{ activity: SearchedActivity }> {
-    const params = new URLSearchParams({
-        activityId: id,
-    })
-    const url = new URL('api/v1/activities/searchactivity', API_URL);
-    url.search = params.toString();
+    const url = new URL(`api/v1/activities/searchactivity/${id}`, API_URL);
     const response: Response = await fetch(url.toString(), {
         method: 'GET',
         cache: 'no-cache'
     })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
     return response.json();
 }
 
@@ -102,16 +105,18 @@ export async function joinActivity(id: string): Promise<{ activities: Activity }
     if (jwt === undefined) {
         redirect('/login');
     }
-    const url = new URL('api/v1/activities/join', API_URL);
+    const url = new URL(`api/v1/activities/join/${id}`, API_URL);
     const response: Response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': jwt?.value,
-            cache: 'no-cache'
         },
-        body: JSON.stringify({activityId: id}),
+        cache: 'no-cache'
     });
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
     return response.json();
 }
 
@@ -120,26 +125,24 @@ export async function unjoinActivity(id: string): Promise<{activities: Activity 
     if (jwt === undefined) {
         redirect('/login');
     }
-    const url = new URL('api/v1/activities/unjoin', API_URL);
+    const url = new URL(`api/v1/activities/unjoin/${id}`, API_URL);
     const response: Response = await fetch(url.toString(), {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': jwt?.value || "",
-            cache: 'no-cache'
         },
-        body: JSON.stringify({activityId: id}),
+        cache: 'no-cache'
     });
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
     return response.json();
 }
 
-export async function checkActivityEnrollment(id: string) : Promise<boolean> {
+export async function checkActivityEnrollment(id: string) : Promise<{ enrolled: boolean }> {
     const jwt = cookies().get('JWT')
-    const params = new URLSearchParams({
-        activityId: id
-    })
-    const url = new URL('api/v1/activities/checkenrollment', API_URL)
-    url.search = params.toString();
+    const url = new URL(`api/v1/activities/checkenrollment/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -149,20 +152,15 @@ export async function checkActivityEnrollment(id: string) : Promise<boolean> {
         cache: 'no-cache'
     });
     const responseStatus: number = response.status;
-    if (responseStatus !== 200) {
-        return false;
+    if (!response.ok) {
+        throw new Error("Could not reach server");
     }
-    const responseBody = await response.json();
-    return responseBody.enrolled;
+    return response.json();
 }
 
 export async function getActivityParticipants(id: string): Promise<EnrolledList> {
     const jwt = cookies().get('JWT')
-    const params = new URLSearchParams({
-        activityId: id
-    })
-    const url = new URL('api/v1/activities/getparticipants', API_URL)
-    url.search = params.toString();
+    const url = new URL(`api/v1/activities/getparticipants/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -171,6 +169,61 @@ export async function getActivityParticipants(id: string): Promise<EnrolledList>
         },
         cache: 'no-cache'
     });
-    const responseBody = await response.json();
-    return responseBody;
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return response.json();
+}
+
+export async function editActivity(id: string, data: UpdateActivityDetails): Promise<Activity> {
+    const jwt: RequestCookie | undefined = cookies().get('JWT');
+    if (jwt === undefined) {
+        redirect('/login')
+    }
+    const url = new URL(`api/v1/activities/edit/${id}`, API_URL)
+    const response: Response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || "",
+
+        },
+        body: JSON.stringify(data),
+        cache: 'no-cache'
+    })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return response.json();
+}
+
+export async function checkIfOwner(id: string): Promise<{ isOwner: boolean }> {
+    const jwt: RequestCookie | undefined = cookies().get('JWT');
+    if (jwt === undefined) {
+        redirect('/login')
+    }
+    const url = new URL(`api/v1/activities/checkisorganiser/${id}`, API_URL);
+    const response: Response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt?.value || "",
+
+        },
+    })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return response.json();
+}
+
+export async function countActivities(): Promise<{activityCount: number}> {
+    const url = new URL(`api/v1/activities/countactivities`, API_URL);
+    const response: Response = await fetch(url, {
+        method: 'GET'
+    })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return response.json();
 }

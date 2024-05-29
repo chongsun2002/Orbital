@@ -32,7 +32,6 @@ import { Textarea } from "../ui/textarea"
 import dynamic from 'next/dynamic'
 import { locationFilters, categoryFilters } from "@/lib/constants/activityConstants"
 import { CreatedActivityDetails } from "@/lib/types/activityTypes"
-// import { Calendar } from "../ui/calendar"
 const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
     loading: () => <p>Loading...</p>
 }); // Using dynamic import to make initial render faster.
@@ -79,7 +78,7 @@ const CreateActivityForm = () => {
             endTime: '',
 
             /** To prevent changing an uncontrolled input to be controlled  */
-            numOfParticipants: ''
+            numOfParticipants: 4
         }
     })
 
@@ -88,7 +87,6 @@ const CreateActivityForm = () => {
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
             const response: CreatedActivityDetails = await createActivity(values);
-            console.log(response)
             const id = response.activityId
             router.push('/activities/' + id)
         } catch (error) {
@@ -210,7 +208,7 @@ const CreateActivityForm = () => {
                     name="numOfParticipants"
                     render={({ field }) => (
                         <FormItem className="w-full">
-                            <FormLabel>Number of Participants</FormLabel>
+                            <FormLabel>Number of Participants {"(Default: 4)"}</FormLabel>
                             <FormControl>
                                 <Input className="w-full" placeholder="Maximum number of participants" {...field} />
                             </FormControl>
