@@ -1,4 +1,4 @@
-import ActivitiesDAO from "../services/activities.DAO";
+import ActivitiesDAO from "../services/activities.DAO.js";
 import { Activity } from "@prisma/client";
 import { RequestHandler, Request , Response, NextFunction } from "express";
 
