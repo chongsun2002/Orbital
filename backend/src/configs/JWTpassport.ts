@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from "passport-jwt"
 import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
 import dotenv from "dotenv";
-import jsonwebtoken from "jsonwebtoken"
+import jsonwebtoken, { Algorithm } from "jsonwebtoken"
 
 const publicKeyFilePath = path.join(process.cwd(), 'src', 'configs', 'id_rsa_pub.pem');
 const privateKeyFilePath = path.join(process.cwd(), 'src', 'configs', 'id_rsa_priv.pem');
@@ -17,12 +17,12 @@ dotenv.config({path: "./.env"})
 const options = {
     secretOrKey: PUB_KEY,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    algorithms: ['RS256'],
+    algorithms: ['RS256'] as Algorithm[],
 };
 
 const strategy = new Strategy(options, async (payload: any, done: any) => {
     try {
-        const user = await AuthDAO.getUser(payload.sub);
+        const user: User | null = await AuthDAO.getUser(payload.sub);
         if (user) {
             return done(null, user);
         } else {

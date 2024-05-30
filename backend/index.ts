@@ -1,6 +1,7 @@
+/// <reference path="./src/types/express/index.d.ts" />
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import "dotenv/config.js";
 import { PrismaClient } from "@prisma/client";
 import authRouter from "./src/routes/auth.routes.js";
 import { passportConfig } from "./src/configs/JWTpassport.js";
@@ -11,7 +12,7 @@ import friendsRouter from "./src/routes/friends.routes.js";
 
 export const prisma: PrismaClient = new PrismaClient();
 export const app: Express = express();
-dotenv.config({path: "src/configs/.env"})
+//dotenv.config({path: "src/configs/.env"})
 const port = process.env.PORT;
 
 
