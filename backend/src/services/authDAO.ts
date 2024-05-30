@@ -2,11 +2,14 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../../index.js";
 import type { User } from "@prisma/client"
 
-type Credentials = {
-    name?: string;
+interface Credentials {
     email: string;
     password: string;
 };
+
+interface SignupCredentials extends Credentials  {
+    name: string;
+}
 
 export default class AuthDAO {
     /**
@@ -27,7 +30,7 @@ export default class AuthDAO {
     /**
      * This function creates a user in the database
      */
-    static async createUser(credentials: Credentials) : Promise<User> {
+    static async createUser(credentials: SignupCredentials) : Promise<User> {
         const user: User = await prisma.user.create({data: {
             name: credentials.name,
             email: credentials.email,

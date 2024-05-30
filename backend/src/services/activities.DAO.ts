@@ -11,6 +11,16 @@ interface ActivityDetails {
     location: string
 }
 
+interface UpdateActivityDetails {
+    title?: string,
+    description?: string,
+    startTime?: Date,
+    endTime?: Date,
+    numOfParticipants?: number
+    category?: ActivityCategory
+    location?: ActivityLocation
+}
+
 export default class ActivitiesDAO {
     /**
      * This function creates an activity in the database and links it to the user who created it
@@ -245,28 +255,49 @@ export default class ActivitiesDAO {
                 }
             }
         })
-        return activity?.participants.map(participant => participant.name) ?? [];
+        return activity?.participants.map((participant: {name: string}) => participant.name) ?? [];
     }
 
-        /**
+    /**
      * This function checks if the activity can still accept more participants. 
      * @param activityId id of the activity
      * @returns true if the activity is not full, false if it is full 
      */
-        static async countParticipants(activityId: string) : Promise<boolean> {
-            const participantCount = await prisma.activity.findUnique({ 
-                where: {
-                    id: activityId
+    static async countParticipants(activityId: string) : Promise<boolean> {
+        const participantCount = await prisma.activity.findUnique({ 
+            where: {
+                id: activityId
+            },
+            select: {
+                _count: {
+                    select: {
+                        participants: true
+                    }
                 },
-                select: {
-                    _count: {
-                        select: {
-                            participants: true
-                        }
-                    },
-                    numOfParticipants: true
-                }
-            }) 
-            return participantCount ? participantCount._count.participants < participantCount.numOfParticipants : false;
+                numOfParticipants: true
+            }
+        }) 
+        return participantCount ? participantCount._count.participants < participantCount.numOfParticipants : false;
+    }
+
+    static async editActivity(activityId: string, data: UpdateActivityDetails) : Promise<Activity> {
+        if (data.location) {
+            data.location.toUpperCase() as ActivityLocation
         }
+        if (data.category) {
+            data.category.toUpperCase() as ActivityLocation
+        }
+        const update = await prisma.activity.update({
+            where: { 
+                id: activityId 
+            },
+            data: data
+        })
+        return update;
+    }
+
+    static async countActivities() : Promise<number> {
+        const count = await prisma.activity.count();
+        return count;
+    }
 }
