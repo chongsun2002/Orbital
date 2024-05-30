@@ -98,7 +98,7 @@ async function isFriends(user1Id: string, user2Id: string): Promise<boolean> {
             }
         }
     });
-    return f._count.friends > 0; 
+    return (f?._count.friends || 0) > 0; 
 }
 
 /**
@@ -137,7 +137,7 @@ async function getPendingOutgoing(userId: string) {
         select: {
             requestedFriendships: {
                 select: {
-                    user2id: true
+                    user2Id: true
                 }
             } 
         }

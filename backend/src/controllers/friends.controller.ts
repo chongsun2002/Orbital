@@ -1,11 +1,16 @@
 import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, isFriends,
     getFriends, getPendingIncoming, getPendingOutgoing, removeFriend } from "../services/friends.DAO.js";
 import { User } from "@prisma/client";
-import { RequestHandler } from "express";
+import { RequestHandler, Request, Response, NextFunction } from "express";
 
 export default class FriendsController {
-    static apiSendFriendRequest: RequestHandler = async (req, res, next) => {
-        const requester: User = req.user;
+    static apiSendFriendRequest: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        
+        const requester: Express.User | undefined = req.user;
+        if (!requester) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const requesterId: string = requester.id;
         const recipientId : string = req.body.recipientId;
         const isSecret : boolean = req.body.isSecret;
@@ -21,7 +26,11 @@ export default class FriendsController {
     }
 
     static apiAcceptFriendRequest: RequestHandler = async (req, res, next) => {
-        const recipient: User = req.user;
+        const recipient: Express.User | undefined = req.user;
+        if (!recipient) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const recipientId: string = recipient.id;
         const requesterId : string = req.body.requesterId;
         try {
@@ -36,7 +45,11 @@ export default class FriendsController {
     }
 
     static apiDeclineFriendRequest: RequestHandler = async (req, res, next) => {
-        const recipient: User = req.user;
+        const recipient: Express.User | undefined = req.user;
+        if (!recipient) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const recipientId: string = recipient.id;
         const requesterId: string = req.body.requesterId;
         try {
@@ -51,7 +64,11 @@ export default class FriendsController {
     }
 
     static apiIsFriends: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const userId: string = user.id;
         const otherUser: any = req.query.requesterId;
         const otherUserId: string = typeof otherUser === 'string' ? otherUser : '';
@@ -67,7 +84,11 @@ export default class FriendsController {
     }
 
     static apiGetFriends: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const id: string = user.id;
         try {
             const friends = await getFriends(id);
@@ -81,7 +102,11 @@ export default class FriendsController {
     }
 
     static apiGetPendingOutgoing: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const id: string = user.id;
         try {
             const outgoing = await getPendingOutgoing(id);
@@ -95,7 +120,11 @@ export default class FriendsController {
     }
 
     static apiGetPendingIncoming: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const id: string = user.id;
         try {
             const incoming = await getPendingIncoming(id);
@@ -109,7 +138,11 @@ export default class FriendsController {
     }
 
     static apiRemoveFriend: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         const id: string = user.id;
         const friendId = req.body.friendId;
         try {
