@@ -1,7 +1,6 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getUserId } from './lib/generalActions';
  
 export async function middleware(request: NextRequest) {
     const cookieStore: RequestCookies = request.cookies;

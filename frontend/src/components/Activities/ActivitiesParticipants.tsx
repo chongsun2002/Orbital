@@ -26,8 +26,8 @@ const ActivitiesParticipants: React.FC<ActivitiesParticipantsProps> = ({ partici
                         <DialogHeader>
                             <DialogTitle>Participants</DialogTitle>
                             <ScrollArea>
-                                {participantNames.map(participant => (
-                                    <div>
+                                {participantNames.map((participant, index) => (
+                                    <div key={index}>
                                         <p>{participant}</p>
                                         <Separator/>
                                     </div>
