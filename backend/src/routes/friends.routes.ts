@@ -1,3 +1,8 @@
+/**
+ * This file contains the backend routes for actions related to friends and friendships.
+ * @see FriendsController for implementation details
+ */
+
 import express, { Router } from "express";
 import FriendsController from "../controllers/friends.controller.js";
 import passport from "passport";

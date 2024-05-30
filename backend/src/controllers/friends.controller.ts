@@ -1,16 +1,20 @@
 import FriendsDAO from "../services/friends.DAO.js";
-import { User } from "@prisma/client";
 import { RequestHandler, Request, Response, NextFunction } from "express";
 
 export default class FriendsController {
+    /**
+     * This function sends a friend request from the logged-in user to another user. 
+     * Expected fields in the request body:
+     * @param recipientId The id of the recipient of the friend request
+     * @param isSecret Boolean representing whether the friend request is anonymous
+     * @returns The new friend request in the body of the response 
+     */
     static apiSendFriendRequest: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        
         const requester: Express.User | undefined = req.user;
         if (!requester) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const requesterId: string = requester.id;
         const recipientId : string = req.body.recipientId;
         const isSecret : boolean = req.body.isSecret;
         try {
@@ -24,13 +28,17 @@ export default class FriendsController {
         }
     }
 
-    static apiAcceptFriendRequest: RequestHandler = async (req, res, next) => {
+    /**
+     * This function allows a user to accept a pending friend request. 
+     * Expected fields in the request body:
+     * @param requesterId The id of the requester of the friend request
+     */
+    static apiAcceptFriendRequest: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const recipient: Express.User | undefined = req.user;
         if (!recipient) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const recipientId: string = recipient.id;
         const requesterId : string = req.body.requesterId;
         try {
             await FriendsDAO.acceptFriendRequest(requesterId, recipient.id);
@@ -43,13 +51,17 @@ export default class FriendsController {
         }
     }
 
-    static apiDeclineFriendRequest: RequestHandler = async (req, res, next) => {
+    /**
+     * This function allows a user to decline a pending friend request. 
+     * Expected fields in the request body:
+     * @param requesterId The id of the requester of the friend request
+     */
+    static apiDeclineFriendRequest: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const recipient: Express.User | undefined = req.user;
         if (!recipient) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const recipientId: string = recipient.id;
         const requesterId: string = req.body.requesterId;
         try {
             await FriendsDAO.declineFriendRequest(requesterId, recipient.id);
@@ -62,14 +74,19 @@ export default class FriendsController {
         }
     }
 
-    static apiIsFriends: RequestHandler = async (req, res, next) => {
+    /**
+     * This function checks if two users are currently friends. 
+     * Expected fields in the request query:
+     * @param userId The id of the other user
+     * @returns A boolean representing whether the two users are friends in the body of the response  
+     */
+    static apiIsFriends: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const user: Express.User | undefined = req.user;
         if (!user) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const userId: string = user.id;
-        const otherUser: any = req.query.requesterId;
+        const otherUser: any = req.query.userId;
         const otherUserId: string = typeof otherUser === 'string' ? otherUser : '';
         try {
             const isFriends: boolean = await FriendsDAO.isFriends(user.id, otherUserId);
@@ -82,13 +99,16 @@ export default class FriendsController {
         }
     }
 
-    static apiGetFriends: RequestHandler = async (req, res, next) => {
+    /**
+     * This function gets all the friends of the logged-in user. 
+     * @returns A list of the user's friends, containing their id, name and image
+     */
+    static apiGetFriends: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const user: Express.User | undefined = req.user;
         if (!user) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const id: string = user.id;
         try {
             const friends = await FriendsDAO.getFriends(user.id);
             res.status(200).json({friends: friends});
@@ -100,7 +120,11 @@ export default class FriendsController {
         }
     }
 
-    static apiGetPendingOutgoing: RequestHandler = async (req, res, next) => {
+    /**
+     * This function gets all the pending outgoing friend requests from the logged-in user. 
+     * @returns A list of the relevant users, containing their id, name and image
+     */
+    static apiGetPendingOutgoing: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const user: Express.User | undefined = req.user;
         if (!user) {
             res.status(401).json({error: "Unauthorized"});
@@ -118,7 +142,11 @@ export default class FriendsController {
         }
     }
 
-    static apiGetPendingIncoming: RequestHandler = async (req, res, next) => {
+    /**
+     * This function gets all the pending incoming friend requests from the logged-in user, where the friend request is not secret.
+     * @returns A list of the relevant users, containing their id, name and image
+     */
+    static apiGetPendingIncoming: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const user: Express.User | undefined = req.user;
         if (!user) {
             res.status(401).json({error: "Unauthorized"});
@@ -136,13 +164,17 @@ export default class FriendsController {
         }
     }
 
-    static apiRemoveFriend: RequestHandler = async (req, res, next) => {
+    /**
+     * This functions removes two users as friends. 
+     * Expected fields in the req body: 
+     * @friendId The id of the friend to be removed
+     */
+    static apiRemoveFriend: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const user: Express.User | undefined = req.user;
         if (!user) {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
-        const id: string = user.id;
         const friendId = req.body.friendId;
         try {
             await FriendsDAO.removeFriend(user.id, friendId);

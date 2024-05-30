@@ -52,7 +52,7 @@ const activity = async ({ params }: { params : { id: string } }) => {
                     <h2 className="scroll-m-20 text-2xl tracking-tight">Organised By: {activityData.organiser.name}</h2>
                     <h2 className="scroll-m-20 text-2xl tracking-tight">Max Participants: {activityData.numOfParticipants}</h2>
                     <p className="leading-7 [&:not(:first-child)]:mt-6">{activityData.description}</p>
-                    <ActivitiesEnrollment endTime={activityData.endTime} isEnrolled={isEnrolled} activityId={params.id}></ActivitiesEnrollment>
+                    <ActivitiesEnrollment endTime={activityData.endTime} isEnrolled={isEnrolled}></ActivitiesEnrollment>
                     <ActivitiesParticipants participantNames={participants}></ActivitiesParticipants>
                 </div>
             </div>

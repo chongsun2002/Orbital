@@ -1,5 +1,5 @@
 import { prisma } from '../../index.js'
-import type { User, Activity, ActivityCategory, ActivityLocation } from "@prisma/client"
+import type { Activity, ActivityCategory, ActivityLocation } from "@prisma/client"
 
 interface ActivityDetails {
     title: string,
@@ -23,7 +23,10 @@ interface UpdateActivityDetails {
 
 export default class ActivitiesDAO {
     /**
-     * This function creates an activity in the database and links it to the user who created it
+     * This function creates an activity in the database and links it to the user who created it.
+     * @param details The details of the activity
+     * @param organiserId The id of the user who is creating the activity
+     * @returns The new activity
      */
     static async createActivity(details: ActivityDetails, organiserId: string) : Promise<Activity> {
         const activity = await prisma.activity.create({
@@ -57,7 +60,9 @@ export default class ActivitiesDAO {
     }
 
     /**
-     * Returns the activity given by its id
+     * This function finds the activity given by its unique id.
+     * @param activityId The id of the activity
+     * @returns The relevant activity
      */
     static async getActivity(activityId: string) : Promise<Activity | null> {
         const get: Activity | null  = await prisma.activity.findUnique({ 
@@ -69,64 +74,75 @@ export default class ActivitiesDAO {
     }
 
     /**
-     * This function allows searches for activities with the specified string in the title and then applies pagination
+     * This function allows searches for activities with the specified parameters and then applies pagination.
+     * @param search The search string
+     * @param pageNum The page to display
+     * @param category The filtered category, optional
+     * @param date The filtered date, optional
+     * @param location The filtered location, optional
      */
-    static async searchActivities(search: string, pageNum: number, category: string | undefined, date: string | undefined, location: string | undefined) : Promise<Activity[]> {
-        const where: any = {
-            AND: []
-        }
-        if (category) {
-            where.AND.push({
-                category: category.toUpperCase() as ActivityCategory
-            });
-        }
-
-        if (location) {
-            where.AND.push({
-                location: location.toUpperCase() as ActivityLocation
-            });
-        }
-
-        const now = new Date();
-        if (date) {
-            if (date === 'past') {
+    static async searchActivities(search: string, pageNum: number, category: string | undefined, date: string | undefined, 
+        location: string | undefined) : Promise<Activity[]> {
+            const where: any = {
+                AND: []
+            }
+            if (category) {
                 where.AND.push({
-                    endTime: { lt: now }
-                });
-            } else if (date === 'future') {
-                where.AND.push({
-                    startTime: { gt: now }
-                });
-            } else if (date === 'happening') {
-                where.AND.push({
-                    startTime: { lte: now },
-                    endTime: { gte: now }
+                    category: category.toUpperCase() as ActivityCategory
                 });
             }
-        }
 
-        const find = await prisma.activity.findMany({
-            where,
-            skip: 9 * (pageNum - 1),
-            take: 9,
-            orderBy: {
-                _relevance: {
-                    fields: ['title', 'description'],
-                    search: search.split(' ').join(' & '),
-                    sort: 'desc'
+            if (location) {
+                where.AND.push({
+                    location: location.toUpperCase() as ActivityLocation
+                });
+            }
+
+            const now = new Date();
+            if (date) {
+                if (date === 'past') {
+                    where.AND.push({
+                        endTime: { lt: now }
+                    });
+                } else if (date === 'future') {
+                    where.AND.push({
+                        startTime: { gt: now }
+                    });
+                } else if (date === 'happening') {
+                    where.AND.push({
+                        startTime: { lte: now },
+                        endTime: { gte: now }
+                    });
                 }
-            },
-            include: {
-                organiser: {
-                    select: {
-                        name: true
+            }
+
+            const find = await prisma.activity.findMany({
+                where,
+                skip: 9 * (pageNum - 1),
+                take: 9,
+                orderBy: {
+                    _relevance: {
+                        fields: ['title', 'description'],
+                        search: search.split(' ').join(' & '),
+                        sort: 'desc'
+                    }
+                },
+                include: {
+                    organiser: {
+                        select: {
+                            name: true
+                        }
                     }
                 }
-            }
-        })
-        return find;
-    }
+            })
+            return find;
+        }
 
+    /**
+     * This function searches for an activity based on its id and returns its organiser's name. 
+     * @param id The id of the activity
+     * @returns The name of the organiser
+     */
     static async searchActivity(id: string) : Promise<Activity | null> {
         const find = await prisma.activity.findUnique({
             where: {
@@ -143,6 +159,12 @@ export default class ActivitiesDAO {
         return find;
     }
 
+    /**
+     * This function checks if a user is currently enrolled in an activity.
+     * @param activityId The id of the activity 
+     * @param userId The id of the user 
+     * @returns A boolean representing if the user is currently enrolled
+     */
     static async checkActivityEnrollment(activityId: string, userId: string): Promise<boolean> {
         const find = await prisma.user.findUnique({
             where: {
@@ -163,7 +185,9 @@ export default class ActivitiesDAO {
 
     /**
     * This function adds a user to an existing activity as a participant
-    * TODO: Check if this updates the User's joined activities as well
+    * @param activityId The id of the activity
+    * @param userId The id of the user
+    * @returns The activity
     */
     static async addParticipant(activityId: string, userId: string) : Promise<Activity | void> {
         const update = await prisma.activity.update({
@@ -182,7 +206,10 @@ export default class ActivitiesDAO {
     }
 
     /**
-     * This function removes a user from an existing activity as a participant
+     * This function removes a user from an existing activity as a participant.
+     * @param activityId The id of the activity
+     * @param userId The id of the user
+     * @returns The activity
      */
     static async removeParticipant(activityId: string, userId: string) : Promise<Activity> {
         const update = await prisma.activity.update({
@@ -201,8 +228,9 @@ export default class ActivitiesDAO {
     }
 
     /**
-     * This function allows an organiser to delete their activity
-     * TODO: Check if this deletes the activity from the User as well
+     * This function allows an organiser to delete their activity.
+     * @param activityId The id of the activity
+     * @returns The deleted activity
      */
     static async deleteActivity(activityId: string) : Promise<Activity> {
         const del = await prisma.activity.delete({
@@ -280,6 +308,12 @@ export default class ActivitiesDAO {
         return participantCount ? participantCount._count.participants < participantCount.numOfParticipants : false;
     }
 
+    /**
+     * This function edits the details of an existing activity 
+     * @param activityId The id of the activity
+     * @param data The updated details 
+     * @returns The updated activity
+     */
     static async editActivity(activityId: string, data: UpdateActivityDetails) : Promise<Activity> {
         if (data.location) {
             data.location.toUpperCase() as ActivityLocation
@@ -296,6 +330,10 @@ export default class ActivitiesDAO {
         return update;
     }
 
+    /**
+     * This function gets the total number of activities in the database. 
+     * @returns The total number of activities in the database
+     */
     static async countActivities() : Promise<number> {
         const count = await prisma.activity.count();
         return count;

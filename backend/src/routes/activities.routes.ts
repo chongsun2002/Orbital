@@ -1,3 +1,8 @@
+/**
+ * This file contains the backend routes for activities.
+ * @see ActivitiesController for implemention details
+ */
+
 import express, { Router } from "express";
 import ActivitiesController from "../controllers/activities.controller.js";
 import passport from "passport";

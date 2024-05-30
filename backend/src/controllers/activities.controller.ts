@@ -1,19 +1,26 @@
 import ActivitiesDAO from "../services/activities.DAO";
-import { User, Activity } from "@prisma/client";
+import { Activity } from "@prisma/client";
 import { RequestHandler, Request , Response, NextFunction } from "express";
 
 export default class ActivitiesController {
-
     /**
-     * This function allows the suer to create an activity with the specified details.
-     * @returns The created activity 
+     * This function creates an activity with the specified details.
+     * Expected fields in the request body:
+     * @param title Title of the activity
+     * @param description Description of the activity, optional
+     * @param startTime Start date (including time) of the activity
+     * @param endTime End date (including time) of the activity
+     * @param numOfParticipants Maximum number of participants
+     * @param category Category the activity falls under
+     * @param location Location where the activity will be held
+     * @returns The created activity in the body of the response
      */
-    static apiCreateActivity : RequestHandler = async (req, res, next) => {
-        const title = req.body.title
-        const description = req.body.description
-        const startTime = req.body.startTime
-        const endTime = req.body.endTime
-        const numOfParticipants = req.body.numOfParticipants
+    static apiCreateActivity : RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const title: string = req.body.title
+        const description: string = req.body.description
+        const startTime: Date = req.body.startTime
+        const endTime: Date = req.body.endTime
+        const numOfParticipants: number = req.body.numOfParticipants
         const category: string = req.body.category
         const location: string = req.body.location
         const user: Express.User | undefined = req.user;
@@ -42,10 +49,16 @@ export default class ActivitiesController {
     }
 
     /**
-     * This function allows the user to search for activities with a specified search string
-     * @returns The activities which match the search string 
+     * This function searches for activities with the specified search parameters.
+     * Expected fields in the request query:
+     * @param rawSearch The search string inputted by the user
+     * @param rawPageNum The page the user is viewing
+     * @param rawCategory The category filtered by the user
+     * @param rawDate The date filtered by the user
+     * @param rawLocation The location filtered by the user
+     * @returns The activities which match the search string in the body of the response
      */
-    static apiSearchActivities: RequestHandler = async (req, res, next) => {
+    static apiSearchActivities: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawSearch: any = req.query.search;
         const rawPageNum: any = req.query.pageNum;
         const rawCategory: any = req.query.category;
@@ -62,13 +75,19 @@ export default class ActivitiesController {
             res.status(200).json({activities: activities});            
             return;
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error searching for activities ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
     }
 
-    static apiSearchActivity: RequestHandler = async (req, res, next) => {
+    /**
+     * This function returns the activity given by its unique id. 
+     * Expected fields in the request query:
+     * @param rawId The activity's id
+     * @returns The given activity in the body of the response
+     */
+    static apiSearchActivity: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.query.activityId;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
@@ -80,13 +99,17 @@ export default class ActivitiesController {
             }
             return;
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error finding activity ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
     }
 
-    static apiAddParticipant: RequestHandler = async (req, res, next) => {
+    /**
+     * This function adds the logged-in user as a participant to an activity, if the activity is not yet full.
+     * @returns The joined activity in the body of the response
+     */
+    static apiAddParticipant: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -104,13 +127,17 @@ export default class ActivitiesController {
             res.status(200).json({activity: activity});            
             return;
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`)
+            console.error(`Unexpected error joining activity ${error}`)
             res.status(500).json({error: (error as Error).message})
             return;
         }
     }
 
-    static apiRemoveParticipant: RequestHandler = async (req, res, next) => {
+    /**
+     * This function removes the logged-in user from an activity they are currently enrolled in.
+     * @returns The relevant activity in the body of the response
+     */
+    static apiRemoveParticipant: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -123,13 +150,17 @@ export default class ActivitiesController {
             res.status(200).json({activities: activity});            
             return;
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error leaving activity ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
     }
 
-    static apiCheckActivityEnrollment: RequestHandler = async (req, res, next) => {
+    /**
+     * This function checks if the logged-in user is currently enrolled in an activity. 
+     * @returns A boolean representing if the user is enrolled in the activity, in the body of the response
+     */
+    static apiCheckActivityEnrollment: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.query.activityId;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -148,7 +179,13 @@ export default class ActivitiesController {
         }
     }
 
-    static apiGetActivityParticipants: RequestHandler = async (req, res, next) => {
+    /**
+     * This function gets the participants of an activity. 
+     * Expected fields in the request query:
+     * @param activityId The id of the activity
+     * @returns The names of the participants in the activity in the body of the response 
+     */
+    static apiGetActivityParticipants: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.query.activityId;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
@@ -162,11 +199,15 @@ export default class ActivitiesController {
         }
     }
 
-    static apiCheckActivitiesEnrolled: RequestHandler = async (req, res, next) => {
+    static apiCheckActivitiesEnrolled: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         // TODO
     }
 
-    static apiCheckIsOrganiser: RequestHandler = async (req, res, next) => {
+    /**
+     * This function checks if the logged-in user is the creator of the relevant activity.
+     * @returns A boolean representing if the user is the creator of the activity, in the body of the response
+     */
+    static apiCheckIsOrganiser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -182,7 +223,7 @@ export default class ActivitiesController {
             res.status(500).json({error: (error as Error).message});
             return;
         }
-     }
+    }
 
     /**
      * This function allows a user to delete an activity if they are the original creator of the activity. 
@@ -190,7 +231,7 @@ export default class ActivitiesController {
      * @param activityId The id of the activity
      * @returns The deleted activity in the body of the response
      */
-    static apiDeleteActivity: RequestHandler = async (req, res, next) => {
+    static apiDeleteActivity: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -214,6 +255,11 @@ export default class ActivitiesController {
         }
     }
 
+    /**
+     * This function allows the owner of an existing activity to edit its details.
+     * @param req Holds the new details of the activity in its body
+     * @returns The edited activity in the body of the response
+     */
     static apiEditActivity: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
@@ -222,6 +268,11 @@ export default class ActivitiesController {
             res.status(401).json({error: "Unauthorized"});
             return;
         }
+        if (!(await ActivitiesDAO.checkIfOwner(activityId, user.id))) {
+            console.error("User is not the creator of this activity");
+            res.status(403).json({error: "User is not the creator of this activity"});
+            return;
+        }    
         try {
             const activity: Activity = await ActivitiesDAO.editActivity(activityId, req.body);
             res.status(200).json({activity: activity});
@@ -233,7 +284,11 @@ export default class ActivitiesController {
         }
     }
 
-    static apiCountActivities: RequestHandler = async (req, res, next) => {
+    /**
+     * This function returns the total number of activities in the database. 
+     * @returns The number of activities in the body of the response
+     */
+    static apiCountActivities: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const activityCount: number = await ActivitiesDAO.countActivities();
             res.status(200).json({activityCount: activityCount});

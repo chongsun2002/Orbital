@@ -16,6 +16,8 @@ export default class AuthDAO {
     * This function checks if the user exists in the database. If the user exists returns the user.
     * Else it throws the following exception: 
     * @throws {PrismaClientKnownRequestError}
+    * @param credentials The user's credentials
+    * @returns The user
     */
     static async authenticate(credentials: Credentials) : Promise<User> {
         const user: User = await prisma.user.findUniqueOrThrow({
@@ -28,7 +30,9 @@ export default class AuthDAO {
     }
     
     /**
-     * This function creates a user in the database
+     * This function creates a user in the database.
+     * @param credentials The user's credentials
+     * @returns The user
      */
     static async createUser(credentials: SignupCredentials) : Promise<User> {
         const user: User = await prisma.user.create({data: {
@@ -47,5 +51,4 @@ export default class AuthDAO {
         })
         return user;
     }
-
 };
