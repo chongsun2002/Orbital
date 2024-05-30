@@ -9,16 +9,15 @@ import React, { useState } from "react";
 interface ActivitiesEnrollmentProps {
     endTime: string;
     isEnrolled: boolean | undefined;
-    activityId: string;
 }
 
-const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isEnrolled, activityId}: ActivitiesEnrollmentProps) => {
+const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isEnrolled}: ActivitiesEnrollmentProps) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const onClickJoin = async () => {
         setLoading(true);
-        const success = await joinActivity(activityId);
+        const success = await joinActivity();
         console.log("clicked")
         console.log(success)
         if (success) {
@@ -29,7 +28,7 @@ const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isE
     const onClickUnjoin = async () => {
         setLoading(true);
         //const success = await unjoinActivity(activityId)
-        const success = await unjoinActivity(activityId);
+        const success = await unjoinActivity();
         if (success) {
             router.refresh();
         }

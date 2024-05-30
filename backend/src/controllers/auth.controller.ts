@@ -30,6 +30,13 @@ export default class AuthController {
         return filtered;
     }
 
+    /**
+     * This function allows a user to login.
+     * Expected fields in the req body:
+     * @param email The user's email address
+     * @param password The user's password
+     * @returns The user and their JWT in the response body
+     */
     static apiLogin: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const email: string = req.body.email;
         const password: string = req.body.password;
@@ -58,6 +65,14 @@ export default class AuthController {
         }
     }
 
+    /**
+     * This function creates a new user. 
+     * Expected fields in the request body:
+     * @param name User's name
+     * @param email User's email
+     * @param password User's password 
+     * @returns The newly created user 
+     */
     static apiCreateUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const name: string = req.body.name;
         const email: string = req.body.email;
@@ -91,15 +106,5 @@ export default class AuthController {
                 return;
             }
         }
-    }
-
-    static apiGetUserId: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const user: Express.User | undefined = req.user;
-        if (!user) {
-            res.status(401).json({error: "Unauthorized"});
-            return;
-        }
-        res.status(200).json({id: user.id});
-        return;
     }
 }

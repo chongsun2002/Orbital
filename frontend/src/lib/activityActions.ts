@@ -99,7 +99,7 @@ export async function getActivity(id: string): Promise<{ activity: ActivityListD
     return responseBody;
 }
 
-export async function joinActivity(id: string) {
+export async function joinActivity() {
     const jwt = cookies().get('JWT')
     if (jwt === undefined) {
         redirect('/login');
@@ -111,14 +111,13 @@ export async function joinActivity(id: string) {
             'Content-Type': 'application/json',
             'Authorization': jwt?.value || "",
             cache: 'no-cache'
-        },
-        body: JSON.stringify({activityId: id}),
+        }
     });
     const responseBody = await response.json();
     return responseBody;
 }
 
-export async function unjoinActivity(id: string) {
+export async function unjoinActivity() {
     const jwt = cookies().get('JWT')
     if (jwt === undefined) {
         redirect('/login');
@@ -131,7 +130,6 @@ export async function unjoinActivity(id: string) {
             'Authorization': jwt?.value || "",
             cache: 'no-cache'
         },
-        body: JSON.stringify({activityId: id}),
     });
     const responseBody = await response.json();
     return responseBody;

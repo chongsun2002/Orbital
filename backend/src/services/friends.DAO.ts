@@ -105,7 +105,7 @@ export default class FriendsDAO {
     /**
      * This function gets all friends of the specified user 
      * @param userId The id of the user
-     * @returns A list of ids of users which are friends of the specified user
+     * @returns A list of users which are friends of the specified user, including their id, name and image.
      */
     static async getFriends(userId: string) {
         const friends = await prisma.user.findUnique({
@@ -128,7 +128,7 @@ export default class FriendsDAO {
     /**
      * This function gets all the outgoing friend requests of a specified user which are still pending. 
      * @param userId the id of the specified user
-     * @returns a list of ids of users who have a pending friend request from our specified user
+     * @returns a list of users who have a pending friend request from our specified user, including their id, name and image
      */
     static async getPendingOutgoing(userId: string) {
         const outgoing = await prisma.user.findUnique({
@@ -138,7 +138,13 @@ export default class FriendsDAO {
             select: {
                 requestedFriendships: {
                     select: {
-                        user2id: true
+                        user2: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true
+                            }
+                        }
                     }
                 } 
             }
@@ -149,7 +155,8 @@ export default class FriendsDAO {
     /**
      * This function gets all the incoming friend requests of a specified user which are still pending, and are visible to the user.
      * @param userId the id of the specified user
-     * @returns a list of ids of users who have a pending friend request from our specified user
+     * @returns a list of users who have sent a friend request to the specified user, where the request is still pending,
+     *          and includes their id, name and image
      */
     static async getPendingIncoming(userId: string) {
         const incoming = await prisma.user.findUnique({
@@ -162,7 +169,13 @@ export default class FriendsDAO {
                         isSecret: false
                     },
                     select: {
-                        user1Id: true
+                        user1: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true
+                            }
+                        }
                     }
                 } 
             }
@@ -170,6 +183,11 @@ export default class FriendsDAO {
         return incoming;
     }
 
+    /**
+     * This function removes two users as friends. 
+     * @param userId The first user's id
+     * @param friendId The second user's id 
+     */
     static async removeFriend(userId: string, friendId: string) {
         await prisma.user.update({
             where: {
