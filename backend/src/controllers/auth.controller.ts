@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
-import { RequestHandler,  } from "express";
+import { RequestHandler, Request, Response, NextFunction } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
 
 /**
@@ -9,26 +9,35 @@ import { createJWT } from "../configs/JWTpassport.js";
  * Notes: ALL error typecasts are safe because you only catch errors
  */
 
+export interface filteredUser {
+    name: string,
+    image: string | null
+}
+
 export default class AuthController {
-    static #sanitizeUser(user: User) : User {
-        // Fields that should not be exposed when request is sent back;
-        delete user.password;
-        delete user.id;
-        delete user.email;
-        delete user.emailVerified;
-        delete user.createdAt;
-        delete user.updatedAt;
-        return user;
+    // static #sanitizeUser(user: User) : User {
+    //     // Fields that should not be exposed when request is sent back;
+    //     delete user.password;
+    //     delete user.id;
+    //     delete user.email;
+    //     delete user.emailVerified;
+    //     delete user.createdAt;
+    //     delete user.updatedAt;
+    //     return user;
+    // }
+    static sanitizeUser(user: User) : filteredUser {
+        const filtered: filteredUser = { name: user.name, image: user.image };
+        return filtered;
     }
 
-    static apiLogin: RequestHandler = async (req, res, next) => {
+    static apiLogin: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const email: string = req.body.email;
         const password: string = req.body.password;
         try {
             const user: User = await AuthDAO.authenticate({email: email, password: password});
             const token = createJWT(user);
-            console.log(token)
-            res.status(200).json({user: this.#sanitizeUser(user), token: token});
+            
+            res.status(200).json({user: this.sanitizeUser(user), token: token});
             return;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
@@ -49,7 +58,7 @@ export default class AuthController {
         }
     }
 
-    static apiCreateUser: RequestHandler = async (req, res, next) => {
+    static apiCreateUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
         const name: string = req.body.name;
         const email: string = req.body.email;
         const password: string = req.body.password;
@@ -63,7 +72,7 @@ export default class AuthController {
         try {
             const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
             const token = createJWT(user);
-            res.status(200).json({user: this.#sanitizeUser(user), token: token});
+            res.status(200).json({user: this.sanitizeUser(user), token: token});
             return;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
@@ -84,8 +93,12 @@ export default class AuthController {
         }
     }
 
-    static apiGetUserId: RequestHandler = async (req, res, next) => {
-        const user: User = req.user;
+    static apiGetUserId: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
         res.status(200).json({id: user.id});
         return;
     }

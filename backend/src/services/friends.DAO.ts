@@ -99,7 +99,7 @@ export default class FriendsDAO {
                 }
             }
         });
-        return f._count.friends > 0; 
+        return (f?._count.friends || 0) > 0; 
     }
 
     /**
