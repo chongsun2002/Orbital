@@ -18,25 +18,22 @@ const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isE
 
     const onClickJoin = async () => {
         setLoading(true);
-        try {
-            const success = await joinActivity(activityId);
+        const success = await joinActivity(activityId);
+        console.log("clicked")
+        console.log(success)
+        if (success) {
             router.refresh();
-        } catch (error) {
-            console.error(`Error: ${error}`)
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     }
     const onClickUnjoin = async () => {
         setLoading(true);
-        try {
-            const success = await unjoinActivity(activityId);
+        //const success = await unjoinActivity(activityId)
+        const success = await unjoinActivity(activityId);
+        if (success) {
             router.refresh();
-        } catch (error) {
-            console.error(`Error: ${error}`)
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     }
     return (
         <div>

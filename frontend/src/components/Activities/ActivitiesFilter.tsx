@@ -2,9 +2,12 @@
 import React from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import SelectFilter from "./SelectFilter";
-import { categoryFilters, dateFilters, locationFilters } from "@/lib/constants/activityConstants";
 
 const ActivitiesFilter: React.FC = () => {
+    const categoryFilter = ["study", "sports", "dining", "leisure", "others"]; // Meant to be lower case!
+    const dateFilter = ["happening", "past", "future"];
+    const locationFilter = ["nus", "ntu", "anywhere"];
+
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -42,9 +45,9 @@ const ActivitiesFilter: React.FC = () => {
     return (
         <div className="flex flex-row mx-[80px]">
             <h1 className="content-center">Filter By:</h1>
-            <SelectFilter onValueChange={onCategoryChange} filterName="Category" filterOptions={categoryFilters} className="w-[180px] mx-5"></SelectFilter>
-            <SelectFilter onValueChange={onDateChange} filterName="Date" filterOptions={dateFilters} className="w-[180px] mx-5"></SelectFilter>
-            <SelectFilter onValueChange={onLocationChange} filterName="Location" filterOptions={locationFilters} className="w-[180px] mx-5"></SelectFilter>
+            <SelectFilter onValueChange={onCategoryChange} filterName="Category" filterOptions={categoryFilter} className="w-[180px] mx-5"></SelectFilter>
+            <SelectFilter onValueChange={onDateChange} filterName="Date" filterOptions={dateFilter} className="w-[180px] mx-5"></SelectFilter>
+            <SelectFilter onValueChange={onLocationChange} filterName="Location" filterOptions={locationFilter} className="w-[180px] mx-5"></SelectFilter>
         </div>
     )
 }

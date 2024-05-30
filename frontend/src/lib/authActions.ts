@@ -45,7 +45,7 @@ export async function login(values: loginParams) : Promise<number> {
             image: responseBody.user.image,
             token: responseBody.token,
         };
-        createSession(user);
+        await createSession(user);
     } catch (error) {
         console.error(error)
     } finally {
@@ -70,7 +70,7 @@ export async function signup(values: signupParams) : Promise<number> {
             image: responseBody.user.image,
             token: responseBody.token,
         };
-        createSession(user);
+        await createSession(user);
     } catch (error) {
         console.error(error);
     } finally {

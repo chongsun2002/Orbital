@@ -11,16 +11,6 @@ interface ActivityDetails {
     location: string
 }
 
-interface UpdateActivityDetails {
-    title?: string,
-    description?: string,
-    startTime?: Date,
-    endTime?: Date,
-    numOfParticipants?: number
-    category?: string
-    location?: string
-}
-
 export default class ActivitiesDAO {
     /**
      * This function creates an activity in the database and links it to the user who created it
@@ -278,20 +268,5 @@ export default class ActivitiesDAO {
                 }
             }) 
             return participantCount ? participantCount._count.participants < participantCount.numOfParticipants : false;
-        }
-
-        static async editActivity(activityId: string, data: UpdateActivityDetails) : Promise<Activity> {
-            const update = await prisma.activity.update({
-                where: { 
-                    id: activityId 
-                },
-                data: data
-            })
-            return update;
-        }
-
-        static async countActivities() : Promise<number> {
-            const count = await prisma.activity.count();
-            return count;
         }
 }
