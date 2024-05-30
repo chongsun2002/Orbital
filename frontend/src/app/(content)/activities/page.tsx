@@ -5,7 +5,7 @@ import ActivitiesSearch from "@/components/Activities/ActivitiesSearch"
 import ActivitiesList from "@/components/Activities/ActivitiesList"
 import ActivitiesPagination from "@/components/Activities/ActivitiesPagination"
 import { ActivitiesListProps } from "@/components/Activities/ActivitiesList"
-import { countActivities, getActivities } from "@/lib/activityActions"
+import { getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
 import { Logo } from "@/components/ui/logo"
 
@@ -25,27 +25,12 @@ const activities = async ({
     const date: string = searchParams?.date || '';
     const location: string = searchParams?.location || '';
     const category: string = searchParams?.category || '';
-
     let activitiesData: ActivitiesListProps | undefined;
-    let totalPages: number | undefined;
 
-    const [activitiesResult, pagesResult] = await Promise.allSettled([
-        getActivities(query, currentPage, category, date, location),
-        countActivities()
-    ])
-
-    if (activitiesResult.status === 'fulfilled') {
-        activitiesData = activitiesResult.value;
-    } else {
-        console.error(`There was an error getting the activities: ${activitiesResult.reason}`);
+    try {
+        activitiesData = await getActivities(query, currentPage, category, date, location);
+    } catch (error) {
         activitiesData = undefined;
-    }
-    
-    if (pagesResult.status === 'fulfilled') {
-        totalPages = Math.ceil(pagesResult.value.activityCount / 9);
-    } else {
-        console.error(`There was an error getting the total pages: ${pagesResult.reason}`);
-        totalPages = 1;
     }
 
     if (!activitiesData) {
@@ -94,7 +79,7 @@ const activities = async ({
 
             <ActivitiesList activities={activitiesData.activities}></ActivitiesList>
 
-            <ActivitiesPagination totalPages={totalPages}></ActivitiesPagination>
+            <ActivitiesPagination totalPages={3}></ActivitiesPagination>
         </div>
     )
 }

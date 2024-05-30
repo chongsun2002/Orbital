@@ -1,9 +1,9 @@
 import React from "react"
 import ActivityCard from "./ActivityCard";
-import { SearchedActivity } from "@/lib/types/activityTypes";
+import { ActivityListDetails } from "@/lib/activityActions";
 
 export interface ActivitiesListProps {
-    activities: SearchedActivity[];
+    activities: ActivityListDetails[];
 }
 
 export interface FilteredActivity {
