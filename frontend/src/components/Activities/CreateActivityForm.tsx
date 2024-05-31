@@ -30,7 +30,8 @@ import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Textarea } from "../ui/textarea"
 import dynamic from 'next/dynamic'
-// import { Calendar } from "../ui/calendar"
+import { locationFilters, categoryFilters } from "@/lib/constants/activityConstants"
+import { CreatedActivityDetails } from "@/lib/types/activityTypes"
 const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
     loading: () => <p>Loading...</p>
 }); // Using dynamic import to make initial render faster.
@@ -76,10 +77,8 @@ const CreateActivityForm = () => {
             startTime: '',
             endTime: '',
 
-            /** 
-             * To prevent changing an uncontrolled input to be controlled error 
-             * @ts-ignore */
-            numOfParticipants: ''
+            /** To prevent changing an uncontrolled input to be controlled  */
+            numOfParticipants: 4
         }
     })
 
@@ -87,7 +86,7 @@ const CreateActivityForm = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
-            const response: { activityId: string } = await createActivity(values);
+            const response: CreatedActivityDetails = await createActivity(values);
             const id = response.activityId
             router.push('/activities/' + id)
         } catch (error) {
@@ -209,7 +208,7 @@ const CreateActivityForm = () => {
                     name="numOfParticipants"
                     render={({ field }) => (
                         <FormItem className="w-full">
-                            <FormLabel>Number of Participants</FormLabel>
+                            <FormLabel>Number of Participants {"(Default: 4)"}</FormLabel>
                             <FormControl>
                                 <Input className="w-full" placeholder="Maximum number of participants" {...field} />
                             </FormControl>
@@ -231,9 +230,9 @@ const CreateActivityForm = () => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="nus">Nus</SelectItem>
-                                            <SelectItem value="ntu">Ntu</SelectItem>
-                                            <SelectItem value="anywhere">Anywhere</SelectItem>
+                                            {locationFilters.map((location, index) => 
+                                                <SelectItem value={location.value} key={index}>{location.name}</SelectItem>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 <FormMessage />
@@ -254,11 +253,9 @@ const CreateActivityForm = () => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="study">Study</SelectItem>
-                                            <SelectItem value="sports">Sports</SelectItem>
-                                            <SelectItem value="dining">Dining</SelectItem>
-                                            <SelectItem value="leisure">Leisure</SelectItem>
-                                            <SelectItem value="others">Others</SelectItem>
+                                            {categoryFilters.map((category, index) => 
+                                                <SelectItem value={category.value} key={index}>{category.name}</SelectItem>
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 <FormMessage />
