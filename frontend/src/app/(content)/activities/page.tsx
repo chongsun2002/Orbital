@@ -30,6 +30,7 @@ const activities = async ({
     try {
         activitiesData = await getActivities(query, currentPage, category, date, location);
     } catch (error) {
+        console.error(error)
         activitiesData = undefined;
     }
 
@@ -50,7 +51,7 @@ const activities = async ({
 
                 <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
                     <Logo/>
-                    <h2>Could not load activitie. Try again later.</h2>
+                    <h2>Could not load activities. Try again later.</h2>
                     <Button>
                         <Link href="/">Return Home</Link>
                     </Button>
