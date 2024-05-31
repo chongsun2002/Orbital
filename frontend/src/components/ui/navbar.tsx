@@ -2,7 +2,7 @@ import Link from "next/link"
 import * as React from "react"
 import { Logo } from "./logo"
 import { Button } from './button'
-import { cookies } from "next/headers"
+import LogoutButton from "../Auth/LogoutButton"
 
 export type NavbarProps = {
     userName: string;
@@ -22,9 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({userName}) => {
                   </Button> 
                     : <Link href='/user'>{ "Welcome, " + userName }</Link> }
                 {userName === "" ? <div></div> 
-                : <Button asChild>
-                      <Link href="/logout" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Log Out</Link>
-                  </Button> }
+                : <LogoutButton/> }
             </div>   
         </div>
     )

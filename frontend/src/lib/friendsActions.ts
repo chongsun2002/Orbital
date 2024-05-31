@@ -11,7 +11,8 @@ export interface Friend {
 }
 
 export async function getFriends() {
-    const jwt = cookies().get('JWT');
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
         redirect('/login');
     }

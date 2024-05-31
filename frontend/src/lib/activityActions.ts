@@ -33,9 +33,10 @@ export async function createActivity(details: CreateActivityDetails): Promise<Cr
         location: details.location,
     }
 
-    const jwt: RequestCookie | undefined = cookies().get('JWT');
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
-        redirect('/login')
+        redirect('/login');
     }
     const url = new URL('api/v1/activities/create', API_URL)
     const response: Response = await fetch(url, {
@@ -101,7 +102,8 @@ export async function getActivity(id: string): Promise<{ activity: SearchedActiv
 }
 
 export async function joinActivity(id: string): Promise<{ activities: Activity }> {
-    const jwt = cookies().get('JWT')
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
         redirect('/login');
     }
@@ -110,7 +112,7 @@ export async function joinActivity(id: string): Promise<{ activities: Activity }
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value,
+            'Authorization': jwt,
         },
         cache: 'no-cache'
     });
@@ -121,7 +123,8 @@ export async function joinActivity(id: string): Promise<{ activities: Activity }
 }
 
 export async function unjoinActivity(id: string): Promise<{activities: Activity }> {
-    const jwt = cookies().get('JWT')
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
         redirect('/login');
     }
@@ -130,7 +133,7 @@ export async function unjoinActivity(id: string): Promise<{activities: Activity 
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value || "",
+            'Authorization': jwt || "",
         },
         cache: 'no-cache'
     });
@@ -141,31 +144,33 @@ export async function unjoinActivity(id: string): Promise<{activities: Activity 
 }
 
 export async function checkActivityEnrollment(id: string) : Promise<{ enrolled: boolean }> {
-    const jwt = cookies().get('JWT')
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     const url = new URL(`api/v1/activities/checkenrollment/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value || ""
+            'Authorization': jwt || ""
         },
         cache: 'no-cache'
     });
-    const responseStatus: number = response.status;
     if (!response.ok) {
+        console.error(response.status)
         throw new Error("Could not reach server");
     }
     return response.json();
 }
 
 export async function getActivityParticipants(id: string): Promise<EnrolledList> {
-    const jwt = cookies().get('JWT')
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     const url = new URL(`api/v1/activities/getparticipants/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value || ""
+            'Authorization': jwt || ""
         },
         cache: 'no-cache'
     });
@@ -176,16 +181,17 @@ export async function getActivityParticipants(id: string): Promise<EnrolledList>
 }
 
 export async function editActivity(id: string, data: UpdateActivityDetails): Promise<Activity> {
-    const jwt: RequestCookie | undefined = cookies().get('JWT');
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
-        redirect('/login')
+        redirect('/login');
     }
     const url = new URL(`api/v1/activities/edit/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value || "",
+            'Authorization': jwt || "",
 
         },
         body: JSON.stringify(data),
@@ -198,16 +204,17 @@ export async function editActivity(id: string, data: UpdateActivityDetails): Pro
 }
 
 export async function checkIfOwner(id: string): Promise<{ isOwner: boolean }> {
-    const jwt: RequestCookie | undefined = cookies().get('JWT');
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
-        redirect('/login')
+        redirect('/login');
     }
     const url = new URL(`api/v1/activities/checkisorganiser/${id}`, API_URL);
     const response: Response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt?.value || "",
+            'Authorization': jwt || "",
 
         },
     })
