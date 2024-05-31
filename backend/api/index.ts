@@ -39,8 +39,8 @@ app.use("*", (req: Request, res: Response) =>
     res.status(404).json({ error: "404 Not Found"}));
 
 
-app.listen(3000, () => {
-    console.log(`Server is running on port 3000`)
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`)
 })
 
 export default app;

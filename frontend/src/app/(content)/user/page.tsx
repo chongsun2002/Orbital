@@ -3,7 +3,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const Page = async () => {
-    const jwt = cookies().get('JWT');
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
         redirect('/login');
     }
