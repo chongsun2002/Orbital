@@ -1,4 +1,4 @@
-import { prisma } from '../../index.js'
+import { prisma } from '../../api/index.js'
 import { FriendRequest } from '@prisma/client'
 
 export default class FriendsDAO {
