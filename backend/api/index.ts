@@ -32,15 +32,15 @@ app.use("/api/v1/activities", activitiesRouter);
 app.use("/api/v1/friends", friendsRouter);
 
 app.get("/healthz", (req: Request, res: Response) => {
-    res.send('Server OK');
+    res.send(`Server Ok, , test`);
 })
 
 app.use("*", (req: Request, res: Response) => 
     res.status(404).json({ error: "404 Not Found"}));
 
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+app.listen(3000, () => {
+    console.log(`Server is running on port 3000`)
 })
 
 export default app;
