@@ -13,4 +13,4 @@ const PROD: string | undefined = process.env.PRODUCTION_BACKEND_URL;
 
 const ENV: string = "DEV"; // Change to prod before deployment
 
-export const API_URL: string | undefined = ENV === "DEV" ? DEV : PROD;
+export const API_URL: string | undefined = ENV === "PROD" ? DEV : PROD;
