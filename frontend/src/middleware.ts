@@ -1,8 +1,8 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
- 
-export async function middleware(request: NextRequest) {
+
+export function middleware(request: NextRequest) {
     const cookieStore: RequestCookies = request.cookies;
 
     if (request.nextUrl.pathname.startsWith('/signup') && cookieStore.get('JWT')) {
