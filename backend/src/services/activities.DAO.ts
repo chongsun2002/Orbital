@@ -1,4 +1,4 @@
-import { prisma } from '../../index.js'
+import { prisma } from '../../api/index.js'
 import type { Activity, ActivityCategory, ActivityLocation } from "@prisma/client"
 
 interface ActivityDetails {

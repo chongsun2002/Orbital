@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { prisma } from "../../index.js";
+import { prisma } from "../../api/index.js";
 import type { User } from "@prisma/client"
 
 interface Credentials {
