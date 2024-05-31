@@ -9,30 +9,34 @@ import React, { useState } from "react";
 interface ActivitiesEnrollmentProps {
     endTime: string;
     isEnrolled: boolean | undefined;
+    activityId: string;
 }
 
-const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isEnrolled}: ActivitiesEnrollmentProps) => {
+const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isEnrolled, activityId}: ActivitiesEnrollmentProps) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const onClickJoin = async () => {
         setLoading(true);
-        const success = await joinActivity();
-        console.log("clicked")
-        console.log(success)
-        if (success) {
+        try {
+            const success = await joinActivity(activityId);
             router.refresh();
+        } catch (error) {
+            console.error(`Error: ${error}`)
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }
     const onClickUnjoin = async () => {
         setLoading(true);
-        //const success = await unjoinActivity(activityId)
-        const success = await unjoinActivity();
-        if (success) {
+        try {
+            const success = await unjoinActivity(activityId);
             router.refresh();
+        } catch (error) {
+            console.error(`Error: ${error}`)
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }
     return (
         <div>

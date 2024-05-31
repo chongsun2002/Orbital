@@ -8,8 +8,11 @@ import {
 
 interface SelectFilterProps {
     onValueChange: (value: string) => void;
-    filterName: string;
-    filterOptions: string[];
+    filterName: string
+    filterOptions: {
+        value: string,
+        name: string
+    }[];
     className: string;
 }
 
@@ -20,7 +23,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({onValueChange, filterName, f
                 <SelectValue placeholder={filterName} />
             </SelectTrigger>
             <SelectContent>
-                {filterOptions.map((option, index) => <SelectItem value={option} key={index}>{option.charAt(0).toUpperCase() + option.slice(1)}</SelectItem>)}
+                {filterOptions.map((option, index) => <SelectItem value={option.value} key={index}>{option.name}</SelectItem>)}
             </SelectContent>
         </Select>
     )
