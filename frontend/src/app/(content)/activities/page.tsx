@@ -53,14 +53,14 @@ const activities = async ({
             <div>
                 <div className='flex flex-row justify-between mx-[80px] my-14'>
                     <h1 className="text-4xl font-bold">Explore Activities</h1>
-                    <Button>
-                        <Link href="/activities/create">
-                            <div className='flex flex-row content-center'>
-                                <h2>Create Activity</h2>
-                                <LuPlus className="mx-1 my-0.5"/>
-                            </div>
-                        </Link>
-                    </Button>
+                    <Button className="px-0 py-0">
+                    <Link href="/activities/create">
+                        <div className='flex flex-row content-center mx-4 my-2'>
+                            <h2>Create Activity</h2>
+                            <LuPlus className="mx-1 my-0.5"/>
+                        </div>
+                    </Link>
+                </Button>
                 </div>
 
                 <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
@@ -78,9 +78,9 @@ const activities = async ({
         <div>
             <div className='flex flex-row justify-between mx-[80px] my-14'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
-                <Button>
+                <Button className="px-0 py-0">
                     <Link href="/activities/create">
-                        <div className='flex flex-row content-center'>
+                        <div className='flex flex-row content-center mx-4 my-2'>
                             <h2>Create Activity</h2>
                             <LuPlus className="mx-1 my-0.5"/>
                         </div>

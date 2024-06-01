@@ -14,7 +14,7 @@ activitiesRouter.route("/countactivities").get(ActivitiesController.apiCountActi
 activitiesRouter.route("/create").post(passport.authenticate('jwt', {session: false}), ActivitiesController.apiCreateActivity);
 activitiesRouter.route("/join/:id").post(passport.authenticate('jwt', {session: false}), ActivitiesController.apiAddParticipant);
 
-activitiesRouter.route("edit/:id").patch(passport.authenticate('jwt', {session: false}), ActivitiesController.apiEditActivity);
+activitiesRouter.route("/edit/:id").patch(passport.authenticate('jwt', {session: false}), ActivitiesController.apiEditActivity);
 
 activitiesRouter.route("/unjoin/:id").delete(passport.authenticate('jwt', {session: false}), ActivitiesController.apiRemoveParticipant);
 activitiesRouter.route("/delete/:id").delete(passport.authenticate('jwt', {session: false}), ActivitiesController.apiDeleteActivity);

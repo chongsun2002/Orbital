@@ -19,8 +19,12 @@ export interface CreatedActivityDetails {
 export interface UpdateActivityDetails {
     title?: string,
     description?: string,
-    startTime?: Date,
-    endTime?: Date,
+    date?: {
+        from?: Date,
+        to?: Date
+    },
+    startTime?: string,
+    endTime?: string,
     numOfParticipants?: number
     category?: string
     location?: string

@@ -161,7 +161,7 @@ export default class ActivitiesController {
      * @returns A boolean representing if the user is enrolled in the activity, in the body of the response
      */
     static apiCheckActivityEnrollment: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const rawId: any = req.query.activityId;
+        const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
         if (!user) {
@@ -272,7 +272,7 @@ export default class ActivitiesController {
             console.error("User is not the creator of this activity");
             res.status(403).json({error: "User is not the creator of this activity"});
             return;
-        }    
+        }
         try {
             const activity: Activity = await ActivitiesDAO.editActivity(activityId, req.body);
             res.status(200).json({activity: activity});
