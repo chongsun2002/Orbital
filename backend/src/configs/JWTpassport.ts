@@ -3,16 +3,14 @@ import path from "path";
 import { ExtractJwt, Strategy } from "passport-jwt"
 import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
-import dotenv from "dotenv";
+import "dotenv/config.js";
 import jsonwebtoken, { Algorithm } from "jsonwebtoken"
 
 const publicKeyFilePath = path.join(process.cwd(), 'src', 'configs', 'id_rsa_pub.pem');
 const privateKeyFilePath = path.join(process.cwd(), 'src', 'configs', 'id_rsa_priv.pem');
 
-const PUB_KEY = fs.readFileSync(publicKeyFilePath, 'utf-8');
-const PRIV_KEY = fs.readFileSync(privateKeyFilePath, 'utf-8');
-
-dotenv.config({path: "./.env"})
+const PUB_KEY = process.env.PUB_KEY ?? ""; //fs.readFileSync(publicKeyFilePath, 'utf-8');
+const PRIV_KEY = process.env.PRIV_KEY ?? ""; //fs.readFileSync(privateKeyFilePath, 'utf-8');
 
 const options = {
     secretOrKey: PUB_KEY,

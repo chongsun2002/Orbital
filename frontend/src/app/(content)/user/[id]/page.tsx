@@ -44,7 +44,7 @@ const Page = async () => {
                 <div className='font-sans text-xl'>Your Friends</div>
                 { friends === undefined
                     ? <div>Could not get friends</div>
-                    : <div>{friends.map(friend => <ProfileDisplay name={friend.name} image={img_url}/>)}</div>
+                    : <div>{friends.map((friend, index) => <ProfileDisplay key={index} name={friend.name} image={friend.image}/>)}</div>
                 }
             </div>
             <div className='flex w-full justify-center'>Space for courses</div>

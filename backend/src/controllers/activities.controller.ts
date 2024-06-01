@@ -1,4 +1,4 @@
-import ActivitiesDAO from "../services/activities.DAO";
+import ActivitiesDAO from "../services/activities.DAO.js";
 import { Activity } from "@prisma/client";
 import { RequestHandler, Request , Response, NextFunction } from "express";
 
@@ -88,7 +88,7 @@ export default class ActivitiesController {
      * @returns The given activity in the body of the response
      */
     static apiSearchActivity: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const rawId: any = req.query.activityId;
+        const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
             const activity: Activity | null = await ActivitiesDAO.searchActivity(activityId);
@@ -186,7 +186,7 @@ export default class ActivitiesController {
      * @returns The names of the participants in the activity in the body of the response 
      */
     static apiGetActivityParticipants: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        const rawId: any = req.query.activityId;
+        const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
             const enrolledNames: string[] = await ActivitiesDAO.getActivityParticipants(activityId);

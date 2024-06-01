@@ -5,7 +5,7 @@ import ActivitiesSearch from "@/components/Activities/ActivitiesSearch"
 import ActivitiesList from "@/components/Activities/ActivitiesList"
 import ActivitiesPagination from "@/components/Activities/ActivitiesPagination"
 import { ActivitiesListProps } from "@/components/Activities/ActivitiesList"
-import { getActivities } from "@/lib/activityActions"
+import { countActivities, getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
 import { Logo } from "@/components/ui/logo"
 
@@ -25,12 +25,27 @@ const activities = async ({
     const date: string = searchParams?.date || '';
     const location: string = searchParams?.location || '';
     const category: string = searchParams?.category || '';
-    let activitiesData: ActivitiesListProps | undefined;
 
-    try {
-        activitiesData = await getActivities(query, currentPage, category, date, location);
-    } catch (error) {
+    let activitiesData: ActivitiesListProps | undefined;
+    let totalPages: number | undefined;
+
+    const [activitiesResult, pagesResult] = await Promise.allSettled([
+        getActivities(query, currentPage, category, date, location),
+        countActivities()
+    ])
+
+    if (activitiesResult.status === 'fulfilled') {
+        activitiesData = activitiesResult.value;
+    } else {
+        console.error(`There was an error getting the activities: ${activitiesResult.reason}`);
         activitiesData = undefined;
+    }
+    
+    if (pagesResult.status === 'fulfilled') {
+        totalPages = Math.ceil(pagesResult.value.activityCount / 9);
+    } else {
+        console.error(`There was an error getting the total pages: ${pagesResult.reason}`);
+        totalPages = 1;
     }
 
     if (!activitiesData) {
@@ -50,7 +65,7 @@ const activities = async ({
 
                 <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
                     <Logo/>
-                    <h2>Could not load activitie. Try again later.</h2>
+                    <h2>Could not load activities. Try again later.</h2>
                     <Button>
                         <Link href="/">Return Home</Link>
                     </Button>
@@ -79,7 +94,7 @@ const activities = async ({
 
             <ActivitiesList activities={activitiesData.activities}></ActivitiesList>
 
-            <ActivitiesPagination totalPages={3}></ActivitiesPagination>
+            <ActivitiesPagination totalPages={totalPages}></ActivitiesPagination>
         </div>
     )
 }

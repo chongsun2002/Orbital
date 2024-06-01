@@ -6,9 +6,11 @@ export default function ContentLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = cookies().get('session')?.value;
+  const username = session ? JSON.parse(session).name : "";
   return (
     <main>
-        <Navbar userName={cookies().get('userName')?.value || ""}/>
+        <Navbar userName={username}/>
         {children}
     </main>
   );
