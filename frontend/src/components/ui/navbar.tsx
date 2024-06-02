@@ -10,11 +10,11 @@ export type NavbarProps = {
 
 const Navbar: React.FC<NavbarProps> = ({userName}) => {
     return(
-        <div className='flex flex-row flex-nowrap items-center justify-around mx-[80px] my-[56px] gap-[522px]'> 
-            <div><Logo /></div>
+        <div className='flex flex-row flex-nowrap items-center justify-between mx-[80px] mt-[56px]'> 
+            <Logo />
             <div className='flex justify-end items-center gap-[48px] text-black font-sans text-xl/[30px] font-[400px] tracking-[-.01em]'>
                 <Link href='/course_matching'>Course Matching</Link>
-                <Link href='/find_friends'>Find Friends</Link>
+                <Link href='/friends'>Find Friends</Link>
                 <Link href='/activities'>Join Activities</Link>
                 {userName === "" 
                 ? <Button asChild>

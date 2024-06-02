@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -16,7 +17,7 @@ datasource db {
 model User {
   // Auth JS schema requirements
   id            String          @id @default(cuid())
-  name          String?
+  name          String
   email         String          @unique
   emailVerified DateTime?
   image         String?
@@ -29,9 +30,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // Project specific fields
-  requestedFriendships Friendship[]        @relation("Requestor") // Friendships where the user is the requestor
-  receivedFriendships  Friendship[]        @relation("Receipient") // Friendships where the user is the receipient of the request.
+  requestedFriendships FriendRequest[]     @relation("Requestor") // Friendships where the user is the requestor
+  receivedFriendships  FriendRequest[]     @relation("Receipient") // Friendships where the user is the receipient of the request.
+  friends              User[]              @relation("Friends")
+  // Necessary to satisfy Prisma's self-relation rules, but will not be directly accessed
+  symmetricFriends     User[]              @relation("Friends")
+
   coursesEnrolled      CourseEnrollment[]  
+  organisedActivities  Activity[]          @relation("Organiser") // Activities where the user is the organiser.
+  inActivities         Activity[]          @relation("Participant") // Activities where the user is participating.
 }
  
 model Account {
@@ -105,7 +112,35 @@ model CourseEnrollment {
   courseId     String
 }
 
-model Friendship {
+enum ActivityLocation {
+  NUS
+  NTU
+  ANYWHERE
+}
+
+enum ActivityCategory {
+  STUDY
+  SPORTS
+  DINING
+  LEISURE
+  OTHERS
+}
+
+model Activity {
+  id                String    @id @default(cuid()) 
+  title             String
+  description       String?
+  startTime         DateTime 
+  endTime           DateTime
+  organiser         User      @relation("Organiser", fields: [organiserId], references: [id], onDelete: Cascade)
+  organiserId       String
+  numOfParticipants Int
+  category          ActivityCategory
+  location          ActivityLocation
+  participants      User[]    @relation("Participant")
+}
+
+model FriendRequest {
   // User 1 is the requestor of the friendship, User 2 is the receipient of the request.
   // This remains even after the friendship status is Friends
   id        String   @id @default(cuid())
@@ -113,7 +148,6 @@ model Friendship {
   user1     User     @relation("Requestor", fields: [user1Id], references: [id], onDelete: Cascade)
   user2Id   String
   user2     User     @relation("Receipient", fields: [user2Id], references: [id], onDelete: Cascade)
-  status    String   @default("pending") // pending, accepted - declining should cause the entry to be removed
   isSecret  Boolean
 
   @@unique([user1Id, user2Id])
