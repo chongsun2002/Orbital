@@ -221,6 +221,28 @@ export async function editActivity(id: string, details: CreateActivityDetails): 
     return response.json();
 }
 
+export async function deleteActivity(id: string): Promise<boolean> {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+
+    const url = new URL(`api/v1/activities/delete/${id}`, API_URL)
+    const response: Response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt,
+        },
+        cache: 'no-cache'
+    })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return true;
+}
+
 export async function checkIfOwner(id: string): Promise<{ isOwner: boolean }> {
     const session = cookies().get('session')?.value;
     const jwt = session ? JSON.parse(session).JWT : undefined;

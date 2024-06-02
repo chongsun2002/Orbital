@@ -76,7 +76,7 @@ const activities = async ({
 
     return (
         <div>
-            <div className='flex flex-row justify-between mx-[80px] my-14'>
+            <div className='flex flex-row justify-between mx-[80px] my-5'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
                 <Button className="px-0 py-0">
                     <Link href="/activities/create">

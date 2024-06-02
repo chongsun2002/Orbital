@@ -10,7 +10,7 @@ const LogoutButton = () => {
             await endSession();
             redirect("/success");
         }}>
-            <Button type="submit">
+            <Button type="submit" className="rounded-3xl bg-red-600 hover:bg-red-400">
                 Log Out
             </Button>
         </form>
