@@ -9,6 +9,8 @@ import { format } from "date-fns";
 import ActivitiesEnrollment from "@/components/Activities/ActivitiesEnrollment";
 import ActivitiesParticipants from "@/components/Activities/ActivitiesParticipants";
 import ActivityEditSheet from "@/components/Activities/ActivityEditSheet";
+import ActivityRemoveButton from "@/components/Activities/ActivtiesRemoveButton";
+import ActivityImage from "@/components/Activities/ActivityImage";
 
 const activity = async ({ params }: { params : { id: string } }) => {
     const [activityResult, enrollmentResult, participantsResult, ownerResult] = await Promise.allSettled([
@@ -66,27 +68,36 @@ const activity = async ({ params }: { params : { id: string } }) => {
     return (
         <div>
             <div className="grid grid-cols-2 gap-10 mx-[80px]">
-                <img src="/testimage.png" className="py-[80px]"></img>
+                <div className="mt-10">
+                    <ActivityImage image="" category={activityData.category}/>
+                </div>
                 <div className="mt-[80px]">
                     <div className="flex flex-row gap-5">
-                        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">{activityData.title}</h1>
-                        {isOwner && <ActivityEditSheet 
-                            id={activityData.id} 
-                            title={activityData.title}
-                            description={activityData.description}
-                            startTime={activityData.startTime}
-                            endTime={activityData.endTime}
-                            numOfParticipants={activityData.numOfParticipants}
-                            organiserId={activityData.organiserId}
-                            category={activityData.category}
-                            location={activityData.location}/>}
+                        <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl">{activityData.title}</h1>
+                        {isOwner && (
+                            <div className="flex flex-row gap-3 items-center">
+                                <ActivityEditSheet 
+                                    id={activityData.id} 
+                                    title={activityData.title}
+                                    description={activityData.description}
+                                    startTime={activityData.startTime}
+                                    endTime={activityData.endTime}
+                                    numOfParticipants={activityData.numOfParticipants}
+                                    organiserId={activityData.organiserId}
+                                    category={activityData.category}
+                                    location={activityData.location}/>
+                                <ActivityRemoveButton id={params.id} />
+                            </div>
+                        )}
                     </div>
-                    <h2 className="scroll-m-20 text-2xl tracking-tight my-5">{format(activityData.startTime, "d MMMM, yyyy, h:mm a")} - {format(activityData.endTime, "d MMMM, yyyy, h:mm a")}</h2>
-                    <h2 className="scroll-m-20 text-2xl tracking-tight">Organised By: {activityData.organiser.name}</h2>
-                    <h2 className="scroll-m-20 text-2xl tracking-tight">Max Participants: {activityData.numOfParticipants}</h2>
-                    <p className="leading-7 [&:not(:first-child)]:mt-6">{activityData.description}</p>
-                    <ActivitiesEnrollment endTime={activityData.endTime} isEnrolled={isEnrolled} activityId={params.id}></ActivitiesEnrollment>
-                    <ActivitiesParticipants participantNames={participants}></ActivitiesParticipants>
+                    <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-5">{format(activityData.startTime, "d MMMM, yyyy, h:mm a")} - {format(activityData.endTime, "d MMMM, yyyy, h:mm a")}</h2>
+                    <h2 className="scroll-m-20 text-xl tracking-tight">Organised By: {activityData.organiser.name}</h2>
+                    <h2 className="scroll-m-20 text-xl tracking-tight">Max Participants: {activityData.numOfParticipants}</h2>
+                    <p className="leading-7 [&:not(:first-child)]:my-5">{activityData.description}</p>
+                    <div className="flex flex-col gap-[4px]">
+                        <ActivitiesEnrollment endTime={activityData.endTime} isEnrolled={isEnrolled} activityId={params.id}></ActivitiesEnrollment>
+                        <ActivitiesParticipants participantNames={participants}></ActivitiesParticipants>
+                    </div>
                 </div>
             </div>
         </div>

@@ -12,6 +12,7 @@ export interface FilteredActivity {
     description?: string;
     startTime: string;
     organiserName: string;
+    category: string;
 }
 
 const ActivitiesList: React.FC<ActivitiesListProps> = (activities: ActivitiesListProps) => {
@@ -21,7 +22,8 @@ const ActivitiesList: React.FC<ActivitiesListProps> = (activities: ActivitiesLis
             title: activity.title,
             description: activity.description,
             startTime: activity.startTime,
-            organiserName: activity.organiser.name
+            organiserName: activity.organiser.name,
+            category: activity.category
         }
     });
 
@@ -36,6 +38,7 @@ const ActivitiesList: React.FC<ActivitiesListProps> = (activities: ActivitiesLis
                         description={activity.description}
                         startTime={activity.startTime}
                         organiserName={activity.organiserName}
+                        category={activity.category}
                         />
                 )
             })}

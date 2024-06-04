@@ -1,7 +1,8 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { LuCheckCheck, LuCheckCircle2 } from 'react-icons/lu'
 
 const Success = () => {
     const router = useRouter();
@@ -10,19 +11,15 @@ const Success = () => {
       const timer = setTimeout(() => {
         router.push('/');
         router.refresh();
-      }, 3000);
+      }, 2000);
   
       return () => clearTimeout(timer); // Cleanup timer if the component unmounts
     }, [router]);
   
     return (
-        <div className='flex h-dvh justify-center items-center'>
-            <div className="flex flex-col w-[400px] gap-[20px] justify-center items-center">
-                Success! You will be redirected home in a few seconds ...
-            </div>
-            <div className="flex flex-col w-[400px] gap-[20px] justify-center items-center">
-                Otherwise, click the adventus icon or close the tab.
-            </div>
+        <div className='flex flex-col w-screen mt-[45vh] items-center justify-center gap-5'>
+            <LuCheckCircle2 size="12vw" strokeWidth={1} color='green' className="animate-bounce"/>
+            <div className="text-2xl text-green">Success! Redirecting home ...</div>
         </div>
     )
 }
