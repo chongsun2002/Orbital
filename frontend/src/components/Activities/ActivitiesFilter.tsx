@@ -51,8 +51,8 @@ const ActivitiesFilter: React.FC = () => {
                 <SelectFilter onValueChange={onCategoryChange} filterName="Category" filterOptions={categoryFilters} className="w-[180px] mx-5"></SelectFilter>
                 <SelectFilter onValueChange={onDateChange} filterName="Date" filterOptions={dateFilters} className="w-[180px] mx-5"></SelectFilter>
                 <SelectFilter onValueChange={onLocationChange} filterName="Location" filterOptions={locationFilters} className="w-[180px] mx-5"></SelectFilter>
-                <Button className="bg-blue-300 hover:bg-blue-500" onClick={onClearFilters}>
-                    <div className="text-black">Clear Filters</div>
+                <Button variant="secondary" onClick={onClearFilters}>
+                    <div>Clear Filters</div>
                 </Button>
             </div>
         </div>

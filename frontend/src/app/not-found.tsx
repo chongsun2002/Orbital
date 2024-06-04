@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export default function NotFound() {
     return (
-        <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
+        <div className='flex flex-col w-full items-center gap-[12px] mt-[64vh]'>
             <Logo/>
             <h2>404 Not Found</h2>
             <p>Could not find requested resource</p>

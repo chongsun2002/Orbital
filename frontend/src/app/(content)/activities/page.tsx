@@ -50,8 +50,8 @@ const activities = async ({
 
     if (!activitiesData) {
         return (
-            <div>
-                <div className='flex flex-row justify-between mx-[80px] my-14'>
+            <div className="overflow-y-auto">
+                <div className='flex flex-row justify-between mx-[80px] mb-5 mt-10'>
                     <h1 className="text-4xl font-bold">Explore Activities</h1>
                     <Button className="px-0 py-0">
                     <Link href="/activities/create">
@@ -75,8 +75,8 @@ const activities = async ({
     }
 
     return (
-        <div>
-            <div className='flex flex-row justify-between mx-[80px] my-5'>
+        <div className="overflow-y-auto">
+            <div className='flex flex-row justify-between mx-[80px] mb-5 mt-10'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
                 <Button className="px-0 py-0">
                     <Link href="/activities/create">

@@ -44,8 +44,8 @@ import { useRouter } from "next/navigation"
 import { Calendar } from "../ui/calendar"
 import { editActivity } from "@/lib/activityActions";
 import { useState } from "react"
-
-const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
+import { Spinner } from "../ui/spinner";
+import { LuCheck } from "react-icons/lu";
 
 const formSchema = z.object({
     title: z.string().min(1, 'Required'),
@@ -80,6 +80,7 @@ const formSchema = z.object({
 const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfParticipants, category, location}: Activity) => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const [editing, setEditing] = useState("");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -99,15 +100,20 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
-        console.log("clicked")
+        setEditing("editing");
         try {
-            const response = await editActivity(id, values);
-            wait().then(() => setOpen(false));
+            await editActivity(id, values);
+            setEditing("edited");
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setOpen(false);
             router.refresh();
         } catch (error) {
             const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
             setError('category', formError)
             console.error(error)
+        } finally {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            setEditing("");
         }
     }
 
@@ -295,7 +301,19 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                                 )}
                             />
                         </div>
-                        <Button type="submit" className="w-full mt-3">Save Changes!</Button>
+                        <Button variant={editing === "edited" ? "success" : "default"} type="submit" className="mt-3">
+                            {editing === "edited" 
+                            ? (<div className="flex flex-row items-center">
+                                <div>Successfully Changed!</div>
+                                <LuCheck className="ml-1" />
+                            </div>) 
+                            : editing === "editing"
+                            ? (<div className="flex flex-row">
+                                <Spinner/>
+                                <div>Editing...</div>
+                            </div>)
+                            : "Save Changes!"}
+                        </Button>
                     </form>
                 </Form>
             </SheetContent>

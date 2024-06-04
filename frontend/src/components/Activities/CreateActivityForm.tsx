@@ -32,6 +32,9 @@ import { Textarea } from "../ui/textarea"
 import dynamic from 'next/dynamic'
 import { locationFilters, categoryFilters } from "@/lib/constants/activityConstants"
 import { CreatedActivityDetails } from "@/lib/types/activityTypes"
+import { Spinner } from "../ui/spinner"
+import { useToast } from "../ui/use-toast"
+import { useState } from "react"
 const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
     loading: () => <p>Loading...</p>
 }); // Using dynamic import to make initial render faster.
@@ -68,6 +71,7 @@ const formSchema = z.object({
 
 const CreateActivityForm = () => {
     const router = useRouter();
+    const { toast } = useToast();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -83,16 +87,30 @@ const CreateActivityForm = () => {
     })
 
     const { setError } = form;
+    const [creating, setCreating] = useState(false);
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        setCreating(true);
         try {
             const response: CreatedActivityDetails = await createActivity(values);
             const id = response.activityId
+            toast({
+                variant: "success",
+                title: "Successfully Created!",
+                description: "You will be redirected to the activity page soon.",
+            })
             router.push('/activities/' + id)
         } catch (error) {
             const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
             setError('category', formError)
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request."
+            })
             console.error(error)
+        } finally {
+            setCreating(false);
         }
     }
 
@@ -263,7 +281,13 @@ const CreateActivityForm = () => {
                             )}
                     />
                 </div>
-                <Button type="submit" className="w-full">Create Activity!</Button>
+                <Button type="submit" className="w-full">
+                    {creating ? (
+                        <div className="flex flex-row">
+                            <Spinner/>
+                            <div>Please Wait...</div>
+                        </div>) : "Create Activity"}
+                </Button>
             </form>
         </Form>
     )
