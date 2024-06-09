@@ -20,8 +20,38 @@ export async function getFriends() {
     const response = await fetch(url.toString(), {
         method: "GET",
         headers: {
-            'Authorization': jwt.value
+            'Content-Type': 'application/json',
+            'Authorization': jwt
         }
-    }).then(res => res.json());
-    return response.friends.friends;
+    });
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    const responseBody = await response.json();
+    return responseBody.friends.friends;
+}
+
+export async function isFriend(id: string): Promise<Boolean> {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const params = new URLSearchParams({
+        userId: id,
+    }); 
+    const url = new URL('api/v1/friends/check', API_URL);
+    url.search = params.toString();
+    const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt
+        }
+    });
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    const responseBody = await response.json();
+    return responseBody.isFriends;
 }

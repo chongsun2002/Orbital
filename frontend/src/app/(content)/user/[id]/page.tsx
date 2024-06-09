@@ -1,12 +1,17 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ImageUploader from "@/components/ui/ImageUploader";
 import ProfileDisplay from "@/components/User/ProfileDisplay";
-import { Friend, getFriends } from "@/lib/friendsActions";
+import { Friend, getFriends, isFriend } from "@/lib/friendsActions";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import ImageForm from "@/components/ui/ImageForm"
+import { getUserDetails, getUserId, UserDetails, userIsPublic } from "@/lib/generalActions";
+import EditProfileForm from "@/components/User/EditProfileForm";
+import OwnProfile from "@/components/User/OwnProfile";
+import PublicProfile from "@/components/User/PublicProfile";
+import { redirect } from "next/navigation";
 
-const Page = async () => {
+const Page = async ({params}: {params: {id: string}}) => {
     let friends: Friend[] | undefined; 
     try {
         friends = await getFriends();
@@ -14,6 +19,7 @@ const Page = async () => {
     } catch (error) {
         friends = undefined;
     }
+    
 
     const client = new S3Client({
         region: "ap-southeast-1",
@@ -37,18 +43,21 @@ const Page = async () => {
     //} catch (error) {
     //    console.error(error);
     //}
-    const img_url = 'https://adventus-orbital.s3.ap-southeast-1.amazonaws.com/user-images/clw6rqbat0008fjx43bpss0tp';
+    const id: string | undefined = await getUserId();
+    if (id === undefined) {
+        redirect('/login');
+    }
+    const isFriends: Boolean = await isFriend(params.id);
+    const isPublic: Boolean = await userIsPublic(params.id);
+    const user: UserDetails = await getUserDetails(params.id);
     return (
         <div className='flex flex-col'>
-            <div className='flex w-full justify-center'>
-                <div className='font-sans text-xl'>Your Friends</div>
-                { friends === undefined
-                    ? <div>Could not get friends</div>
-                    : <div>{friends.map((friend, index) => <ProfileDisplay key={index} name={friend.name} image={friend.image}/>)}</div>
-                }
-            </div>
-            <div className='flex w-full justify-center'>Space for courses</div>
-            <div><ImageForm/></div>
+            { id === params.id
+                ? <PublicProfile user={user}/>
+                : isPublic || isFriends
+                    ? <PublicProfile user={user}/>
+                    : null
+            }
         </div>
     );
 }

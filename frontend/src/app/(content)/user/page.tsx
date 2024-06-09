@@ -8,7 +8,7 @@ const Page = async () => {
     if (jwt === undefined) {
         redirect('/login');
     }
-    const decoded = jwtDecode(jwt.value);
+    const decoded = jwtDecode(jwt);
     redirect('/user/' + decoded.sub);
 }
 
