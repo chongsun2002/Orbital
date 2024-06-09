@@ -316,10 +316,10 @@ export default class ActivitiesDAO {
      */
     static async editActivity(activityId: string, data: UpdateActivityDetails) : Promise<Activity> {
         if (data.location) {
-            data.location.toUpperCase() as ActivityLocation
+            data.location = data.location.toUpperCase() as ActivityLocation
         }
         if (data.category) {
-            data.category.toUpperCase() as ActivityLocation
+            data.category = data.category.toUpperCase() as ActivityCategory
         }
         const update = await prisma.activity.update({
             where: { 

@@ -3,6 +3,7 @@
 import { Button } from "../ui/button";
 import { isPast } from "date-fns";
 import { joinActivity, unjoinActivity } from "@/lib/activityActions"
+import { Spinner } from "../ui/spinner";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -14,28 +15,28 @@ interface ActivitiesEnrollmentProps {
 
 const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isEnrolled, activityId}: ActivitiesEnrollmentProps) => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [joining, setJoining] = useState(false);
 
     const onClickJoin = async () => {
-        setLoading(true);
+        setJoining(true);
         try {
-            const success = await joinActivity(activityId);
+            await joinActivity(activityId);
             router.refresh();
         } catch (error) {
             console.error(`Error: ${error}`)
         } finally {
-            setLoading(false);
+            setJoining(false);
         }
     }
     const onClickUnjoin = async () => {
-        setLoading(true);
+        setJoining(true);
         try {
-            const success = await unjoinActivity(activityId);
+            await unjoinActivity(activityId);
             router.refresh();
         } catch (error) {
             console.error(`Error: ${error}`)
         } finally {
-            setLoading(false);
+            setJoining(false);
         }
     }
     return (
@@ -45,9 +46,19 @@ const ActivitiesEnrollment: React.FC<ActivitiesEnrollmentProps> = ({endTime, isE
             ) : (typeof isEnrolled === "undefined") ? (
                 <p>Could not get enrollment status. Try again later!</p>
             ) : isEnrolled === false ? (
-                <Button onClick={onClickJoin} disabled={loading}>{loading ? "Joining..." : "Join Activity"}</Button>
+                <Button onClick={onClickJoin} disabled={joining}>{joining ? (
+                    <div className="flex flex-row">
+                        <Spinner/>
+                        <p>Joining...</p>
+                    </div>
+                ) : "Join Activity"}</Button>
             ) : (
-                <Button onClick={onClickUnjoin} disabled={loading}>{loading ? "Unjoining..." : "Unjoin Activity"}</Button>
+                <Button onClick={onClickUnjoin} disabled={joining}>{joining ? (
+                    <div className="flex flex-row">
+                        <Spinner/>
+                        <p>Leaving...</p>
+                    </div>
+                ) : "Leave Activity"}</Button>
             )
             }
         </div>

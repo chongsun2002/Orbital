@@ -43,7 +43,7 @@ export async function createActivity(details: CreateActivityDetails): Promise<Cr
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt.value
+            'Authorization': jwt
         },
         body: JSON.stringify(params),
         cache: 'no-cache'
@@ -180,27 +180,67 @@ export async function getActivityParticipants(id: string): Promise<EnrolledList>
     return response.json();
 }
 
-export async function editActivity(id: string, data: UpdateActivityDetails): Promise<Activity> {
+export async function editActivity(id: string, details: CreateActivityDetails): Promise<Activity> {
     const session = cookies().get('session')?.value;
     const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
         redirect('/login');
     }
+    const startDateTime: Date = details.date.from;
+    startDateTime.setHours(Number(details.startTime.split(':')[0]));
+    startDateTime.setMinutes(Number(details.startTime.split(':')[1]));
+
+    const endDateTime: Date = details.date.to;
+    endDateTime.setHours(Number(details.endTime.split(':')[0]));
+    endDateTime.setMinutes(Number(details.endTime.split(':')[1]));
+
+    const params = {
+        title: details.title,
+        description: details.description, 
+        startTime: startDateTime,
+        endTime: endDateTime,
+        numOfParticipants: details.numOfParticipants, 
+        category: details.category,
+        location: details.location,
+    }
+
     const url = new URL(`api/v1/activities/edit/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': jwt || "",
+            'Authorization': jwt,
 
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(params),
         cache: 'no-cache'
     })
     if (!response.ok) {
         throw new Error("Could not reach server");
     }
     return response.json();
+}
+
+export async function deleteActivity(id: string): Promise<boolean> {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+
+    const url = new URL(`api/v1/activities/delete/${id}`, API_URL)
+    const response: Response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt,
+        },
+        cache: 'no-cache'
+    })
+    if (!response.ok) {
+        throw new Error("Could not reach server");
+    }
+    return true;
 }
 
 export async function checkIfOwner(id: string): Promise<{ isOwner: boolean }> {
