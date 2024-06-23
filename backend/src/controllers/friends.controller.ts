@@ -22,7 +22,7 @@ export default class FriendsController {
             res.status(200).json({friendRequest: friendRequest});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error sending friend request ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -45,7 +45,7 @@ export default class FriendsController {
             res.status(200).json({message: "Successfully accepted friend request"});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error accepting friend request ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -68,7 +68,7 @@ export default class FriendsController {
             res.status(200).json({message: "Successfully declined friend request"});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error declining friend request ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -93,7 +93,7 @@ export default class FriendsController {
             res.status(200).json({isFriends: isFriends});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error checking friends ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -114,7 +114,7 @@ export default class FriendsController {
             res.status(200).json({friends: friends});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error getting friends ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -136,7 +136,7 @@ export default class FriendsController {
             res.status(200).json({pending: outgoing});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error getting friend requests ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -158,7 +158,7 @@ export default class FriendsController {
             res.status(200).json({pending: incoming});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error getting friend requests ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }
@@ -181,7 +181,7 @@ export default class FriendsController {
             res.status(200).json({message: "Successfully removed friend"});
             return; 
         } catch (error) {
-            console.error(`Unexpected error creating activity ${error}`);
+            console.error(`Unexpected error removing friend ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }

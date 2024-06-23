@@ -10,12 +10,12 @@ import EditProfileForm from "@/components/User/EditProfileForm";
 import OwnProfile from "@/components/User/OwnProfile";
 import PublicProfile from "@/components/User/PublicProfile";
 import { redirect } from "next/navigation";
+import PrivateProfile from "@/components/User/PrivateProfile";
 
 const Page = async ({params}: {params: {id: string}}) => {
     let friends: Friend[] | undefined; 
     try {
         friends = await getFriends();
-        console.log(friends);
     } catch (error) {
         friends = undefined;
     }
@@ -47,16 +47,21 @@ const Page = async ({params}: {params: {id: string}}) => {
     if (id === undefined) {
         redirect('/login');
     }
+    const user: UserDetails | null = await getUserDetails(params.id);
+    if (user === null) {
+        return (
+            <div>404 User not found</div>
+        )
+    }
     const isFriends: Boolean = await isFriend(params.id);
     const isPublic: Boolean = await userIsPublic(params.id);
-    const user: UserDetails = await getUserDetails(params.id);
     return (
         <div className='flex flex-col'>
             { id === params.id
-                ? <PublicProfile user={user}/>
+                ? <OwnProfile user={user}/>
                 : isPublic || isFriends
-                    ? <PublicProfile user={user}/>
-                    : null
+                    ? <PublicProfile isFriends={isFriends} id={params.id} user={user}/>
+                    : <PrivateProfile id={params.id} user={user} />
             }
         </div>
     );

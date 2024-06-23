@@ -1,9 +1,10 @@
-import "server-only";
+"use server"
+
 import { cookies } from "next/headers";
 import { User } from "./authActions";
 
 
-export function createSession(user: User) {
+export async function createSession(user: User) {
     const expires = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
     cookies().set('session', JSON.stringify({
         name: user.name,
