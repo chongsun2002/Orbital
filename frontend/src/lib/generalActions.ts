@@ -40,11 +40,14 @@ export async function getUserDetails(id: string) {
             'Authorization': jwt
         }
     });
-    if (!response.ok) {
+    if (!response) {
         throw new Error("Could not reach server");
     }
-    const details: UserDetails = await response.json().then(res => res.user); 
-    return details;
+    const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error)
+    }
+    return responseBody.user;
 }
 
 export async function userIsPublic(id: string) {
@@ -59,10 +62,13 @@ export async function userIsPublic(id: string) {
             'Content-Type': 'application/json',
         }
     });
-    if (!response.ok) {
+    if (!response) {
         throw new Error("Could not reach server");
     }
     const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error)
+    }
     return responseBody.isPublic;
 }
 
@@ -81,7 +87,11 @@ export async function updateUserDetails(data: UpdateUserDetails) {
         },
         body: JSON.stringify(data)
     });
-    if (!response.ok) {
+    if (!response) {
         throw new Error("Could not reach server");
+    }
+    const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error)
     }
 }

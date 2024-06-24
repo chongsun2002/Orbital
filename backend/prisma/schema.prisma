@@ -42,6 +42,8 @@ model User {
   coursesEnrolled      CourseEnrollment[]  
   organisedActivities  Activity[]          @relation("Organiser") // Activities where the user is the organiser.
   inActivities         Activity[]          @relation("Participant") // Activities where the user is participating.
+
+  timetableUrl         String?
 }
  
 model Account {
