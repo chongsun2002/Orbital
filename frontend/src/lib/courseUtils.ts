@@ -41,7 +41,7 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
             const matchingLessons = lessonData.filter((lesson: RawLesson) => {
                 return lesson.lessonType.toUpperCase().startsWith(lessonType.toUpperCase()) && lesson.classNo === classNo;
             })
-            matchingLessons.forEach(matchingLessongit  => {
+            matchingLessons.forEach(matchingLesson => {
                 lessonsByDay[matchingLesson.day as DaysOfWeek].push({
                     ...matchingLesson,
                     moduleCode,
