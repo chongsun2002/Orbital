@@ -28,7 +28,7 @@ const ActivitiesList: React.FC<ActivitiesListProps> = (activities: ActivitiesLis
     });
 
     return (
-        <div className="grid grid-cols-3 gap-x-10 gap-y-5 mx-[80px]">
+        <div className="flex flex-col items-center sm:grid grid-cols-3 gap-x-10 gap-y-5 mx-[80px]">
             {filteredActivities.map((activity, index) => {
                 return (
                     <ActivityCard 

@@ -35,6 +35,7 @@ import { CreatedActivityDetails } from "@/lib/types/activityTypes"
 import { Spinner } from "../ui/spinner"
 import { useToast } from "../ui/use-toast"
 import { useState } from "react"
+import { NumberInput } from "../ui/number-input"
 const Calendar = dynamic(() => import("../ui/calendar").then(mod => mod.Calendar), {
     loading: () => <p>Loading...</p>
 }); // Using dynamic import to make initial render faster.
@@ -228,7 +229,7 @@ const CreateActivityForm = () => {
                         <FormItem className="w-full">
                             <FormLabel>Number of Participants {"(Default: 4)"}</FormLabel>
                             <FormControl>
-                                <Input className="w-full" placeholder="Maximum number of participants" {...field} />
+                                <NumberInput className="w-full" placeholder="Maximum number of participants" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

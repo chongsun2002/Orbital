@@ -45,12 +45,12 @@ const ActivitiesFilter: React.FC = () => {
     }
 
     return (
-        <div className="mx-[80px]">
-            <div className="flex flex-row items-center">
+        <div className="sm:mx-[80px]">
+            <div className="flex flex-col gap-2 sm:flex-row items-center gap-5">
                 <div className="content-center">Filter By:</div>
-                <SelectFilter onValueChange={onCategoryChange} filterName="Category" filterOptions={categoryFilters} className="w-[180px] mx-5"></SelectFilter>
-                <SelectFilter onValueChange={onDateChange} filterName="Date" filterOptions={dateFilters} className="w-[180px] mx-5"></SelectFilter>
-                <SelectFilter onValueChange={onLocationChange} filterName="Location" filterOptions={locationFilters} className="w-[180px] mx-5"></SelectFilter>
+                <SelectFilter onValueChange={onCategoryChange} filterName="Category" filterOptions={categoryFilters} className="w-[180px]"></SelectFilter>
+                <SelectFilter onValueChange={onDateChange} filterName="Date" filterOptions={dateFilters} className="w-[180px]"></SelectFilter>
+                <SelectFilter onValueChange={onLocationChange} filterName="Location" filterOptions={locationFilters} className="w-[180px]"></SelectFilter>
                 <Button variant="secondary" onClick={onClearFilters}>
                     <div>Clear Filters</div>
                 </Button>

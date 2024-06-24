@@ -18,7 +18,7 @@ type ActivityCardProps = FilteredActivity;
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ id, title, description, startTime, organiserName, category }: ActivityCardProps) => {
     return (
-        <Card>
+        <Card className="w-[90vw] sm:w-full">
             <CardHeader className="bg-gray-100">
                 <CardTitle>{title}</CardTitle>
                 <div className="flex flex-row items-center">
