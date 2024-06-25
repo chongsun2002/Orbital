@@ -21,7 +21,7 @@ model User {
   email         String          @unique
   emailVerified DateTime?
   image         String?
-  password      String          @db.VarChar(60)
+  password      String?         @db.VarChar(60)
   bio           String?
   birthday      DateTime?
   isPublic      Boolean         @default(false)
@@ -44,6 +44,8 @@ model User {
   inActivities         Activity[]          @relation("Participant") // Activities where the user is participating.
 
   timetableUrl         String?
+
+  googleId             String?             @unique
 }
  
 model Account {

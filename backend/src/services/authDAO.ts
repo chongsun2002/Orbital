@@ -7,8 +7,12 @@ interface Credentials {
     password: string;
 };
 
-interface SignupCredentials extends Credentials  {
+interface SignupCredentials {
     name: string;
+    email: string;
+    password?: string;
+    googleId?: string;
+    image?: string;
 }
 
 export default class AuthDAO {
@@ -39,6 +43,8 @@ export default class AuthDAO {
             name: credentials.name,
             email: credentials.email,
             password: credentials.password,
+            googleId: credentials.googleId,
+            image: credentials.image
         }});
         return user;
     }
@@ -50,5 +56,51 @@ export default class AuthDAO {
             }
         })
         return user;
+    }
+
+    static async getUserByEmail(email: string) : Promise<User | null> {
+        const user: User | null = await prisma.user.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        return user;
+    } 
+
+    static async getUserByGoogle(googleId: string) : Promise<User | null> {
+        const user: User | null = await prisma.user.findUnique({
+            where: {
+                googleId: googleId,
+            }
+        })
+        return user;
+    }
+
+    static async linkUserGoogle(email: string, googleId: string, image?: string) : Promise<User> {
+        // If the user currently has no image, use their google image and link their google id
+        const user: User | null = await prisma.user.update({
+            where: {
+                email: email,
+                image: null
+            },
+            data: {
+                googleId: googleId,
+                image: image
+            }
+        });
+        if (user) {
+            return user;
+        }
+
+        // If the user already has an image, just link their google account
+        const user2: User | null = await prisma.user.update({
+            where: {
+                email: email,
+            },
+            data: {
+                googleId: googleId,
+            }
+        });
+        return user2;
     }
 };

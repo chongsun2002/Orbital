@@ -94,7 +94,7 @@ const LoginForm = () => {
             </form>
             <Divider message='or continue with' />
             <GoogleButton />
-            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400]'>
+            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400] mt-[20px]'>
                 If you don&apos;t have an account, 
                 <Link href='/signup' className='text-black'> sign up here.</Link>
             </div>
