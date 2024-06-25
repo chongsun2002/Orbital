@@ -67,12 +67,12 @@ const activity = async ({ params }: { params : { id: string } }) => {
     }
     return (
         <div>
-            <div className="grid grid-cols-2 gap-10 mx-[80px]">
+            <div className="mx-[10px] sm:grid grid-cols-2 gap-10 mx-[80px]">
                 <div className="mt-10">
                     <ActivityImage image="" category={activityData.category}/>
                 </div>
                 <div className="mt-[80px]">
-                    <div className="flex flex-row gap-5">
+                    <div className="flex flex-col sm:flex flex-row gap-5">
                         <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl">{activityData.title}</h1>
                         {isOwner && (
                             <div className="flex flex-row gap-3 items-center">

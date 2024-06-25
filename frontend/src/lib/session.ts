@@ -17,20 +17,6 @@ export async function createSession(user: User) {
         sameSite: 'lax',
         path: '/',
     });
-    // cookies().set('userImage', user.image, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     expires: expires,
-    //     sameSite: 'lax',
-    //     path: '/',
-    // });
-    // cookies().set('JWT', user.token, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     expires: expires,
-    //     sameSite: 'lax',
-    //     path: '/',
-    // });
 }
 
 export async function endSession() {

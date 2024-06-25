@@ -76,11 +76,11 @@ const activities = async ({
 
     return (
         <div className="overflow-y-auto">
-            <div className='flex flex-row justify-between mx-[80px] mb-5 mt-10'>
+            <div className='flex flex-row justify-between mb-5 mt-10 mx-[20px] sm:mx-[80px]'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
                 <Button className="px-0 py-0">
                     <Link href="/activities/create">
-                        <div className='flex flex-row content-center mx-4 my-2'>
+                        <div className='flex flex-row content-center mx-1 my-2 sm:mx-4'>
                             <h2>Create Activity</h2>
                             <LuPlus className="mx-1 my-0.5"/>
                         </div>
