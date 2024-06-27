@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 export interface Friend {
     id: string,
     name: string,
-    image?: string
+    image?: string,
+    timetableUrl?: string
 }
 
 export async function getFriends(): Promise<Friend[]> {
@@ -33,6 +34,11 @@ export async function getFriends(): Promise<Friend[]> {
         throw new Error(response.status + responseBody.error);
     }
     return responseBody.friends.friends;
+}
+
+export async function getFriendsTimetable(): Promise<(String | undefined)[]> {
+    const friends = await getFriends();
+    return friends.map((friend) => friend.timetableUrl);
 }
 
 export async function isFriend(id: string): Promise<Boolean> {

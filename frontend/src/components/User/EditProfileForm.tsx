@@ -23,22 +23,25 @@ import { updateUserDetails } from "@/lib/generalActions"
 const formSchema = z.object({
     name: z.string().min(1, 'Required'),
     bio: z.string().optional(),
-    birthday: z.string().date().optional()
+    birthday: z.string().date().optional(),
+    timetableUrl: z.string().optional()
 });
 
 interface FormProps {
     name: string,
     bio?: string,
     birthday?: string
+    timetableUrl?: string
 }
 
-const EditProfileForm = ({name, bio, birthday}: FormProps) => {
+const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: name,
             bio: bio ?? '',
-            birthday: birthday?.substring(0,10) ?? ''
+            birthday: birthday?.substring(0,10) ?? '',
+            timetableUrl: timetableUrl ?? ''
         }
     })
 
@@ -48,7 +51,8 @@ const EditProfileForm = ({name, bio, birthday}: FormProps) => {
         await updateUserDetails({
             name: values.name,
             bio: values.bio,
-            birthday: new Date(values.birthday ?? '')
+            birthday: new Date(values.birthday ?? ''),
+            timetableUrl: values.timetableUrl
         });        
     }
 
@@ -96,6 +100,21 @@ const EditProfileForm = ({name, bio, birthday}: FormProps) => {
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={form.control}
+                    name='timetableUrl'
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col w-full">
+                            <FormLabel>Link your timetable!</FormLabel>
+                            <FormControl>
+                                <Input type='url' className="w-full" placeholder='Your NUSMods timetable link' {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <Button type="submit" className="w-full">Save changes</Button>
             </form>
         </Form>

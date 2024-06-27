@@ -117,7 +117,8 @@ export default class FriendsDAO {
                     select: { 
                         id: true,
                         name: true,
-                        image: true
+                        image: true,
+                        timetableUrl: true
                     }
                 }
             }

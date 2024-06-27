@@ -40,7 +40,7 @@ export default class UserController {
             const isFriends = await FriendsDAO.isFriends(user.id, id);
             const userDetails = await UserDAO.userGetDetails(id);
             if (isPublic === undefined || userDetails === null) {
-                console.error("Could not find user");
+                console.error("Could not find user details");
                 res.status(404).json({error: "Could not find user"});
                 return;
             }

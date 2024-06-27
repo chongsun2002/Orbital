@@ -14,7 +14,7 @@ const OwnProfile = async ({user}: {user: UserDetails}) => {
                 </Avatar>
             </div>
             <div className='col-start-2 col-span-1 row-auto w-2/3 justify-self-center'>
-                <EditProfileForm name={user.name} bio={user.bio} birthday={user.birthday} /> 
+                <EditProfileForm name={user.name} bio={user.bio} birthday={user.birthday} timetableUrl={user.timetableUrl}/> 
             </div>      
         </div>
     )

@@ -4,29 +4,39 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { API_URL } from "./utils";
+import { endSession } from "./session";
 
 export interface UserDetails {
     name: string,
     image?: string,
     bio?: string,
-    birthday?: string
+    birthday?: string,
+    timetableUrl?: string,
 }
 
 export interface UpdateUserDetails {
     name: string,
     bio?: string,
-    birthday?: Date
+    birthday?: Date,
+    timetableUrl?: string
 }
 
 export async function getUserId() {
-    const session = cookies().get('session')?.value;
-    const jwt: string = session ? JSON.parse(session).JWT : '';
+    const session = cookies().get('session')
+    if(!session) {
+        redirect('/login');
+    }
+    const jwt: string = JSON.parse(session.value).JWT;
     const decoded = jwtDecode(jwt);
     const id: string | undefined = decoded.sub;
+    if(!id) {
+        await endSession();
+        redirect('/login');
+    }
     return id;
 }
 
-export async function getUserDetails(id: string) {
+export async function getUserDetails(id: string) : Promise<UserDetails> {
     const session = cookies().get('session');
     if (session === undefined) {
         redirect('/login');

@@ -7,7 +7,8 @@ import { prisma } from "../../api/index.js";
 interface UpdateUserDetails {
     name: string,
     bio?: string,
-    birthday?: Date
+    birthday?: Date,
+    timetableUrl?: string
 }
 
 export default class UserDAO {
@@ -42,7 +43,8 @@ export default class UserDAO {
                 name: true,
                 image: true,
                 bio: true,
-                birthday: true
+                birthday: true,
+                timetableUrl: true,
             }
         });
         return user;
