@@ -21,7 +21,7 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
     }))
     const moduleCodesColors = assignColorsToModules(moduleCodes);
     return (
-        <div className="bg-gray-100 mb-10">
+        <div className="bg-gray-100 mb-10 mx-[80px] mt-[30px]">
             <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
                 {Array.from({ length: 13 }).map((_, index) => (
                     <div key={index} className="h-10 border-b flex items-center">

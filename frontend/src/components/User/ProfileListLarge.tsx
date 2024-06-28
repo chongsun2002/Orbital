@@ -9,7 +9,7 @@ interface Friend {
 
 const ProfileListLarge = ({friends}: { friends: Friend[] }) => {
     return (
-        <div className="flex flex-row gap-x-10 gap-y-5 mx-[80px]">
+        <div className="flex flex-row flex-wrap gap-x-10 gap-y-5 mx-[80px]">
             {friends.map((friend) => {
                 return (
                     <Link key={friend.id} className='w-[40%]' href={'/user/'+friend.id}>
