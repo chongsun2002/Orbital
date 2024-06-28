@@ -15,7 +15,9 @@ const SelectFriend = ({onChange, friends}: {onChange: any, friends: Friend[]}) =
                 <SelectValue placeholder="Choose friend" />
             </SelectTrigger>
             <SelectContent>
-                {friends.map((friend) => friend.timetableUrl ? <SelectItem value={"name="+friend.name+"&url="+friend.timetableUrl}>{friend.name}</SelectItem> : <></>)}
+                {friends.map((friend) => friend.timetableUrl 
+                    ? <SelectItem key={friend.id} value={"name="+friend.name+"&url="+encodeURIComponent(friend.timetableUrl)}>{friend.name}</SelectItem> 
+                    : <></>)}
             </SelectContent>
         </Select>    
     )

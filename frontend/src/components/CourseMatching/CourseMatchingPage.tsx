@@ -1,9 +1,7 @@
 "use client"
 
-import Timetable from "@/components/CourseMatching/Timetable"
-import { UserDetails } from "@/lib/generalActions"
 import SelectFriend from "@/components/CourseMatching/SelectFriend"
-import { ChangeEvent, useState, useTransition } from "react"
+import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
@@ -11,13 +9,11 @@ import { usePathname, useSearchParams } from "next/navigation"
 const CourseMatching = ({friends}: {friends: Friend[]}) => {
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     const [isPending, startTransition] = useTransition();
     
     const onChange = (value: string) => {
         const updatedSearchParams = new URLSearchParams(value);
-
         startTransition(() => {
             router.replace(`${pathname}?${updatedSearchParams.toString()}`);
         });

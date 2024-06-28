@@ -20,12 +20,14 @@ export default async function Page({ searchParams }: { searchParams: { name?: st
         return <div>{(error as Error).message}</div>
     }
 
+    const url = searchParams.url ? decodeURIComponent(searchParams.url) : "";
+
     return (
         <div>
             <CourseMatching friends={friends}/> 
             <Timetable NUSModsURLs={[
                 {name: me.name, url: me.timetableUrl ?? ""},
-                {name: searchParams.name ?? "Your friend", url: searchParams.url ?? ""}
+                {name: searchParams.name ?? "Your friend", url: url}
             ]}/>
         </div>
     );
