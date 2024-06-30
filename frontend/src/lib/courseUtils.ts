@@ -38,7 +38,7 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
             lessonData = [];
         }
         Object.entries(selectedClasses as object).forEach(([lessonType, classNo]) => {
-            const matchingLessons = lessonData.filter((lesson: RawLesson) => {
+            const matchingLessons: RawLesson[] = lessonData.filter((lesson: RawLesson) => {
                 return lesson.lessonType.toUpperCase().startsWith(lessonType.toUpperCase()) && lesson.classNo === classNo;
             })
             matchingLessons.forEach(matchingLesson => {

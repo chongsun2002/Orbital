@@ -69,7 +69,7 @@ const ImageForm = () => {
         const response = await client.send(new PutObjectCommand({
             Bucket: 'adventus-orbital',
             Key: 'user-images/' + id,
-            Body: values.picture?[0]
+            Body: values.picture?.[0]
         }));
         console.log(response);
     }

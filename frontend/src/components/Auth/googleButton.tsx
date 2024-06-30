@@ -39,13 +39,16 @@ export default function GoogleButton() {
             const { google } = window;
             if (google) {
                 google.accounts.id.initialize({
-                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
                     callback: googleSignin,
                 });
-                google.accounts.id.renderButton(
-                    document.getElementById("buttonDiv"),
-                    { theme: "outline", size: "large", width: 400 }  // customization attributes
-                );
+                const buttonDiv = document.getElementById("buttonDiv");
+                if (buttonDiv) {
+                    google.accounts.id.renderButton(
+                        buttonDiv,
+                        { theme: "outline", size: "large", width: 400 }  // customization attributes
+                    );
+                }
                 google.accounts.id.prompt(); // also display the One Tap dialog
             } 
         }, 1);
