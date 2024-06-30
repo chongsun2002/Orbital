@@ -3,6 +3,12 @@ import TimetableRow
  from "./TimetableRow";
 import { daysShortform, DaysOfWeek, daysMapping } from "@/lib/constants/courseConstants";
 import { TimetableLesson } from "@/lib/types/courseTypes";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { LuTrash2 } from "react-icons/lu";
+import { deleteNUSModsURL } from "@/lib/courseActions";
+import { redirect, useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 
 type TimetableProps = {
     NUSModsURLs: {name: string, url: string}[];
@@ -20,8 +26,28 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
         })
     }))
     const moduleCodesColors = assignColorsToModules(moduleCodes);
+    const session = cookies().get('session')?.value;
+    const currentUserName = session ? JSON.parse(session).name : "";
+
     return (
         <div className="mb-10 mx-[80px] mt-[30px]">
+            <div className="flex flex-row flex-wrap">
+                {lessons.map((lessonsForPerson, personIndex) => {
+                    const name = lessonsForPerson.name;
+                    return (<Badge key={personIndex} className="mr-2 bg-gray-300" variant="outline">
+                        {name}
+                        {currentUserName !== name ? (<form action={async () => {
+                            "use server"
+                            await deleteNUSModsURL(name);
+                            redirect("/course_matching");
+                        }}>
+                            <Button variant="destructive" className="h-6 w-auto px-2 py-1 ml-4 flex items-center justify-center">
+                                <LuTrash2 className="w-5 h-4" />
+                            </Button>
+                        </form>) : null}
+                    </Badge>)
+                })}
+            </div>
             {daysShortform.map((day, dayIndex) => {
                 return (
                     <div key={dayIndex.toString()} className="mb-2">

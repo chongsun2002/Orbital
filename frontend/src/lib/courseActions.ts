@@ -44,6 +44,24 @@ export function getNUSModsURLs(): {name: string, url: string}[] {
     return [];
 }
 
+export async function deleteNUSModsURL(name: string) {
+    const cookie = cookies().get('NUSModsURLs');
+    if (cookie) {
+        try {
+            const URLs: {name: string, url: string}[] = JSON.parse(cookie.value);
+            const newURLs = URLs.filter((url) => url.name !== name);
+            cookies().set('NUSModsURLs', JSON.stringify(newURLs), {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'lax',
+                path: '/',
+            })
+        } catch (error) {
+            throw new Error("Unable to get URLs from cookie.")
+        }
+    }
+}
+
 export async function getCourseData(moduleCode: string) {
     const url = new URL(`${acadYear}/modules/${moduleCode}.json`, NUSMODS_URL);
     const response: Response = await fetch(url.toString(), {

@@ -3,7 +3,7 @@ import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
-import { addNUSModsURLToCookies } from "@/lib/courseActions"
+import { addNUSModsURLToCookies, getNUSModsURLs } from "@/lib/courseActions"
 
 const CourseMatching = ({friends}: {friends: Friend[]}) => {
     // const router = useRouter();
@@ -26,7 +26,8 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
         } catch (error) {
             console.error("Failed to add friend to timetable.");
         }
-    }    
+    }
+    const NUSModsURLs: {name: string, url: string}[] = getNUSModsURLs();
     return(
         <div className='flex flex-col justify-left gap-[30px] mx-[80px] mt-[56px]'>
             <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px]"> 
@@ -42,7 +43,7 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
                 <CourseCard />
             </div> */}
 
-            <SelectFriend onChange={onChange} friends={friends}/>
+            <SelectFriend onChange={onChange} friends={friends} NUSModsURLs={NUSModsURLs}/>
             {/* {isPending && <div>Loading...</div>} */}
             {/*<LinkAdder />*/}
 

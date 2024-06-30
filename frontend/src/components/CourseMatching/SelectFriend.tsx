@@ -11,11 +11,11 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "@/components/ui/command"
-import { addNUSModsURLToCookies } from "@/lib/courseActions";
 
 import { Friend } from "@/lib/friendsActions";
   
-const SelectFriend = ({ onChange, friends }: { onChange: (value: string) => void, friends: Friend[]}) => {
+const SelectFriend = ({ onChange, friends, NUSModsURLs }: { onChange: (value: string) => void, friends: Friend[], NUSModsURLs: {name: string, url: string}[]}) => {
+    const nusModsNamesSet = new Set(NUSModsURLs.map(item => item.name));
 
     return(
         <Command className='bg-gray-100'>
@@ -23,7 +23,8 @@ const SelectFriend = ({ onChange, friends }: { onChange: (value: string) => void
             <CommandList>
                 <CommandEmpty>No results found. Your friend may not have added their NUSMods URL!</CommandEmpty>
                 <CommandGroup heading="Suggestions">
-                    {friends.map((friend) => friend.timetableUrl ? <CommandItem key={friend.id} value={JSON.stringify({name: friend.name, url: friend.timetableUrl})} onSelect={onChange}>{friend.name}</CommandItem> : null)}
+                    {friends
+                        .map((friend) => friend.timetableUrl && !nusModsNamesSet.has(friend.name) ? <CommandItem key={friend.id} value={JSON.stringify({name: friend.name, url: friend.timetableUrl})} onSelect={onChange}>{friend.name}</CommandItem> : null)}
                 </CommandGroup>
             </CommandList>
         </Command>
