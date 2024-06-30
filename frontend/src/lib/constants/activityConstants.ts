@@ -1,17 +1,17 @@
 // Activity Parameters for developers
 export const categoryFilters =[
-    {value: "study", name: "Study"},
-    {value: "sports", name: "Sports"},
-    {value: "dining", name: "Dining"},
-    {value: "leisure", name: "Leisure"},
-    {value: "others", name: "Others"}];
+    {value: "STUDY", name: "Study"},
+    {value: "SPORTS", name: "Sports"},
+    {value: "DINING", name: "Dining"},
+    {value: "LEISURE", name: "Leisure"},
+    {value: "OTHERS", name: "Others"}];
 
 export const dateFilters = [
-    {value: "happening", name: "Happening Now"},
-    {value: "past", name: "Past Activities"},
-    {value: "future", name: "Future Activities"}];
+    {value: "HAPPENING", name: "Happening Now"},
+    {value: "PAST", name: "Past Activities"},
+    {value: "FUTURE", name: "Future Activities"}];
 
 export const locationFilters = [
-    {value: "nus", name: "NUS"},
-    {value: "ntu", name: "NTU"},
-    {value: "anywhere", name: "Anywhere"}];
+    {value: "NUS", name: "NUS"},
+    {value: "NTU", name: "NTU"},
+    {value: "ANYWHERE", name: "Anywhere"}];

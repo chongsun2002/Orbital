@@ -1,12 +1,10 @@
 import express, { Router } from "express";
-import AuthController from "../controllers/auth.controller.js";
+import CoursesController from "../controllers/courses.controller.js";
 import passport from "passport";
 
-const courseRouter: Router = express.Router();
+const coursesRouter: Router = express.Router();
 
-courseRouter.get("/protected", passport.authenticate('jwt', {session: false}), (req, res, next) => {
-    console.log(req.user)
-    res.status(200).json({msg: "Authorized!"});
-})
+coursesRouter.route("/linkTimetable").put(passport.authenticate('jwt', {session: false}), CoursesController.apiLinkTimetable);
+coursesRouter.route("/getTimetable").get(CoursesController.apiLinkTimetable);
 
-export default courseRouter;
+export default coursesRouter;

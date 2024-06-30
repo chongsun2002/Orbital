@@ -10,11 +10,6 @@ const Page = async () => {
     }
     const decoded = jwtDecode(jwt);
     redirect('/user/' + decoded.sub);
-    return (
-        <div>
-            
-        </div>
-    )
 }
 
 export default Page;

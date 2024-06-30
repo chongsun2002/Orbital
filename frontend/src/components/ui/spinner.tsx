@@ -14,6 +14,7 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
           className
         )}
         ref={ref}
+        data-testid="spinner"
         {...props}
       />
     )

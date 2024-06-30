@@ -9,6 +9,8 @@ activitiesRouter.route("/searchactivity/:id").get(ActivitiesController.apiSearch
 activitiesRouter.route("/getparticipants/:id").get(passport.authenticate('jwt', {session: false}), ActivitiesController.apiGetActivityParticipants);
 activitiesRouter.route("/checkenrollment/:id").get(passport.authenticate('jwt', {session: false}), ActivitiesController.apiCheckActivityEnrollment);
 activitiesRouter.route("/checkisorganiser/:id").get(passport.authenticate('jwt', {session: false}), ActivitiesController.apiCheckIsOrganiser);
+activitiesRouter.route("/getorganised").get(ActivitiesController.apiGetOrganisedActivities);
+activitiesRouter.route("/getjoined").get(ActivitiesController.apiGetJoinedActivities);
 activitiesRouter.route("/countactivities").get(ActivitiesController.apiCountActivities);
 
 activitiesRouter.route("/create").post(passport.authenticate('jwt', {session: false}), ActivitiesController.apiCreateActivity);

@@ -11,6 +11,7 @@ import activitiesRouter from "../src/routes/activities.routes.js";
 import friendsRouter from "../src/routes/friends.routes.js";
 import bodyParser from "body-parser";
 import path from "path";
+import userRouter from "../src/routes/user.routes.js";
 
 export const prisma: PrismaClient = new PrismaClient();
 const app: Express = express();
@@ -30,6 +31,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/activities", activitiesRouter);
 app.use("/api/v1/friends", friendsRouter);
+app.use("/api/v1/user", userRouter);
 
 app.get("/healthz", (req: Request, res: Response) => {
     res.send(`Server Ok, , test`);

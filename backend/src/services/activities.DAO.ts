@@ -338,4 +338,36 @@ export default class ActivitiesDAO {
         const count = await prisma.activity.count();
         return count;
     }
+
+    static async getOrganisedActivities(userId: string): Promise<Activity[] | undefined> {
+        const activities = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                organisedActivities: true
+            }
+        });
+        return activities?.organisedActivities;
+    }
+
+    static async getJoinedActivities(userId: string): Promise<Activity[] | undefined> {
+        const activities = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                inActivities: {
+                    include: {
+                        organiser: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return activities?.inActivities;
+    }
 }

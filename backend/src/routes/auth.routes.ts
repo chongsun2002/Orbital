@@ -11,5 +11,6 @@ const authRouter: Router = express.Router();
 
 authRouter.route("/login").post(AuthController.apiLogin);
 authRouter.route("/signup").post(AuthController.apiCreateUser);
+authRouter.route("/google").post(AuthController.apiHandleGoogle);
 
 export default authRouter;

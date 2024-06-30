@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation"
 import { redirect } from "next/navigation";
 
 const LogoutButton = () => {
+    const router = useRouter();
+
     return (
         <form action={async () => {
-            'use server'
             await endSession();
-            redirect("/success");
+            router.push("/success");
         }}>
-            <Button type="submit" variant="destructive" className="rounded-3xl">
+            <Button type="submit" variant="destructive" className="w-full">
                 Log Out
             </Button>
         </form>

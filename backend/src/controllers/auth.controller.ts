@@ -107,4 +107,35 @@ export default class AuthController {
             }
         }
     }
+
+    static apiHandleGoogle: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const name: string = req.body.name;
+        const email: string = req.body.email;
+        const googleId: string = req.body.googleId;
+        const image: string | undefined = req.body.image;
+        var user: User | null;
+        try {
+            user = await AuthDAO.getUserByGoogle(googleId); 
+            if(user) {
+                const token = createJWT(user);
+                res.status(200).json({user: this.sanitizeUser(user), token: token});
+                return;
+            }
+            user = await AuthDAO.getUserByEmail(email);
+            if(user) {
+                user = await AuthDAO.linkUserGoogle(email, googleId, image);
+                const token = createJWT(user);
+                res.status(200).json({user: this.sanitizeUser(user), token: token});
+                return;
+            }
+            user = await AuthDAO.createUser({ name: name, email: email, googleId: googleId, image: image});
+            const token = createJWT(user);
+            res.status(200).json({user: this.sanitizeUser(user), token: token});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error signing in with Google ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
 }

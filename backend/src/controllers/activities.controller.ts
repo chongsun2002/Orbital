@@ -199,8 +199,46 @@ export default class ActivitiesController {
         }
     }
 
-    static apiCheckActivitiesEnrolled: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        // TODO
+    static apiGetOrganisedActivities: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const rawId: any = req.query.id;
+        if (typeof rawId !== 'string') {
+            res.status(400).json({error: "User ID invalid"});
+            return;
+        }
+        try {
+            const activities: Activity[] | undefined = await ActivitiesDAO.getOrganisedActivities(rawId);
+            if (activities === undefined) {
+                res.status(404).json({error: "User not found"});
+                return;
+            }
+            res.status(200).json({organisedActivities: activities});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error getting activities ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        } 
+    }
+
+    static apiGetJoinedActivities: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const rawId: any = req.query.id;
+        if (typeof rawId !== 'string') {
+            res.status(400).json({error: "User ID invalid"});
+            return;
+        }
+        try {
+            const activities: Activity[] | undefined = await ActivitiesDAO.getJoinedActivities(rawId);
+            if (activities === undefined) {
+                res.status(404).json({error: "User not found"});
+                return;
+            }
+            res.status(200).json({joinedActivities: activities});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error getting activities ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        } 
     }
 
     /**
