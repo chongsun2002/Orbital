@@ -9,7 +9,7 @@ import { countActivities, getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
 import { Logo } from "@/components/ui/logo"
 
-const activities = async ({
+const Page = async ({
     searchParams,
 }: {
     searchParams?: {
@@ -99,4 +99,4 @@ const activities = async ({
     )
 }
 
-export default activities
+export default Page;

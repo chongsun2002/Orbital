@@ -19,6 +19,9 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Textarea } from "../ui/textarea"
 import { updateUserDetails } from "@/lib/generalActions"
+import { useToast } from "../ui/use-toast"
+import { useState } from "react"
+import { Spinner } from "../ui/spinner"
 
 const formSchema = z.object({
     name: z.string().min(1, 'Required'),
@@ -35,6 +38,9 @@ interface FormProps {
 }
 
 const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
+    const router = useRouter();
+    const { toast } = useToast();
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -47,14 +53,38 @@ const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
 
     const { setError } = form;
 
+    const [creating, setCreating] = useState(false);
+
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
-        await updateUserDetails({
-            name: values.name,
-            bio: values.bio,
-            birthday: new Date(values.birthday ?? ''),
-            timetableUrl: values.timetableUrl
-        });        
+        setCreating(true);
+        try {
+            const response = await updateUserDetails({
+                name: values.name,
+                bio: values.bio,
+                birthday: new Date(values.birthday ?? ''),
+                timetableUrl: values.timetableUrl
+            });    
+
+            toast({
+                variant: "success",
+                title: "Successfully Created!",
+                description: "You will be redirected home soon.",
+            })
+            router.push('/')
+        } catch (error) {
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('timetableUrl', formError)
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request."
+            })
+            console.error(error)
+        } finally {
+            setCreating(false);
+        }
     }
+
 
     return (
         <Form {...form}>
@@ -115,7 +145,13 @@ const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
                     )}
                 />
 
-                <Button type="submit" className="w-full">Save changes</Button>
+                <Button type="submit" className="w-full">
+                    {creating ? (
+                        <div className="flex flex-row">
+                            <Spinner/>
+                            <div>Please Wait...</div>
+                        </div>) : "Save Changes"}
+                </Button>
             </form>
         </Form>
     )

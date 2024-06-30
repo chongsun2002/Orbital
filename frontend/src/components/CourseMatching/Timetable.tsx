@@ -21,26 +21,33 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
     }))
     const moduleCodesColors = assignColorsToModules(moduleCodes);
     return (
-        <div className="bg-gray-100 mb-10 mx-[80px] mt-[30px]">
-            <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
-                {Array.from({ length: 13 }).map((_, index) => (
-                    <div key={index} className="h-10 border-b flex items-center">
-                    {index === 0 ? '' : `${8 + index - 1}:00`}
-                    </div>
-                ))}
-            </div>
+        <div className="mb-10 mx-[80px] mt-[30px]">
             {daysShortform.map((day, dayIndex) => {
-                return lessons.map((lessonsForPerson, personIndex) => {
-                    return (
-                        <TimetableRow 
-                            key={dayIndex.toString()+personIndex.toString()}
-                            day={day}
-                            name={lessonsForPerson.name} 
-                            lessons={lessonsForPerson.lessonsByDay[daysMapping[day]]}
-                            moduleColorAssignments={moduleCodesColors}
-                        />
-                    )
-                })
+                return (
+                    <div key={dayIndex.toString()} className="mb-2">
+                        <div className="text-2xl font-bold text-center">{day}</div>
+                        <div className="grid bg-gray-100" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
+                            {Array.from({ length: 13 }).map((_, index) => (
+                                <div key={index} className="h-10 flex items-center">
+                                {index === 0 ? '' : index < 3 ? `0${8 + index - 1}00` : `${8 + index - 1}00`}
+                                </div>
+                            ))}
+                        </div>
+                        {
+                            lessons.map((lessonsForPerson, personIndex) => {
+                                return (
+                                    <TimetableRow 
+                                        isFirst={personIndex===0}
+                                        key={dayIndex.toString()+personIndex.toString()}
+                                        name={lessonsForPerson.name} 
+                                        lessons={lessonsForPerson.lessonsByDay[daysMapping[day]]}
+                                        moduleColorAssignments={moduleCodesColors}
+                                    />
+                                )
+                            })
+                        }
+                    </div>
+                )
             })}
         </div>
     )

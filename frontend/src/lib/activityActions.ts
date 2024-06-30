@@ -55,14 +55,14 @@ export async function createActivity(details: CreateActivityDetails): Promise<Cr
 }
 
 /**
- * Creates an activity on the backend with all the necessary details.
+ * Gets an activity on the backend with all the necessary details.
  *
  * @param search - input of the user into the search field.
  * @param pageNum - number of the page of activities that the user has navigated to.
  * @param category - category the user has selected.
  * @param date - date the user has selected.
  * @param location - location the user has selected.
- * @returns A promise of CreatedActivityDetails.
+ * @returns A promise of { activities: SearchedActivity[] }.
  */
 export async function getActivities(search: string, pageNum: number, category: string, date: string, location: string): Promise<{ activities: SearchedActivity[] }> {
     const params = new URLSearchParams({

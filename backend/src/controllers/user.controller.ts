@@ -64,8 +64,29 @@ export default class UserController {
             return;
         } 
         try {
-            await UserDAO.userUpdateDetails(user.id, req.body);
-            res.status(200);
+            const updatedUser = await UserDAO.userUpdateDetails(user.id, req.body);
+            res.status(200).json(updatedUser);
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiSearchUsers: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const rawSearch: any = req.query.search;
+        const searchString: string = typeof rawSearch === 'string' ? rawSearch : "";
+        try {
+            const users: {
+                id: string;
+                name: string;
+                image: string | null;
+                bio: string | null;
+                birthday: Date | null;
+                timetableUrl: string | null;
+            }[] = await UserDAO.searchUsers(searchString);
+            res.status(200).json({users: users});            
             return;
         } catch (error) {
             console.error((error as Error).message);

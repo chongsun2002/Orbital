@@ -1,24 +1,32 @@
-"use client"
-
 import SelectFriend from "@/components/CourseMatching/SelectFriend"
 import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
+import { addNUSModsURLToCookies } from "@/lib/courseActions"
 
 const CourseMatching = ({friends}: {friends: Friend[]}) => {
-    const router = useRouter();
-    const pathname = usePathname();
+    // const router = useRouter();
+    // const pathname = usePathname();
 
-    const [isPending, startTransition] = useTransition();
+    // const [isPending, startTransition] = useTransition();
     
-    const onChange = (value: string) => {
-        const updatedSearchParams = new URLSearchParams(value);
-        startTransition(() => {
-            router.replace(`${pathname}?${updatedSearchParams.toString()}`);
-        });
-    };
+    // const onChange = (value: string) => {
+    //     const updatedSearchParams = new URLSearchParams(value);
+    //     startTransition(() => {
+    //         router.replace(`${pathname}?${updatedSearchParams.toString()}`);
+    //     });
+    // };
 
+    const onChange = async (value: string) => {
+        "use server"
+        try {
+            const selectedFriend: {name: string, url: string} = JSON.parse(value);
+            addNUSModsURLToCookies(selectedFriend);
+        } catch (error) {
+            console.error("Failed to add friend to timetable.");
+        }
+    }    
     return(
         <div className='flex flex-col justify-left gap-[30px] mx-[80px] mt-[56px]'>
             <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px]"> 
@@ -35,7 +43,7 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
             </div> */}
 
             <SelectFriend onChange={onChange} friends={friends}/>
-            {isPending && <div>Loading...</div>}
+            {/* {isPending && <div>Loading...</div>} */}
             {/*<LinkAdder />*/}
 
 

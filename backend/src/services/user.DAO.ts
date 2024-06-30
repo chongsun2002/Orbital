@@ -65,4 +65,33 @@ export default class UserDAO {
         });
         return user;
     }
+
+    /**
+     * This function updates a user's details. 
+     * @param id The user's id
+     * @param data The user's updated details
+     * @returns The updated user
+     */
+    static async searchUsers(name: string) {
+        const searchQuery = name.split(' ').join(' & ')
+        const user = await prisma.user.findMany({
+            take: 10,
+            orderBy: {
+                _relevance: {
+                    fields: ['name', 'email'],
+                    search: searchQuery,
+                    sort: 'desc'
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                bio: true,
+                birthday: true,
+                timetableUrl: true,
+            }
+        })
+        return user;
+    }
 }

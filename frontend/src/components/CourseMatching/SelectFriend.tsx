@@ -1,16 +1,36 @@
+"use client"
+
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+    CommandShortcut,
+} from "@/components/ui/command"
+import { addNUSModsURLToCookies } from "@/lib/courseActions";
+
 import { Friend } from "@/lib/friendsActions";
   
-const SelectFriend = ({onChange, friends}: {onChange: any, friends: Friend[]}) => {
+const SelectFriend = ({ onChange, friends }: { onChange: (value: string) => void, friends: Friend[]}) => {
 
     return(
-        <Select onValueChange={onChange}>
+        <Command className='bg-gray-100'>
+            <CommandInput placeholder="Type a command or search..."/>
+            <CommandList>
+                <CommandEmpty>No results found. Your friend may not have added their NUSMods URL!</CommandEmpty>
+                <CommandGroup heading="Suggestions">
+                    {friends.map((friend) => friend.timetableUrl ? <CommandItem key={friend.id} value={JSON.stringify({name: friend.name, url: friend.timetableUrl})} onSelect={onChange}>{friend.name}</CommandItem> : null)}
+                </CommandGroup>
+            </CommandList>
+        </Command>
+    )
+}
+
+        {/*<Select onValueChange={onChange}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Choose friend" />
             </SelectTrigger>
@@ -19,8 +39,7 @@ const SelectFriend = ({onChange, friends}: {onChange: any, friends: Friend[]}) =
                     ? <SelectItem key={friend.id} value={"name="+friend.name+"&url="+encodeURIComponent(friend.timetableUrl)}>{friend.name}</SelectItem> 
                     : <></>)}
             </SelectContent>
-        </Select>    
-    )
-}
+        </Select>
+        "name="+friend.name+"&url="+encodeURIComponent(friend.timetableUrl)*/}
 
 export default SelectFriend;

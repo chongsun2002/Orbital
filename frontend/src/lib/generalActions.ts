@@ -37,11 +37,11 @@ export async function getUserId() {
 }
 
 export async function getUserDetails(id: string) : Promise<UserDetails> {
-    const session = cookies().get('session');
-    if (session === undefined) {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
         redirect('/login');
     }
-    const jwt: string = JSON.parse(session.value).JWT;
     const url = new URL(`api/v1/user/details/${id}`, API_URL);
     const response = await fetch(url.toString(), {
         method: "GET",
@@ -83,12 +83,13 @@ export async function userIsPublic(id: string) {
 }
 
 export async function updateUserDetails(data: UpdateUserDetails) {
-    const session = cookies().get('session')
-    if (session === undefined) {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
         redirect('/login');
     }
-    const jwt: string = JSON.parse(session.value).JWT;
     const url = new URL(`api/v1/user/update/`, API_URL);
+    console.log("reached")
     const response = await fetch(url.toString(), {
         method: "PUT",
         headers: {
@@ -104,4 +105,5 @@ export async function updateUserDetails(data: UpdateUserDetails) {
     if (!response.ok) {
         throw new Error(response.status + responseBody.error)
     }
+    return responseBody;
 }
