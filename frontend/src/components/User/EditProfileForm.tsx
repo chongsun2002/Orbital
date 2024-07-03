@@ -67,7 +67,7 @@ const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
 
             toast({
                 variant: "success",
-                title: "Successfully Created!",
+                title: "Successfully Saved!",
                 description: "You will be redirected home soon.",
             })
             router.push('/')
