@@ -30,7 +30,14 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
     for (const [moduleCode, selectedClasses] of Object.entries(lessons)) {
         moduleCodesSet.add(moduleCode);
         let lessonData = await getCourseData(moduleCode);
-        console.log(lessonData);
+        lessonData.semesterData = lessonData.semesterData.map((semester: any) => ({
+            ...semester,
+            timetable: semester.timetable.map((lesson: any) => ({
+                ...lesson,
+                title: lessonData.title,
+                description: lessonData.description,
+            }))
+        }));
         lessonData = lessonData.semesterData;
         if (lessonData.length === 1) {
             lessonData = lessonData[0].timetable;

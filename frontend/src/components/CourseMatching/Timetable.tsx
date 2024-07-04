@@ -7,7 +7,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LuTrash2 } from "react-icons/lu";
 import { deleteNUSModsURL, resetTimetable } from "@/lib/courseActions";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 type TimetableProps = {
@@ -30,8 +30,8 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
     const currentUserName = session ? JSON.parse(session).name : "";
 
     return (
-        <div className="mb-10 mt-[30px] sm:mx-[80px]">
-            <div className="flex flex-row flex-wrap">
+        <div className="mb-10 mt-[30px] sm:mx-[20px] lg:mx-[80px]">
+            <div className="flex flex-row flex-wrap mx-[20px] sm:mx-0">
                 {lessons.map((lessonsForPerson, personIndex) => {
                     const name = lessonsForPerson.name;
                     const badgeStyle = currentUserName === name ? { padding: '0.625rem' } : { paddingRight: '0' };
@@ -54,7 +54,7 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                 await resetTimetable();
                 redirect("/course_matching");
             }} className="mt-2">
-                <Button variant="destructive" className="h-6 w-auto px-2 py-1 flex items-center justify-center">
+                <Button variant="destructive" className="h-6 w-auto px-2 py-1 flex items-center justify-center mx-[20px] sm:mx-0">
                     <div className="flex flex-row items-center">
                         <div>Reset Timetable</div>
                         <LuTrash2 className="w-5 h-4 ml-2" />

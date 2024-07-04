@@ -29,7 +29,7 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
     }
     const NUSModsURLs: {name: string, url: string}[] = getNUSModsURLs();
     return(
-        <div className='flex flex-col justify-left gap-[30px] sm:mx-[80px] mt-[56px]'>
+        <div className='flex flex-col justify-left gap-[30px] mx-[20px] lg:mx-[80px] mt-[56px]'>
             <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px]"> 
                 Course Matching
             </div>
