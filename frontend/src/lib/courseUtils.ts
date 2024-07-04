@@ -29,7 +29,9 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
     const moduleCodesSet: Set<string> = new Set();
     for (const [moduleCode, selectedClasses] of Object.entries(lessons)) {
         moduleCodesSet.add(moduleCode);
-        let lessonData = (await getCourseData(moduleCode)).semesterData;
+        let lessonData = await getCourseData(moduleCode);
+        console.log(lessonData);
+        lessonData = lessonData.semesterData;
         if (lessonData.length === 1) {
             lessonData = lessonData[0].timetable;
         } else if (lessonData.length === 2) {

@@ -18,13 +18,21 @@ const SelectFriend = ({ onChange, friends, NUSModsURLs }: { onChange: (value: st
     const nusModsNamesSet = new Set(NUSModsURLs.map(item => item.name));
 
     return(
-        <Command className='bg-gray-100'>
-            <CommandInput placeholder="Type a command or search..."/>
+        <Command className='bg-gray-100 rounded-lg'>
+            <CommandInput placeholder="Search for a friend..."/>
             <CommandList>
-                <CommandEmpty>No results found. Your friend may not have added their NUSMods URL!</CommandEmpty>
+                <CommandEmpty>No results found. Your friend may not have added their NUSMods URL to their profile!</CommandEmpty>
                 <CommandGroup heading="Suggestions">
                     {friends
-                        .map((friend) => friend.timetableUrl && !nusModsNamesSet.has(friend.name) ? <CommandItem key={friend.id} value={JSON.stringify({name: friend.name, url: friend.timetableUrl})} onSelect={onChange}>{friend.name}</CommandItem> : null)}
+                        .map((friend) => friend.timetableUrl && !nusModsNamesSet.has(friend.name) 
+                            ? <CommandItem 
+                                key={friend.id}
+                                value={JSON.stringify({name: friend.name, url: friend.timetableUrl})}
+                                onSelect={onChange}
+                                className="hover:bg-blue-100"
+                                >{friend.name}</CommandItem> 
+                            : null
+                        )}
                 </CommandGroup>
             </CommandList>
         </Command>

@@ -1,4 +1,14 @@
 import { TimetableLesson } from "@/lib/types/courseTypes";
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 type TimetableCellProps = {
     startIndex: number;
@@ -11,19 +21,33 @@ const TimetableCell: React.FC<TimetableCellProps> = ({startIndex, endIndex, less
 
     return (
         <div
-            className="flex flex-col rounded-sm"
+            className="flex flex-col justify-center h-full rounded-sm"
             style={{
                 gridColumnStart: startIndex + 2,
                 gridColumnEnd: endIndex + 2,
-                margin: '1.5px',
+                margin: '2px',
                 backgroundColor: color,
             }}
         >
-            <div className="p-1">
-                <h1 className='text-xs font-semibold'>{lesson.moduleCode}</h1>
-                <div className='text-xs'>{lesson.lessonType}</div>
-                <div className='text-xs'>{lesson.venue || "E-Learn"}</div>
-            </div>
+            <Dialog>
+                <DialogTrigger>
+                    <Button  className="p-1 text-black flex flex-col items-start h-full bg-inherit hover:bg-inherit hover:opacity-60">
+                        <h1 className='text-xs font-semibold overflow-hidden'>{lesson.moduleCode}</h1>
+                        <div className='text-xs overflow-hidden'>{lesson.lessonType}</div>
+                        <div className='text-xs overflow-hidden'>{lesson.venue || "E-Learn"}</div>
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {lesson.moduleCode}
+                        </DialogTitle>
+                        <DialogDescription>
+
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

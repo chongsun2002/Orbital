@@ -7,16 +7,16 @@ interface Props {
     image?: string
 }
 
-const ProfileDisplay = ({ className, name, image=''}: Props) => {
+const NavProfileDisplay = ({ className, name, image=''}: Props) => {
     return (
         <div className={cn('flex justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
             <Avatar className="size-12">
                 <AvatarImage src={ image } />
                 <AvatarFallback>{ name[0] }</AvatarFallback> 
             </Avatar>
-            <div className='ml-[10px] font-sans'>{ name }</div>
+            <div className='ml-[10px] font-sans hidden sm:block'>{ name }</div>
         </div>
     )
 }
 
-export default ProfileDisplay
+export default NavProfileDisplay

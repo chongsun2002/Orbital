@@ -30,11 +30,12 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
     const currentUserName = session ? JSON.parse(session).name : "";
 
     return (
-        <div className="mb-10 mx-[80px] mt-[30px]">
+        <div className="mb-10 mt-[30px] sm:mx-[80px]">
             <div className="flex flex-row flex-wrap">
                 {lessons.map((lessonsForPerson, personIndex) => {
                     const name = lessonsForPerson.name;
-                    return (<Badge key={personIndex} className="mr-2 bg-gray-300" variant="outline">
+                    const badgeStyle = currentUserName === name ? { padding: '0.625rem' } : { paddingRight: '0' };
+                    return (<Badge key={personIndex} className="mr-2 h-6 bg-gray-300 flex flex-row justify-between" style={badgeStyle} variant="outline">
                         {name}
                         {currentUserName !== name ? (<form action={async () => {
                             "use server"
@@ -52,10 +53,10 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                 return (
                     <div key={dayIndex.toString()} className="mb-2">
                         <div className="text-2xl font-bold text-center">{day}</div>
-                        <div className="grid bg-gray-100" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
+                        <div className="grid bg-gray-100 rounded-t-md" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
                             {Array.from({ length: 13 }).map((_, index) => (
-                                <div key={index} className="h-10 flex items-center">
-                                {index === 0 ? '' : index < 3 ? `0${8 + index - 1}00` : `${8 + index - 1}00`}
+                                <div key={index} className="h-10 flex items-center text-xs sm:text-md">
+                                    {index === 0 ? '' : index < 3 ? `0${8 + index - 1}00` : `${8 + index - 1}00`}
                                 </div>
                             ))}
                         </div>
@@ -63,6 +64,8 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                             lessons.map((lessonsForPerson, personIndex) => {
                                 return (
                                     <TimetableRow 
+                                        isLast={personIndex===lessons.length-1}
+                                        isEven={personIndex%2===0}
                                         isFirst={personIndex===0}
                                         key={dayIndex.toString()+personIndex.toString()}
                                         name={lessonsForPerson.name} 
