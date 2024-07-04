@@ -62,6 +62,10 @@ export async function deleteNUSModsURL(name: string) {
     }
 }
 
+export async function resetTimetable() {
+    cookies().set('NUSModsURLs', JSON.stringify([]));
+}
+
 export async function getCourseData(moduleCode: string) {
     const url = new URL(`${acadYear}/modules/${moduleCode}.json`, NUSMODS_URL);
     const response: Response = await fetch(url.toString(), {

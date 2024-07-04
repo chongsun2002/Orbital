@@ -6,7 +6,7 @@ import { TimetableLesson } from "@/lib/types/courseTypes";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LuTrash2 } from "react-icons/lu";
-import { deleteNUSModsURL } from "@/lib/courseActions";
+import { deleteNUSModsURL, resetTimetable } from "@/lib/courseActions";
 import { redirect, useRouter } from "next/navigation";
 import { cookies } from "next/headers";
 
@@ -42,13 +42,25 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                             await deleteNUSModsURL(name);
                             redirect("/course_matching");
                         }}>
-                            <Button variant="destructive" className="h-6 w-auto px-2 py-1 ml-4 flex items-center justify-center">
-                                <LuTrash2 className="w-5 h-4" />
+                            <Button variant="destructive" className="h-6 w-auto px-1 py-1 ml-5 flex items-center justify-center rounded-l-none rounded-r-full">
+                                <LuTrash2 className="w-6 h-4" />
                             </Button>
                         </form>) : null}
                     </Badge>)
                 })}
             </div>
+            <form action={async () => {
+                "use server"
+                await resetTimetable();
+                redirect("/course_matching");
+            }} className="mt-2">
+                <Button variant="destructive" className="h-6 w-auto px-2 py-1 flex items-center justify-center">
+                    <div className="flex flex-row items-center">
+                        <div>Reset Timetable</div>
+                        <LuTrash2 className="w-5 h-4 ml-2" />
+                    </div>
+                </Button>
+            </form>
             {daysShortform.map((day, dayIndex) => {
                 return (
                     <div key={dayIndex.toString()} className="mb-2">
