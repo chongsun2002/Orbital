@@ -6,7 +6,7 @@ import { TimetableLesson } from "@/lib/types/courseTypes";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LuTrash2 } from "react-icons/lu";
-import { deleteNUSModsURL, resetTimetable } from "@/lib/courseActions";
+import { deleteNUSModsURL, getColorAssignments, resetTimetable, setColorAssignments } from "@/lib/courseActions";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
@@ -15,17 +15,16 @@ type TimetableProps = {
 }
 
 const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetableProps) => {
-    const lessons: { name: string, lessonsByDay: Record<DaysOfWeek, TimetableLesson[]> }[] = [];
-    const moduleCodes: Set<string> = new Set();
-    await Promise.all(NUSModsURLs.map(async urlNamePair => {
-        const lessonsAndModuleCodes: { lessonsByDay: Record<DaysOfWeek, TimetableLesson[]>, moduleCodes: Set<string> } = await NUSModsURLToLessonDays(urlNamePair.url);
-        lessonsAndModuleCodes.moduleCodes.forEach(moduleCodes.add, moduleCodes);
-        lessons.push({
+    const timetableColorAssignments = await getColorAssignments();
+    const assignments = timetableColorAssignments.colorAssignments;
+    const promises = NUSModsURLs.map(async (urlNamePair) => {
+        const lessonsAndModuleCodes = await NUSModsURLToLessonDays(urlNamePair.url);
+        return {
             name: urlNamePair.name,
             lessonsByDay: lessonsAndModuleCodes.lessonsByDay,
-        })
-    }))
-    const moduleCodesColors = assignColorsToModules(moduleCodes);
+        };
+    });
+    const lessons: { name: string, lessonsByDay: Record<DaysOfWeek, TimetableLesson[]> }[] = await Promise.all(promises);
     const session = cookies().get('session')?.value;
     const currentUserName = session ? JSON.parse(session).name : "";
 
@@ -82,7 +81,7 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                                         key={dayIndex.toString()+personIndex.toString()}
                                         name={lessonsForPerson.name} 
                                         lessons={lessonsForPerson.lessonsByDay[daysMapping[day]]}
-                                        moduleColorAssignments={moduleCodesColors}
+                                        moduleColorAssignments={assignments}
                                     />
                                 )
                             })

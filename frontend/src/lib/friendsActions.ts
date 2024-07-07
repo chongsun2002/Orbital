@@ -137,3 +137,7 @@ export async function acceptFriendRequest(id: string) {
         throw new Error(response.status + responseBody.error);
     }
 }
+
+export async function removeFriend() {
+    
+}

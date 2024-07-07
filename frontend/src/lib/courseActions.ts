@@ -1,3 +1,5 @@
+"use server"
+
 import { NUSMODS_URL } from "./utils";
 import { acadYear } from "./constants/courseConstants";
 import { cookies } from "next/headers";
@@ -31,7 +33,7 @@ export async function addNUSModsURLToCookies({ name, url } : {name: string, url:
     }
 }
 
-export function getNUSModsURLs(): {name: string, url: string}[] {
+export async function getNUSModsURLs(): Promise<{name: string, url: string}[]> {
     const cookie = cookies().get('NUSModsURLs');
     if (cookie) {
         try {
@@ -64,6 +66,49 @@ export async function deleteNUSModsURL(name: string) {
 
 export async function resetTimetable() {
     cookies().set('NUSModsURLs', JSON.stringify([]));
+}
+
+export async function getModuleCodes(): Promise<Set<string>> {
+    const cookie = cookies().get('moduleCodes');
+    if (cookie) {
+        try {
+            const parsedModuleCodes: string[] = JSON.parse(cookie.value);
+            return new Set(parsedModuleCodes);
+        } catch (error) {
+            console.error('Error parsing module codes from cookies:', error);
+        }
+    }
+    return new Set();
+}
+
+export async function getColorAssignments(): Promise<{ currentColorIndex: number, colorAssignments: Record<string, string> }> {
+    const cookie = cookies().get('timetableColorAssignments');
+    if (cookie) {
+        try {
+            const timetableColorAssignments = JSON.parse(cookie.value);
+            return {
+                currentColorIndex: timetableColorAssignments.currentColorIndex,
+                colorAssignments: timetableColorAssignments.colorAssignments,
+            };
+        } catch (error) {
+            console.error('Error parsing color data from cookies:', error);
+        }
+    }
+    return { currentColorIndex: 0, colorAssignments: {} };
+}
+
+export async function setColorAssignments(currentColorIndex: number, colorAssignments: Record<string, string>): Promise<void> {
+    const timetableColorAssignments = {
+        currentColorIndex,
+        colorAssignments,
+    };
+    
+    cookies().set('timetableColorAssignments', JSON.stringify(timetableColorAssignments), {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        path: '/',
+    });
 }
 
 export async function getCourseData(moduleCode: string) {

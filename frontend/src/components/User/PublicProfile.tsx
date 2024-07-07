@@ -26,11 +26,11 @@ const PublicProfile = async ({isFriends, id, user}: {isFriends: Boolean, id: str
                 }
                 {    
                     isFriends
-                        ? <div>
+                        ? <div>Not friends</div>
+                        : (<div className="flex flex-row gap-5">
                             <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={false}/>
                             <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={true}/>
-                          </div>
-                        : <div/>
+                          </div>)
                 }
             </div>      
         </div>
