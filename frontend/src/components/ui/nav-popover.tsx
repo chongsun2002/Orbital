@@ -25,7 +25,7 @@ const NavPopover = () => {
             <PopoverTrigger>
                 <LuMenu />
             </PopoverTrigger>
-            <PopoverContent className="w-screen bg-gradient-to-b from-blue-100 to-blue-200 mt-10 rounded-none">
+            <PopoverContent className="w-screen bg-gradient-to-b from-blue-100 to-blue-200 mt-9 rounded-none">
                 <button className="flex flex-col w-full" onClick={handleButtonClick}>
                     <Separator className=""/>
                     <Link href='/course_matching'>Course Matching</Link>

@@ -4,8 +4,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { UserDetails, getUserDetails } from "@/lib/generalActions";
 import { sendFriendRequest } from "@/lib/friendsActions";
 import SendFriendRequestButton from "../ui/SendFriendReqButton";
+import RemoveFriendButton from "../Friends/RemoveFriendButton";
+import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
+import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";
 
-const PublicProfile = async ({isFriends, id, user}: {isFriends: Boolean, id: string, user: UserDetails}) => {
+const PublicProfile = ({isFriends, hasRequested, id, user}: {isFriends: Boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
     return (
         <div className='grid grid-cols-[1fr_3fr] justify-center mt-[56px]'>
             <div className='col-start-1 col-span-1 row-auto justify-self-center'>
@@ -26,11 +29,10 @@ const PublicProfile = async ({isFriends, id, user}: {isFriends: Boolean, id: str
                 }
                 {    
                     isFriends
-                        ? <div>Not friends</div>
-                        : (<div className="flex flex-row gap-5">
-                            <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={false}/>
-                            <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={true}/>
-                          </div>)
+                        ? <RemoveFriendButton friendId={id} friendName={user.name}/>
+                        : hasRequested
+                        ? <UnsendFriendRequestButton recipientId={id}/>
+                        : <SendFriendRequestButtonGroup id={id}/>
                 }
             </div>      
         </div>
