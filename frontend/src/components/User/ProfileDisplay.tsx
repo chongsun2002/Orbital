@@ -1,19 +1,19 @@
-import { FC } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 interface Props {
-    name: string
-    image: string //assume link for now
+    className? : string,
+    name: string,
+    image?: string
 }
 
-const ProfileDisplay: FC<Props> = ({ name,  image='', ...props }) => {
+const ProfileDisplay = ({ className, name, image=''}: Props) => {
     return (
-        <div className='flex justify-left items-center w-full'>
-            <Avatar>
+        <div className={cn('flex justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
+            <Avatar className="size-12">
                 <AvatarImage src={ image } />
                 <AvatarFallback>{ name[0] }</AvatarFallback> 
             </Avatar>
-
             <div className='ml-[10px] font-sans'>{ name }</div>
         </div>
     )

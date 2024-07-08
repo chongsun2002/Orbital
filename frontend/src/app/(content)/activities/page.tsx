@@ -5,11 +5,11 @@ import ActivitiesSearch from "@/components/Activities/ActivitiesSearch"
 import ActivitiesList from "@/components/Activities/ActivitiesList"
 import ActivitiesPagination from "@/components/Activities/ActivitiesPagination"
 import { ActivitiesListProps } from "@/components/Activities/ActivitiesList"
-import { getActivities } from "@/lib/activityActions"
+import { countActivities, getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
 import { Logo } from "@/components/ui/logo"
 
-const activities = async ({
+const Page = async ({
     searchParams,
 }: {
     searchParams?: {
@@ -25,32 +25,47 @@ const activities = async ({
     const date: string = searchParams?.date || '';
     const location: string = searchParams?.location || '';
     const category: string = searchParams?.category || '';
-    let activitiesData: ActivitiesListProps | undefined;
 
-    try {
-        activitiesData = await getActivities(query, currentPage, category, date, location);
-    } catch (error) {
+    let activitiesData: ActivitiesListProps | undefined;
+    let totalPages: number | undefined;
+
+    const [activitiesResult, pagesResult] = await Promise.allSettled([
+        getActivities(query, currentPage, category, date, location),
+        countActivities()
+    ])
+
+    if (activitiesResult.status === 'fulfilled') {
+        activitiesData = activitiesResult.value;
+    } else {
+        console.error(`There was an error getting the activities: ${activitiesResult.reason}`);
         activitiesData = undefined;
+    }
+    
+    if (pagesResult.status === 'fulfilled') {
+        totalPages = Math.ceil(pagesResult.value.activityCount / 9);
+    } else {
+        console.error(`There was an error getting the total pages: ${pagesResult.reason}`);
+        totalPages = 1;
     }
 
     if (!activitiesData) {
         return (
-            <div>
-                <div className='flex flex-row justify-between mx-[80px] my-14'>
+            <div className="overflow-y-auto">
+                <div className='flex flex-row justify-between mx-[80px] mb-5 mt-10'>
                     <h1 className="text-4xl font-bold">Explore Activities</h1>
-                    <Button>
-                        <Link href="/activities/create">
-                            <div className='flex flex-row content-center'>
-                                <h2>Create Activity</h2>
-                                <LuPlus className="mx-1 my-0.5"/>
-                            </div>
-                        </Link>
-                    </Button>
+                    <Button className="px-0 py-0">
+                    <Link href="/activities/create">
+                        <div className='flex flex-row content-center mx-4 my-2'>
+                            <h2>Create Activity</h2>
+                            <LuPlus className="mx-1 my-0.5"/>
+                        </div>
+                    </Link>
+                </Button>
                 </div>
 
                 <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
                     <Logo/>
-                    <h2>Could not load activitie. Try again later.</h2>
+                    <h2>Could not load activities. Try again later.</h2>
                     <Button>
                         <Link href="/">Return Home</Link>
                     </Button>
@@ -60,12 +75,12 @@ const activities = async ({
     }
 
     return (
-        <div>
-            <div className='flex flex-row justify-between mx-[80px] my-14'>
+        <div className="overflow-y-auto">
+            <div className='flex flex-row justify-between mb-5 mt-10 mx-[20px] sm:mx-[80px]'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
-                <Button>
+                <Button className="px-0 py-0">
                     <Link href="/activities/create">
-                        <div className='flex flex-row content-center'>
+                        <div className='flex flex-row content-center mx-1 my-2 sm:mx-4'>
                             <h2>Create Activity</h2>
                             <LuPlus className="mx-1 my-0.5"/>
                         </div>
@@ -79,9 +94,9 @@ const activities = async ({
 
             <ActivitiesList activities={activitiesData.activities}></ActivitiesList>
 
-            <ActivitiesPagination totalPages={3}></ActivitiesPagination>
+            <ActivitiesPagination totalPages={totalPages}></ActivitiesPagination>
         </div>
     )
 }
 
-export default activities
+export default Page;
