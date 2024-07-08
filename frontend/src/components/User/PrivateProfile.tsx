@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { sendFriendRequest } from "@/lib/friendsActions";
 import SendFriendRequestButton from "../ui/SendFriendReqButton";
 
-const PrivateProfile = async ({id, user}: {id: string, user: UserDetails}) => {
+const PrivateProfile = ({id, user}: {id: string, user: UserDetails}) => {
     const s3Url = 'https://adventus-orbital.s3.ap-southeast-1.amazonaws.com/user-images/';
     return (
         <div className='grid grid-cols-[1fr_3fr] justify-center mt-[56px]'>
