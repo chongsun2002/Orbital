@@ -2,11 +2,11 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { UserDetails, getUserDetails } from "@/lib/generalActions";
-import { Button } from "../ui/button";
-import { sendFriendRequest } from "@/lib/friendsActions";
-import SendFriendRequestButton from "../ui/SendFriendReqButton";
+import RemoveFriendButton from "../Friends/RemoveFriendButton";
+import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
+import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";
 
-const PrivateProfile = ({id, user}: {id: string, user: UserDetails}) => {
+const PrivateProfile = ({id, user, isFriends, hasRequested }: {isFriends: boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
     const s3Url = 'https://adventus-orbital.s3.ap-southeast-1.amazonaws.com/user-images/';
     return (
         <div className='grid grid-cols-[1fr_3fr] justify-center mt-[56px]'>
@@ -17,8 +17,13 @@ const PrivateProfile = ({id, user}: {id: string, user: UserDetails}) => {
             </div>
             <div className='col-start-2 col-span-1 row-auto w-2/3 justify-self-center flex flex-col gap-[12px]'>
                 <div className='font-sans text-[40px]'>{user.name}</div>
-                <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={false}/>
-                <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={true}/>
+                {    
+                    isFriends
+                        ? <RemoveFriendButton friendId={id} friendName={user.name}/>
+                        : hasRequested
+                        ? <UnsendFriendRequestButton recipientId={id}/>
+                        : <SendFriendRequestButtonGroup id={id}/>
+                }
             </div>      
         </div>
     )

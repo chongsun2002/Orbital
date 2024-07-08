@@ -16,6 +16,8 @@ friendsRouter.route("/check").get(passport.authenticate('jwt', {session: false})
 friendsRouter.route("/all").get(passport.authenticate('jwt', {session: false}), FriendsController.apiGetFriends);
 friendsRouter.route("/outgoing").get(passport.authenticate('jwt', {session: false}), FriendsController.apiGetPendingOutgoing);
 friendsRouter.route("/incoming").get(passport.authenticate('jwt', {session: false}), FriendsController.apiGetPendingIncoming);
+friendsRouter.route("/unsend").post(passport.authenticate('jwt', {session: false}), FriendsController.apiUnsendFriendRequest);
+friendsRouter.route("/checkhasrequested/:id").get(passport.authenticate('jwt', {session: false}), FriendsController.apiCheckHasRequested);
 friendsRouter.route("/remove").delete(passport.authenticate('jwt', {session: false}), FriendsController.apiRemoveFriend);
 
 export default friendsRouter;

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ImageUploader from "@/components/ui/ImageUploader";
 import ProfileDisplay from "@/components/User/ProfileDisplay";
-import { Friend, getFriends, isFriend } from "@/lib/friendsActions";
+import { checkHasRequested, Friend, getFriends, isFriend } from "@/lib/friendsActions";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import ImageForm from "@/components/ui/ImageForm"
@@ -43,25 +43,47 @@ const Page = async ({params}: {params: {id: string}}) => {
     //} catch (error) {
     //    console.error(error);
     //}
-    const id: string | undefined = await getUserId();
-    if (id === undefined) {
-        redirect('/login');
+    let id: string | undefined;
+    try {
+        id = await getUserId();
+        if (id === undefined) {
+            redirect('/login');
+        }
+    } catch (error) {
+        console.error(`error getting id ${error}`)
     }
-    const user: UserDetails | null = await getUserDetails(params.id);
-    if (user === null) {
+    let user: UserDetails | null = null;
+    try {
+        user = await getUserDetails(params.id);
+        if (user === null) {
+            return (
+                <div>404 User not found</div>
+            )
+        }
+    } catch (error) {
+        console.error(`error getting user details ${error}`)
+    }
+
+    if (!id || !user) {
         return (
-            <div>404 User not found</div>
-        )
+            <div>Error loading user data.</div>
+        );
     }
-    const isFriends: Boolean = await isFriend(params.id);
-    const isPublic: Boolean = await userIsPublic(params.id);
+
+
+    const isFriends: boolean = await isFriend(params.id);
+    let hasRequested: boolean = false;
+    if (!isFriends) {
+        hasRequested = (await checkHasRequested(params.id)).hasRequested;
+    }
+    const isPublic: boolean = await userIsPublic(params.id);
     return (
         <div className='flex flex-col'>
             { id === params.id
                 ? <OwnProfile user={user}/>
                 : isPublic || isFriends
-                    ? <PublicProfile isFriends={isFriends} id={params.id} user={user}/>
-                    : <PrivateProfile id={params.id} user={user} />
+                    ? <PublicProfile isFriends={isFriends} hasRequested={hasRequested} id={params.id} user={user}/>
+                    : <PrivateProfile isFriends={isFriends} hasRequested={hasRequested} id={params.id} user={user} />
             }
         </div>
     );

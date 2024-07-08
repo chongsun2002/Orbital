@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: { name?: st
             {<CourseMatching friends={friends}/>}
             <Timetable NUSModsURLs={[
                 {name: me.name, url: me.timetableUrl ?? ""}
-            ].concat(getNUSModsURLs())}/>
+            ].concat(await getNUSModsURLs())}/>
         </div>
     );
 }

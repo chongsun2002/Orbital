@@ -41,7 +41,7 @@ export async function getFriendsTimetable(): Promise<(String | undefined)[]> {
     return friends.map((friend) => friend.timetableUrl);
 }
 
-export async function isFriend(id: string): Promise<Boolean> {
+export async function isFriend(id: string): Promise<boolean> {
     const session = cookies().get('session')?.value;
     const jwt = session ? JSON.parse(session).JWT : undefined;
     if (jwt === undefined) {
@@ -136,4 +136,79 @@ export async function acceptFriendRequest(id: string) {
     if (!response.ok) {
         throw new Error(response.status + responseBody.error);
     }
+}
+
+export async function removeFriend(friendId: string ) {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const url = new URL('api/v1/friends/remove', API_URL);
+    const response = await fetch(url.toString(), {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt,
+        },
+        cache: 'no-cache',
+        body: JSON.stringify({friendId: friendId})
+    });
+    if(!response){
+        throw new Error("Unexpected error occured");
+    }
+    const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error);
+    }
+}
+
+export async function unsendFriendRequest(recipientId: string) {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const url = new URL('api/v1/friends/unsend', API_URL);
+    const response = await fetch(url.toString(), {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt,
+        },
+        cache: 'no-cache',
+        body: JSON.stringify({recipientId: recipientId})
+    });
+    if(!response){
+        throw new Error("Unexpected error occured");
+    }
+    const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error);
+    }
+}
+
+export async function checkHasRequested(recipientId: string): Promise<{ hasRequested: boolean }> {
+    const session = cookies().get('session')?.value;
+    const jwt = session ? JSON.parse(session).JWT : undefined;
+    if (jwt === undefined) {
+        redirect('/login');
+    }
+    const url = new URL(`api/v1/friends/checkhasrequested/${recipientId}`, API_URL);
+    const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt,
+        },
+        cache: 'no-cache',
+    });
+    if(!response){
+        throw new Error("Unexpected error occured");
+    }
+    const responseBody = await response.json();
+    if (!response.ok) {
+        throw new Error(response.status + responseBody.error);
+    }
+    return responseBody;
 }

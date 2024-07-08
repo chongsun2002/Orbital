@@ -1,7 +1,7 @@
 "use client"
 
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { handleGoogle } from '@/lib/authActions'
 import { useToast } from '../ui/use-toast';
@@ -20,7 +20,9 @@ export default function GoogleButton() {
     )
     */
     const { toast } = useToast();
+    const [scriptLoaded, setScriptLoaded] = useState(false);
     const router = useRouter();
+    
 
     async function googleSignin(response: any) {
         try {
@@ -52,11 +54,11 @@ export default function GoogleButton() {
                 google.accounts.id.prompt(); // also display the One Tap dialog
             } 
         }, 1);
-    }, []);
+    }, [scriptLoaded]);
     
     return (
         <div>
-            <Script src="https://accounts.google.com/gsi/client" async></Script>
+            <Script src="https://accounts.google.com/gsi/client" async onLoad={() => setScriptLoaded(true)}></Script>
             <div id='buttonDiv' className='font-sans'/>
         </div>
     ) 
