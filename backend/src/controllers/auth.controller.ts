@@ -3,6 +3,7 @@ import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
+import bcrypt from "bcrypt";
 
 /**
  * To improve on: ensure that emails are nus emails only.
@@ -77,6 +78,7 @@ export default class AuthController {
         const name: string = req.body.name;
         const email: string = req.body.email;
         const password: string = req.body.password;
+        const saltRounds = 10;
         /* 
         const confirmedPassword: string = req.body.confirmedPassword; // Can potentially be removed
         if (confirmedPassword !== password) {
@@ -85,7 +87,15 @@ export default class AuthController {
         }
         */
         try {
-            const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
+            const user: User = await AuthDAO.createUser({name: name, email: email});
+            bcrypt.hash(password, saltRounds, (err, hash) => {
+                if (err) {
+                    console.error(`Unexpected error hashing password ${err}`);
+                    res.status(500).json({error: err.message});
+                    return;
+                }
+                AuthDAO.addPassword(email, hash);
+            });
             const token = createJWT(user);
             res.status(200).json({user: this.sanitizeUser(user), token: token});
             return;
@@ -134,6 +144,19 @@ export default class AuthController {
             return;
         } catch (error) {
             console.error(`Unexpected error signing in with Google ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiMigratePasswords: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await AuthDAO.migratePasswords();
+            console.log("Password migration completed");
+            res.status(200).json("Password migration completed");
+            return;
+        } catch (error) {
+            console.error(`Unexpected error migrating passwords ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }

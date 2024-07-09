@@ -1,6 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../../api/index.js";
 import type { User } from "@prisma/client"
+import bcrypt from "bcrypt";
 
 interface Credentials {
     email: string;
@@ -27,9 +28,18 @@ export default class AuthDAO {
         const user: User = await prisma.user.findUniqueOrThrow({
             where: {
                 email: credentials.email,
-                password: credentials.password,
             }
         });
+        if (!user.password) {
+            throw new Error("User has no password. User may be linked with Google");
+        }
+        const match: boolean = await bcrypt.compare(credentials.password, user.password);
+        if (!match) {
+            throw new PrismaClientKnownRequestError("Incorrect password", {
+                code: "P2025",
+                clientVersion: '' 
+            });
+        }
         return user;
     }
     
@@ -46,6 +56,18 @@ export default class AuthDAO {
             googleId: credentials.googleId,
             image: credentials.image
         }});
+        return user;
+    }
+
+    static async addPassword(email: string, password: string) : Promise<User> {
+        const user: User = await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                password: password
+            }
+        });
         return user;
     }
     
@@ -102,5 +124,27 @@ export default class AuthDAO {
             }
         });
         return user2;
+    }
+
+    static async migratePasswords() {
+        const users: User[] = await prisma.user.findMany();
+        const saltRounds = 10;
+        for (const user of users) {
+            if (user.password && !user.password?.startsWith('$2b$')) {
+                bcrypt.hash(user.password, saltRounds, (err, hash) => {
+                    if (err) {
+                        throw err;
+                    }
+                    prisma.user.update({
+                        where: {
+                            id: user.id
+                        },
+                        data: {
+                            password: hash
+                        }
+                    }).then(() => console.log(`Password for user ${user.id} has been hashed`));
+                });
+            }
+        };
     }
 };

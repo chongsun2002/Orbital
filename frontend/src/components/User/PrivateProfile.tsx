@@ -6,7 +6,7 @@ import RemoveFriendButton from "../Friends/RemoveFriendButton";
 import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
 import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";
 
-const PrivateProfile = async ({id, user, isFriends, hasRequested }: {isFriends: boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
+const PrivateProfile = ({id, user, isFriends, hasRequested }: {isFriends: boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
     const s3Url = 'https://adventus-orbital.s3.ap-southeast-1.amazonaws.com/user-images/';
     return (
         <div className='grid grid-cols-[1fr_3fr] justify-center mt-[56px]'>
