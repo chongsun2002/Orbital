@@ -148,17 +148,4 @@ export default class AuthController {
             return;
         }
     }
-
-    static apiMigratePasswords: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await AuthDAO.migratePasswords();
-            console.log("Password migration completed");
-            res.status(200).json("Password migration completed");
-            return;
-        } catch (error) {
-            console.error(`Unexpected error migrating passwords ${error}`);
-            res.status(500).json({error: (error as Error).message});
-            return;
-        }
-    }
 }

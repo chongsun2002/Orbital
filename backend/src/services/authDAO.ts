@@ -33,7 +33,7 @@ export default class AuthDAO {
         if (!user.password) {
             throw new Error("User has no password. User may be linked with Google");
         }
-        const match: boolean = await bcrypt.compare(credentials.password, user.password);
+        const match: boolean = await bcrypt.compare(credentials.password, user.password.toString());
         if (!match) {
             throw new PrismaClientKnownRequestError("Incorrect password", {
                 code: "P2025",
@@ -52,7 +52,7 @@ export default class AuthDAO {
         const user: User = await prisma.user.create({data: {
             name: credentials.name,
             email: credentials.email,
-            password: credentials.password,
+            password: credentials.password ? Buffer.from(credentials.password) : undefined,
             googleId: credentials.googleId,
             image: credentials.image
         }});
@@ -65,7 +65,7 @@ export default class AuthDAO {
                 email: email
             },
             data: {
-                password: password
+                password: Buffer.from(password)
             }
         });
         return user;
@@ -125,26 +125,4 @@ export default class AuthDAO {
         });
         return user2;
     }
-
-    static async migratePasswords() {
-        const users: User[] = await prisma.user.findMany();
-        const saltRounds = 10;
-        for (const user of users) {
-            if (user.password && !user.password?.startsWith('$2b$')) {
-                bcrypt.hash(user.password, saltRounds, (err, hash) => {
-                    if (err) {
-                        throw err;
-                    }
-                    prisma.user.update({
-                        where: {
-                            id: user.id
-                        },
-                        data: {
-                            password: hash
-                        }
-                    }).then(() => console.log(`Password for user ${user.id} has been hashed`));
-                });
-            }
-        };
-    }
-};
+}
