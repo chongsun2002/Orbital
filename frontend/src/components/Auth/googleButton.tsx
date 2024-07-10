@@ -2,7 +2,6 @@
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import { handleGoogle } from '@/lib/authActions'
 import { useToast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
@@ -51,7 +50,6 @@ export default function GoogleButton() {
                         { theme: "outline", size: "large", width: 400 }  // customization attributes
                     );
                 }
-                google.accounts.id.prompt(); // also display the One Tap dialog
             } 
         }, 1);
     }, [scriptLoaded]);

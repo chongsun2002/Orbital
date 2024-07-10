@@ -12,7 +12,7 @@ export async function createSession(user: User) {
         JWT: user.token
     }), {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         expires: expires,
         sameSite: 'lax',
         path: '/',

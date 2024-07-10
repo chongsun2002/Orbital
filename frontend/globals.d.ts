@@ -9,3 +9,13 @@ interface Window {
         };
     };
 }
+
+declare namespace Cypress {
+    interface Chainable<Subject = any> {
+      loginByGoogleApi(): Chainable<any>;
+      login(): Chainable<any>;
+    }
+    interface JQuery{
+        body: any
+    }
+}
