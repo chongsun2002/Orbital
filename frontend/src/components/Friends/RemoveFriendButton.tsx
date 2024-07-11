@@ -29,6 +29,7 @@ const RemoveFriendButton: React.FC<RemoveFriendButtonProps> = ( { friendId, frie
                 }, 1500)
             } catch (error) {
                 console.error(`Error Removing Friend, ${error}`);
+                setRemoving("");
             }
         }}>
             <Button variant={removing === "removed" ? "success" : "destructive"} type="submit">

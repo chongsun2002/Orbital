@@ -4,26 +4,43 @@ import { useState } from "react"
 import { Button } from "./button"
 import { acceptFriendRequest } from "@/lib/friendsActions"
 import { useToast } from "./use-toast"
+import { LuCheck } from "react-icons/lu"
+import { Spinner } from "./spinner"
 
 const AcceptFriendButton = ({id}: {id: string}) => {
-    const [success, setSuccess] = useState(false);
+    const [accepting, setAccepting] = useState("");
     const { toast } = useToast();
 
-    async function onClick() {
-        try {
-            await acceptFriendRequest(id);
-            setSuccess(true);
-        } catch (error) {
-            console.error((error as Error).message);
-            return toast({
-                title: "Uh oh! Something went wrong.",
-                description: (error as Error).message
-            });
-        }
-    }
-
-    return success ? <div>success!</div>
-                   : <Button type='button' onClick={onClick}>Accept</Button>
+    return (
+        <form action={async () => {
+            setAccepting("accepting")
+            try {
+                await acceptFriendRequest(id);
+                setAccepting("accepted");
+            } catch (error) {
+                console.error((error as Error).message);
+                setAccepting("accept");
+                return toast({
+                    title: "Uh oh! Something went wrong.",
+                    description: (error as Error).message
+                });
+            }
+        }}>
+            <Button variant={accepting === "accepted" ? "success" : "default"} type="submit">
+                {accepting === "accepted" 
+                ? (<div className="flex flex-row items-center">
+                    <div>Accepted!</div>
+                    <LuCheck className="ml-1" />
+                </div>) 
+                : accepting === "accepting"
+                ? (<div className="flex flex-row">
+                    <Spinner/>
+                    <div>Accepting...</div>
+                </div>)
+                : "Accept"}
+            </Button>
+        </form>
+    )
 }
 
 export default AcceptFriendButton;
