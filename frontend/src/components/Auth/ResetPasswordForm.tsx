@@ -15,25 +15,25 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import Divider from "../ui/divider"
-import GoogleButton from "./googleButton"
-import { login } from "../../lib/authActions"
+import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
+import React from 'react'
+import { resetPassword } from "@/lib/authActions"
+import { cookies } from "next/headers"
 
 const formSchema = z.object({
-    email: z.string().min(1, 'Required').email('Invalid email'),
     password: z.string().min(1, 'Required').min(8, 'Password must have at least 8 characters'),
-})
+    verifyPassword: z.string().min(1, 'Required')
+}).refine(schema => schema.password == schema.verifyPassword, { message: 'Passwords do not match', path: ['verifyPassword'] })
 
-const LoginForm = () => {
+const ResetPasswordForm: React.FC = () => {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: '',
-            password: ''
+            password: '',
+            verifyPassword: ''
         }
     })
 
@@ -41,13 +41,14 @@ const LoginForm = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
-            const responseCode: number = await login(values);
+            const responseCode: number = await resetPassword(values.password);
             switch(responseCode) {
                 case 401:
-                    setError('password', { type: "401", message: "Incorrect email or password." });
+                    setError('password', { type: "401", message: "You are not authorized to make this password reset." });
                     break;
                 case 200:
-                    router.push('/');
+                    router.push('/login');
+                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
                     break;
                 default:
                     setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
@@ -62,47 +63,37 @@ const LoginForm = () => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full items-center gap-[12px]">
-                <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px]">Login with your email</div>
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem className="w-full">
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input className="w-full" placeholder="Your email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <div className="text-black font-sans text-center text-[24px]/[36px] font-[600] tracking-[-.24px] mb-10">Reset Password</div>
                 <FormField
                     control={form.control}
                     name="password"
                     render={({ field }) => (
                         <FormItem className="w-full">
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>New Password</FormLabel>
                             <FormControl>
-                                <Input type="password" className="w-full" placeholder="Your password" {...field} />
+                                <Input type="password" className="w-full" placeholder="Enter a new password" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full">Sign in with email</Button>
+                <FormField
+                    control={form.control}
+                    name="verifyPassword"
+                    render={({ field }) => (
+                        <FormItem className="w-full">
+                            <FormLabel>Confirm New Password</FormLabel>
+                            <FormControl>
+                                <Input type="password" className="w-full" placeholder="Confirm new password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" className="w-full">Reset Password</Button>
             </form>
-            <Divider message='or continue with' />
-            <GoogleButton />
-            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400] mt-[20px]'>
-                If you don&apos;t have an account, 
-                <Link href='/signup' className='text-black'> sign up here.</Link>
-            </div>
-            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400] mt-[20px]'>
-                <Link href='/forget_password' className='text-black'>Forgot Password?</Link>
-            </div>
-            
         </Form>
     )
 }
 
-export default LoginForm
+export default ResetPasswordForm

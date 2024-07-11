@@ -70,6 +70,16 @@ export default class AuthDAO {
         });
         return user;
     }
+
+    static async changePassword(userId: string, newPassword: string) : Promise<void> {
+        const user: User = await prisma.user.update({
+            where: {
+                id: userId
+            }, data: {
+                password: Buffer.from(newPassword)
+            }
+        })
+    }
     
     static async getUser(id: string) : Promise<User | null> {
         const user: User | null = await prisma.user.findUnique({

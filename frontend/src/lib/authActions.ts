@@ -1,4 +1,5 @@
 "use server"
+import { cookies } from "next/headers";
 import { createSession } from "./session";
 import { API_URL } from "./utils";
 import { OAuth2Client } from 'google-auth-library';
@@ -127,4 +128,40 @@ export async function handleGoogle(response: any) {
     } catch (error) {
         throw new Error((error as Error).message);
     } 
+}
+
+export async function forgetPassword(email: string) {
+    const url = new URL('api/v1/auth/forgetpassword', API_URL);
+    const response: Response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: email
+        }),
+        cache: 'no-cache'
+    });
+    return response.status;
+}
+
+export async function resetPassword(newPassword: string) {
+    const jwt = cookies().get('tempsession')?.value;
+    console.log(jwt)
+    const url = new URL(`api/v1/auth/resetpassword`, API_URL)
+    const response: Response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': jwt || ""
+        },
+        body: JSON.stringify({
+            password: newPassword
+        }),
+        cache: 'no-cache'
+    });
+    if (response.status === 200) {
+        cookies().set('tempsession', '', { maxAge: 0 })
+    }
+    return response.status;
 }
