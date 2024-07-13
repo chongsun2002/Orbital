@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 import { ExtractJwt, Strategy } from "passport-jwt"
 import AuthDAO from "../services/authDAO.js";
@@ -40,6 +39,17 @@ export const createJWT = (user: User): string => {
     };
     const signedJWT = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: JWTDuration, algorithm: "RS256"});
     return "Bearer " + signedJWT;
+}
+
+export const createResetPasswordJWT = (user: User): string => {
+    const id = user.id;
+    const JWTDuration = '10m';
+    const payload = {
+        sub: id,
+        iat: Date.now(),
+    };
+    const signedJWT = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: JWTDuration, algorithm: "RS256"});
+    return signedJWT;
 }
 
 export const passportConfig = (passport: any) => {

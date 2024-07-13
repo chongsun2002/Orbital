@@ -3,9 +3,10 @@ import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
-import { addNUSModsURLToCookies, getNUSModsURLs } from "@/lib/courseActions"
+import { addNUSModsURLToCookies, getColorAssignments, getNUSModsURLs, setColorAssignments } from "@/lib/courseActions"
+import { assignColorsToModules, parseNUSModsURL } from "@/lib/courseUtils"
 
-const CourseMatching = ({friends}: {friends: Friend[]}) => {
+const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLoggedIn: boolean}) => {
     // const router = useRouter();
     // const pathname = usePathname();
 
@@ -21,15 +22,27 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
     const onChange = async (value: string) => {
         "use server"
         try {
-            const selectedFriend: {name: string, url: string} = JSON.parse(value);
+            const selectedFriend: {name: string, url: string, isFriend: boolean,}  = { ...JSON.parse(value), isFriend: true };
             addNUSModsURLToCookies(selectedFriend);
+            const courses = parseNUSModsURL(selectedFriend.url);
+            const courseColorAssignment = await getColorAssignments();
+            let currIndex = courseColorAssignment.currentColorIndex;
+            const colorAssignment = courseColorAssignment.colorAssignments;
+            for (const course in courses) {
+                if (colorAssignment[course] === undefined) {
+                    const color = assignColorsToModules(currIndex);
+                    currIndex = color.newIndex;
+                    colorAssignment[course] = color.assignedColor;
+                }
+            }
+            await setColorAssignments(currIndex,colorAssignment);
         } catch (error) {
             console.error("Failed to add friend to timetable.");
         }
     }
-    const NUSModsURLs: {name: string, url: string}[] = getNUSModsURLs();
+    const NUSModsURLs: {name: string, url: string}[] = await getNUSModsURLs();
     return(
-        <div className='flex flex-col justify-left gap-[30px] mx-[80px] mt-[56px]'>
+        <div className='flex flex-col justify-left gap-[30px] mx-[20px] lg:mx-[80px] mt-[56px]'>
             <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px]"> 
                 Course Matching
             </div>
@@ -43,7 +56,7 @@ const CourseMatching = ({friends}: {friends: Friend[]}) => {
                 <CourseCard />
             </div> */}
 
-            <SelectFriend onChange={onChange} friends={friends} NUSModsURLs={NUSModsURLs}/>
+            {isLoggedIn && <SelectFriend onChange={onChange} friends={friends} NUSModsURLs={NUSModsURLs}/>}
             {/* {isPending && <div>Loading...</div>} */}
             {/*<LinkAdder />*/}
 

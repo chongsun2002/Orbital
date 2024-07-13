@@ -15,5 +15,5 @@ export const daysMapping: Record<string, DaysOfWeek> = {
 };
 
 export type DaysOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
-export const acadYear = "2023-2024";
-export const currentSemester = 2;
+export const acadYear = "2024-2025";
+export const currentSemester = 1;

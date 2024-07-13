@@ -23,7 +23,7 @@ const Page = async ({
         )
     }
     return (
-        <div>
+        <div className="mx-[10px] sm:mx-[80px]">
             <FriendsSearch></FriendsSearch>
             <SearchedUsersList users={users}></SearchedUsersList>
         </div>

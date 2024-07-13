@@ -185,6 +185,39 @@ export default class FriendsDAO {
     }
 
     /**
+     * This function removes a pending friend request.
+     * @param requesterId The first user's id
+     * @param recipientId The second user's id
+     */
+    static async unsendFriendRequest(requestorId: string, recipientId: string) {
+        await prisma.friendRequest.delete({
+            where: {
+                user1Id_user2Id: {
+                    user1Id: requestorId,
+                    user2Id: recipientId
+                }
+            }
+        });
+    }
+
+    /**
+     * This function removes a pending friend request.
+     * @param requesterId The first user's id
+     * @param recipientId The second user's id
+     */
+    static async checkHasRequested(requestorId: string, recipientId: string) {
+        const friendRequest = await prisma.friendRequest.findUnique({
+            where: {
+              user1Id_user2Id: {
+                user1Id: requestorId,
+                user2Id: recipientId
+              }
+            }
+        });
+        return !!friendRequest;
+    }
+
+    /**
      * This function removes two users as friends. 
      * @param userId The first user's id
      * @param friendId The second user's id 

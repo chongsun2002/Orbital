@@ -25,3 +25,60 @@ Once you've installed postgreSQL, boot up pgAdmin and sign in to your account. T
 2. In the terminal, under directory `Adventus/frontend`, run `npm run dev`. Take note of the address shown (for us, it's "http://localhost:3000")
 3. In your browser of choice, type in "localhost:3000/" (or the address you were given) in your address bar and enter. 
 4. You should see the homepage of our app Adventus!
+
+## Backend routes
+Here we list all the backend API routes and what they expect.
+
+Note that routes marked with an * expect a user's JWT in the 'Authorization' header.
+
+### Authentication
+Routes in this section all begin with ```/api/v1/auth```
+1. POST /login
+   - This route allows a user to login and returns a JWT upon successful authentication.
+   - Expects the following Request Body parameters:
+     - email: The user's email
+     - password: The user's password
+   - Responses
+     - Status 200 OK
+       - ```json
+         {
+            "user": {
+               "name": "...",
+               "image": "..."
+            },
+            "token": "Bearer ..."
+         }
+         ```
+      - Status 401 Unauthorized
+        - Occurs when user supplies invalid credentials
+        - ```json
+          {
+             "error": "..."
+          }
+          ```
+2. POST /signup
+   - This route allows a user to signup for an account.
+   - Expects the following Request Body parameters:
+     - name: The user's name
+     - email: The user's email
+     - password: The user's password
+   - Responses
+     - Status 200 OK
+       - ```json
+         {
+            "user": {
+               "name": "...",
+               "image": "..."
+            },
+            "token": "Bearer ..."
+         }
+         ```
+      - Status 400 Bad Request
+        - Occurs when user supplies duplicate credentials (their email has already been used to sign up for an account)
+        - ```json
+          {
+             "error": "..."
+          }
+          ```
+### Activities
+### WIP

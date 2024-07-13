@@ -22,7 +22,7 @@ const FriendsSearch: React.FC = () => {
     }, 300);
 
     return (
-        <div className="flex items-center space-x-2 mx-[80px] my-[20px]">
+        <div className="flex items-center space-x-2 my-[20px]">
             <Label htmlFor="search">
                 <div className="flex flex-row">
                     Search
@@ -32,7 +32,7 @@ const FriendsSearch: React.FC = () => {
             <Input type="search" placeholder="Search For User"
                 onChange={(e) => handleSearch(e.target.value)} id="search"
                 defaultValue={searchParams.get('query')?.toString()}/>
-    </div>
+        </div>
     )
 }
 

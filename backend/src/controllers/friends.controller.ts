@@ -28,6 +28,41 @@ export default class FriendsController {
         }
     }
 
+    static apiUnsendFriendRequest: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const requestor: Express.User | undefined = req.user;
+        if (!requestor) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        const recipientId : string = req.body.recipientId;
+        try {
+            const unsend = await FriendsDAO.unsendFriendRequest(requestor.id, recipientId);
+            res.status(200).json({removedFriendRequest: unsend});
+        } catch (error) {
+            console.error(`Unexpected error deleting friend request ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiCheckHasRequested: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const requestor: Express.User | undefined = req.user;
+        const rawId: any = req.params.id;
+        const recipientId: string = typeof rawId === 'string' ? rawId : "";
+        if (!requestor) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        try {
+            const hasRequested = await FriendsDAO.checkHasRequested(requestor.id, recipientId);
+            res.status(200).json({hasRequested: hasRequested});
+        } catch (error) {
+            console.error(`Unexpected error checking friend request ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
     /**
      * This function allows a user to accept a pending friend request. 
      * Expected fields in the request body:

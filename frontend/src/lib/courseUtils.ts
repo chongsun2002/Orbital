@@ -29,7 +29,16 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
     const moduleCodesSet: Set<string> = new Set();
     for (const [moduleCode, selectedClasses] of Object.entries(lessons)) {
         moduleCodesSet.add(moduleCode);
-        let lessonData = (await getCourseData(moduleCode)).semesterData;
+        let lessonData = await getCourseData(moduleCode);
+        lessonData.semesterData = lessonData.semesterData.map((semester: any) => ({
+            ...semester,
+            timetable: semester.timetable.map((lesson: any) => ({
+                ...lesson,
+                title: lessonData.title,
+                description: lessonData.description,
+            }))
+        }));
+        lessonData = lessonData.semesterData;
         if (lessonData.length === 1) {
             lessonData = lessonData[0].timetable;
         } else if (lessonData.length === 2) {
@@ -55,8 +64,9 @@ export const NUSModsURLToLessonDays = async (NUSModsURL: string): Promise<{ less
     }
 }
 
-const generateColorPalette = (): string[] => {
-    return [
+
+export const assignColorsToModules = (currentColorIndex: number): { assignedColor: string, newIndex: number } => {
+    const colors = [
         '#1F77B4', // Dark Blue
         '#FF7F0E', // Dark Orange
         '#2CA02C', // Dark Green
@@ -66,14 +76,6 @@ const generateColorPalette = (): string[] => {
         '#E377C2', // Pink
         '#7F7F7F', // Dark Gray
     ];
+    const chosenColor = colors[currentColorIndex];
+    return { assignedColor: chosenColor, newIndex: (currentColorIndex + 1) % colors.length}
 };
-
-export const assignColorsToModules = (moduleCodes: Set<string>): Record<string, string> => {
-    const colors = generateColorPalette();
-    const moduleColors: Record<string, string> = {};
-    Array.from(moduleCodes).forEach((moduleCode, index) => {
-        moduleColors[moduleCode] = colors[index % colors.length];
-    });
-    return moduleColors;
-}
-

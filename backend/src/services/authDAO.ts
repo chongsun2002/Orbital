@@ -1,6 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../../api/index.js";
 import type { User } from "@prisma/client"
+import bcrypt from "bcrypt";
 
 interface Credentials {
     email: string;
@@ -27,9 +28,18 @@ export default class AuthDAO {
         const user: User = await prisma.user.findUniqueOrThrow({
             where: {
                 email: credentials.email,
-                password: credentials.password,
             }
         });
+        if (!user.password) {
+            throw new Error("User has no password. User may be linked with Google");
+        }
+        const match: boolean = await bcrypt.compare(credentials.password, user.password.toString());
+        if (!match) {
+            throw new PrismaClientKnownRequestError("Incorrect password", {
+                code: "P2025",
+                clientVersion: '' 
+            });
+        }
         return user;
     }
     
@@ -42,11 +52,33 @@ export default class AuthDAO {
         const user: User = await prisma.user.create({data: {
             name: credentials.name,
             email: credentials.email,
-            password: credentials.password,
+            password: credentials.password ? Buffer.from(credentials.password) : undefined,
             googleId: credentials.googleId,
             image: credentials.image
         }});
         return user;
+    }
+
+    static async addPassword(email: string, password: string) : Promise<User> {
+        const user: User = await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                password: Buffer.from(password)
+            }
+        });
+        return user;
+    }
+
+    static async changePassword(userId: string, newPassword: string) : Promise<void> {
+        const user: User = await prisma.user.update({
+            where: {
+                id: userId
+            }, data: {
+                password: Buffer.from(newPassword)
+            }
+        })
     }
     
     static async getUser(id: string) : Promise<User | null> {
@@ -103,4 +135,4 @@ export default class AuthDAO {
         });
         return user2;
     }
-};
+}

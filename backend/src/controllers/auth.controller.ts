@@ -3,6 +3,8 @@ import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
+import bcrypt from "bcrypt";
+import { sendPasswordResetEmail } from "../configs/sendEmail.js";
 
 /**
  * To improve on: ensure that emails are nus emails only.
@@ -77,6 +79,7 @@ export default class AuthController {
         const name: string = req.body.name;
         const email: string = req.body.email;
         const password: string = req.body.password;
+        const saltRounds = 10;
         /* 
         const confirmedPassword: string = req.body.confirmedPassword; // Can potentially be removed
         if (confirmedPassword !== password) {
@@ -85,7 +88,15 @@ export default class AuthController {
         }
         */
         try {
-            const user: User = await AuthDAO.createUser({name: name, email: email, password: password});
+            const user: User = await AuthDAO.createUser({name: name, email: email});
+            bcrypt.hash(password, saltRounds, (err, hash) => {
+                if (err) {
+                    console.error(`Unexpected error hashing password ${err}`);
+                    res.status(500).json({error: err.message});
+                    return;
+                }
+                AuthDAO.addPassword(email, hash);
+            });
             const token = createJWT(user);
             res.status(200).json({user: this.sanitizeUser(user), token: token});
             return;
@@ -134,6 +145,50 @@ export default class AuthController {
             return;
         } catch (error) {
             console.error(`Unexpected error signing in with Google ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiResetPassword: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        const password: string = req.body.password;
+        const saltRounds = 10;
+        try {
+            bcrypt.hash(password, saltRounds, (err, hash) => {
+                if (err) {
+                    console.error(`Unexpected error hashing password ${err}`);
+                    res.status(500).json({error: err.message});
+                    return;
+                }
+                AuthDAO.changePassword(user.id, hash);
+            });
+            res.status(200).json({message: "Password changed successfully"});
+            return;
+        } catch (error) {
+            console.error(`Unexpected Error changing password ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiForgetPassword: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const email: string = req.body.email;
+        try {
+            const user: User | null = await AuthDAO.getUserByEmail(email);
+            if (!user) {
+                res.status(404).json({error: "Could not find user with the given email!"});
+                return;
+            }
+            sendPasswordResetEmail(email, user);
+            res.status(200).json({ message: "Link Sent Successfully"});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error sending password reset link ${error}`);
             res.status(500).json({error: (error as Error).message});
             return;
         }

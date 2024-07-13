@@ -63,7 +63,7 @@ const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
                 bio: values.bio,
                 birthday: new Date(values.birthday ?? ''),
                 timetableUrl: values.timetableUrl
-            });    
+            });
 
             toast({
                 variant: "success",

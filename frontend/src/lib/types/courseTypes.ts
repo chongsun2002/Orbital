@@ -1,5 +1,7 @@
 export type Lesson = {
     classNo: string;
+    title: string;
+    description: string;
     startTime: string;
     endTime: string;
     weeks: number[];
@@ -21,6 +23,8 @@ export type ParsedResult = {
 export type RawLesson = Readonly<{
     classNo: string;
     day: string;
+    title: string;
+    description: string;
     endTime: string;
     lessonType: string;
     startTime: string;
