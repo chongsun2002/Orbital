@@ -21,7 +21,7 @@ import NavPopover from "./nav-popover";
 const NavbarNew = ({user}: {user: {id: string, name: string, image: string}}) => {
     return (
         <NavigationMenu className='w-full'>
-            <div className='w-full'>
+            <div className='w-full relative'>
                 <NavigationMenuList className='flex flex-row flex-nowrap w-full items-center justify-between px-[20px] py-8 shadow-lg bg-gradient-to-t
                     from-blue-100 sm:px-[80px]'>
                     <div className="flex gap-3 items-center">
@@ -64,11 +64,11 @@ const NavbarNew = ({user}: {user: {id: string, name: string, image: string}}) =>
                         </Button> 
                     :
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger className='bg-transparent hover:bg-inherit'>
+                        <NavigationMenuTrigger className='bg-transparent hover:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent focus:bg-transparent'>
                             <NavProfileDisplay className='font-semibold text-base' name={user.name} image={user.image} />
                         </NavigationMenuTrigger>
-                        <NavigationMenuContent className="-mt-6">
-                            <ul className="flex flex-col gap-[12px] items-center w-full font-sans">
+                        <NavigationMenuContent className="mt-2 absolute w-[100px] sm:w-full">
+                            <ul className="flex flex-col gap-[12px] items-center w-full font-sans sm:w-[150px]">
                                 <li>
                                     <Link href={'/user/'+user.id} legacyBehavior passHref>
                                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>

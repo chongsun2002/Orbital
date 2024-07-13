@@ -22,7 +22,7 @@ const CourseMatching = async ({friends}: {friends: Friend[]}) => {
     const onChange = async (value: string) => {
         "use server"
         try {
-            const selectedFriend: {name: string, url: string} = JSON.parse(value);
+            const selectedFriend: {name: string, url: string, isFriend: boolean,}  = { ...JSON.parse(value), isFriend: true };
             addNUSModsURLToCookies(selectedFriend);
             const courses = parseNUSModsURL(selectedFriend.url);
             const courseColorAssignment = await getColorAssignments();

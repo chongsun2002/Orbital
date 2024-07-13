@@ -1,4 +1,5 @@
 import CourseMatching from "@/components/CourseMatching/CourseMatchingPage";
+import LinkAdder from "@/components/CourseMatching/LinkAdder";
 import Timetable from "@/components/CourseMatching/Timetable";
 import { getNUSModsURLs } from "@/lib/courseActions";
 import { Friend, getFriends } from "@/lib/friendsActions";
@@ -27,8 +28,9 @@ export default async function Page({ searchParams }: { searchParams: { name?: st
     return (
         <div>
             {<CourseMatching friends={friends}/>}
+            <LinkAdder />
             <Timetable NUSModsURLs={[
-                {name: me.name, url: me.timetableUrl ?? ""}
+                {name: me.name, url: me.timetableUrl ?? "", isFriend: true}
             ].concat(await getNUSModsURLs())}/>
         </div>
     );

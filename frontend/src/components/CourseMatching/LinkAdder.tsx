@@ -1,72 +1,99 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "../ui/data-table";
-import { MoreHorizontal } from "lucide-react"
- 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useToast } from "../ui/use-toast"
+import { addNUSModsURLToCookies } from "@/lib/courseActions"
+import { updateUserTimetableColors } from "@/lib/generalActions"
 
-const dummyLinks: NUSModsLink[] = [{name: "Me", link: "https://nusmods.com/timetable/sem-2/share?CS2030S=LAB:14B,REC:24,LEC:2&CS2040S=REC:04,TUT:52,LEC:2&IS1108=TUT:06,LEC:2&MA1522=TUT:9,LEC:2&ST1131=LEC:1,TUT:5&ST2334=TUT:9,LEC:2&UTW1001O=SEC:1"}]
 
-export type NUSModsLink = {
-    name: string;
-    link: string;
-}
-
-export const columns: ColumnDef<NUSModsLink>[] = [
-    {
-        accessorKey: "name",
-        header: "Name",
-    },
-    {
-        accessorKey: "link",
-        header: "NUSMods Link",
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-          const linkEntry = row.original
-     
-          return (
-            <div >
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                        onClick={() => navigator.clipboard.writeText(linkEntry.link)}
-                        >
-                        Copy payment ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-          )
-        },
-      },
-]
+const formSchema = z.object({
+    name: z.string(),
+    link: z.string().min(1, 'Required').url('Invalid link'),
+});
 
 const LinkAdder = () => {
+    const { toast } = useToast();
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: '',
+        }
+    })
+
+    const { setError } = form;
+
+    async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
+        try {
+            await addNUSModsURLToCookies({
+                name: values.name,
+                url: values.link,
+                isFriend: false,
+            });
+            await updateUserTimetableColors(values.link);
+        }
+        catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request."
+            })
+            setError('link', { type: "other", message: "Oops, something went wrong! Try again later." });
+            console.error(error)
+        }
+    }
+
+
     return (
-        <div className="mx-[80px]">
-            <DataTable columns={columns} data={dummyLinks}></DataTable>
+        <div>
+            <div className="text-black font-sans text-[24px]/[36px] font-[600] tracking-[-.24px] my-4 sm:mx-[80px]">Manual Link Input</div>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-row items-end gap-[12px] sm:mx-[80px]">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem className="w-full">
+                                <FormLabel>Enter your friend's name:</FormLabel>
+                                <FormControl>
+                                    <Input className="w-full" placeholder="Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="link"
+                        render={({ field }) => (
+                            <FormItem className="w-full">
+                                <FormLabel>Enter NUSMods Share URL: </FormLabel>
+                                <FormControl>
+                                    <Input className="w-full" placeholder="NUSMods share URL" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit">Add URL</Button>
+                </form>
+            </Form>
         </div>
+        
     )
 }
 

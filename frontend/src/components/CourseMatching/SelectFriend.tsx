@@ -18,24 +18,27 @@ const SelectFriend = ({ onChange, friends, NUSModsURLs }: { onChange: (value: st
     const nusModsNamesSet = new Set(NUSModsURLs.map(item => item.name));
 
     return(
-        <Command className='bg-gray-100 rounded-lg'>
-            <CommandInput placeholder="Search for a friend..."/>
-            <CommandList>
-                <CommandEmpty>No results found. Your friend may not have added their NUSMods URL to their profile!</CommandEmpty>
-                <CommandGroup heading="Suggestions">
-                    {friends
-                        .map((friend) => friend.timetableUrl && !nusModsNamesSet.has(friend.name) 
-                            ? <CommandItem 
-                                key={friend.id}
-                                value={JSON.stringify({name: friend.name, url: friend.timetableUrl})}
-                                onSelect={onChange}
-                                className="hover:bg-blue-100"
-                                >{friend.name}</CommandItem> 
-                            : null
-                        )}
-                </CommandGroup>
-            </CommandList>
-        </Command>
+        <div>
+            <div className="text-black font-sans text-[24px]/[36px] font-[600] tracking-[-.24px] my-4">Add Friend's Link (Recommended)</div>
+            <Command className='bg-gray-100 rounded-lg'>
+                <CommandInput placeholder="Search for a friend..."/>
+                <CommandList>
+                    <CommandEmpty>No results found. Your friend may not have added their NUSMods URL to their profile!</CommandEmpty>
+                    <CommandGroup heading="Suggestions">
+                        {friends
+                            .map((friend) => friend.timetableUrl && !nusModsNamesSet.has(friend.name) 
+                                ? <CommandItem 
+                                    key={friend.id}
+                                    value={JSON.stringify({name: friend.name, url: friend.timetableUrl})}
+                                    onSelect={onChange}
+                                    className="hover:bg-blue-100"
+                                    >{friend.name}</CommandItem> 
+                                : null
+                            )}
+                    </CommandGroup>
+                </CommandList>
+            </Command>
+        </div>
     )
 }
 

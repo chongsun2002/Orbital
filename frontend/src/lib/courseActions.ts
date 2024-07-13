@@ -4,12 +4,12 @@ import { NUSMODS_URL } from "./utils";
 import { acadYear } from "./constants/courseConstants";
 import { cookies } from "next/headers";
 
-export async function addNUSModsURLToCookies({ name, url } : {name: string, url: string}) {
+export async function addNUSModsURLToCookies({ name, url, isFriend } : {name: string, url: string, isFriend: boolean}) {
     const cookie = cookies().get('NUSModsURLs');
     if (cookie) {
         try {
-            const URLs: {name: string, url: string}[] = JSON.parse(cookie.value);
-            URLs.push({name: name, url: url});
+            const URLs: {name: string, url: string, isFriend: boolean,}[] = JSON.parse(cookie.value);
+            URLs.push({name: name, url: url, isFriend: isFriend});
             cookies().set('NUSModsURLs', JSON.stringify(URLs), {
                 httpOnly: true,
                 secure: true,
@@ -33,11 +33,11 @@ export async function addNUSModsURLToCookies({ name, url } : {name: string, url:
     }
 }
 
-export async function getNUSModsURLs(): Promise<{name: string, url: string}[]> {
+export async function getNUSModsURLs(): Promise<{name: string, url: string, isFriend: boolean}[]> {
     const cookie = cookies().get('NUSModsURLs');
     if (cookie) {
         try {
-            const URLs: {name: string, url: string}[] = JSON.parse(cookie.value);
+            const URLs: {name: string, url: string, isFriend: boolean}[] = JSON.parse(cookie.value);
             return URLs;
         } catch (error) {
             throw new Error("Unable to get URLs from cookie.")
@@ -50,8 +50,31 @@ export async function deleteNUSModsURL(name: string) {
     const cookie = cookies().get('NUSModsURLs');
     if (cookie) {
         try {
-            const URLs: {name: string, url: string}[] = JSON.parse(cookie.value);
+            const URLs: {name: string, url: string, isFriend: boolean}[] = JSON.parse(cookie.value);
             const newURLs = URLs.filter((url) => url.name !== name);
+            cookies().set('NUSModsURLs', JSON.stringify(newURLs), {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'lax',
+                path: '/',
+            })
+        } catch (error) {
+            throw new Error("Unable to get URLs from cookie.")
+        }
+    }
+}
+
+export async function editNUSModsURL(name: string, newURL: string) {
+    const cookie = cookies().get('NUSModsURLs');
+    if (cookie) {
+        try {
+            const URLs: {name: string, url: string, isFriend: boolean}[] = JSON.parse(cookie.value);
+            const newURLs = URLs.map(url => {
+                if (url.name === name) {
+                    url.url = newURL;
+                }
+                return url;
+            })
             cookies().set('NUSModsURLs', JSON.stringify(newURLs), {
                 httpOnly: true,
                 secure: true,
