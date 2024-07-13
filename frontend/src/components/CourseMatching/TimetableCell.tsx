@@ -43,7 +43,7 @@ const TimetableCell: React.FC<TimetableCellProps> = ({startIndex, endIndex, less
             >
                 <Dialog>
                     <DialogTrigger>
-                        <div className="p-1 text-black flex flex-col items-start h-full bg-inherit hover:bg-inherit hover:opacity-60">
+                        <div className="p-1 text-black flex flex-col items-start h-full overflow-hidden bg-inherit hover:bg-inherit hover:opacity-60">
                             <h1 className='text-xs font-semibold overflow-hidden'>{lesson.moduleCode}</h1>
                             <div className='text-xs overflow-hidden'>{lesson.lessonType}</div>
                             <div className='text-xs overflow-hidden'>{lesson.venue || "E-Learn"}</div>

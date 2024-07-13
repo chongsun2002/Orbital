@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { addNUSModsURLToCookies, getColorAssignments, getNUSModsURLs, setColorAssignments } from "@/lib/courseActions"
 import { assignColorsToModules, parseNUSModsURL } from "@/lib/courseUtils"
 
-const CourseMatching = async ({friends}: {friends: Friend[]}) => {
+const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLoggedIn: boolean}) => {
     // const router = useRouter();
     // const pathname = usePathname();
 
@@ -56,7 +56,7 @@ const CourseMatching = async ({friends}: {friends: Friend[]}) => {
                 <CourseCard />
             </div> */}
 
-            <SelectFriend onChange={onChange} friends={friends} NUSModsURLs={NUSModsURLs}/>
+            {isLoggedIn && <SelectFriend onChange={onChange} friends={friends} NUSModsURLs={NUSModsURLs}/>}
             {/* {isPending && <div>Loading...</div>} */}
             {/*<LinkAdder />*/}
 

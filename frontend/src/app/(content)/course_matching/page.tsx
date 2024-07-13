@@ -8,8 +8,8 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
 export default async function Page({ searchParams }: { searchParams: { name?: string, url?: string }}) {
-    let me: UserDetails;
-    let friends: Friend[];
+    let me: UserDetails | null = null;
+    let friends: Friend[] = [];
     try {
         const session = cookies().get('session')?.value;
         const jwt = session ? JSON.parse(session).JWT : undefined;
@@ -17,21 +17,22 @@ export default async function Page({ searchParams }: { searchParams: { name?: st
         if(jwt !== undefined) {
             const decoded = jwtDecode(jwt);
             id = decoded.sub ?? '';
+            me = await getUserDetails(id);
+            friends = await getFriends();
         }
-        me = await getUserDetails(id);
-        friends = await getFriends();
     } catch (error) {
+        console.error(error);
         return <div>{(error as Error).message}</div>
     }
     const url = searchParams.url ? decodeURIComponent(searchParams.url) : "";
 
     return (
         <div>
-            {<CourseMatching friends={friends}/>}
+            {<CourseMatching isLoggedIn={!!me} friends={friends}/>}
             <LinkAdder />
-            <Timetable NUSModsURLs={[
+            <Timetable NUSModsURLs={!!me ? [
                 {name: me.name, url: me.timetableUrl ?? "", isFriend: true}
-            ].concat(await getNUSModsURLs())}/>
+            ].concat(await getNUSModsURLs()) : await getNUSModsURLs()}/>
         </div>
     );
 }
