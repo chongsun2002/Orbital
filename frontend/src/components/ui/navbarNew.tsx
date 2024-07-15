@@ -61,7 +61,7 @@ const NavbarNew = ({user}: {user: {id: string, name: string, image: string}}) =>
                 { user.id === '' 
                     ? <Button className="rounded-3xl" asChild>
                             <Link href="/login" className='font-sans text-[18px] font-[400px] tracking-[-.01em]'>Sign In</Link>
-                        </Button> 
+                         </Button> 
                     :
                     <NavigationMenuItem>
                         <NavigationMenuTrigger className='bg-transparent hover:bg-inherit'>
@@ -70,21 +70,21 @@ const NavbarNew = ({user}: {user: {id: string, name: string, image: string}}) =>
                         <NavigationMenuContent className="-mt-6">
                             <ul className="flex flex-col gap-[12px] items-center w-full font-sans">
                                 <li>
-                                    <Link href={'/user/'+user.id} legacyBehavior passHref>
+                                    <Link id='myProfile' href={'/user/'+user.id} legacyBehavior passHref>
                                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                             My Profile
                                         </NavigationMenuLink>
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href={'/user/'+user.id+'/friends'} legacyBehavior passHref>
+                                    <Link id='myFriends' href={'/user/'+user.id+'/friends'} legacyBehavior passHref>
                                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                             My Friends
                                         </NavigationMenuLink>
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href={'/user/'+user.id+'/activities'} legacyBehavior passHref>
+                                    <Link id='myActivities' href={'/user/'+user.id+'/activities'} legacyBehavior passHref>
                                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                             My Activities
                                         </NavigationMenuLink>

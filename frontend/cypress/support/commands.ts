@@ -88,8 +88,12 @@ Cypress.Commands.add('login', () => {
       failOnStatusCode: false
     });
 
+    cy.intercept('POST', '/login').as('apiLogin');
+
     cy.visit('/login');
     cy.get('input[name="email"]').type('login@gmail.com');
     cy.get('input[name="password"').type('loginTest');
+
     cy.get('button[type="submit"]').click();
+    cy.wait('@apiLogin');
 })

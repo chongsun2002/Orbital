@@ -9,7 +9,7 @@ interface Props {
 
 const NavProfileDisplay = ({ className, name, image=''}: Props) => {
     return (
-        <div className={cn('flex justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
+        <div id='navProfileDisplay' className={cn('flex justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
             <Avatar className="size-12">
                 <AvatarImage src={ image } />
                 <AvatarFallback>{ name[0] }</AvatarFallback> 
