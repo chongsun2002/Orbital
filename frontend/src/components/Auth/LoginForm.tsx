@@ -48,7 +48,6 @@ const LoginForm = () => {
                     break;
                 case 200:
                     router.push('/');
-                    // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
                     break;
                 default:
                     setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
@@ -94,10 +93,14 @@ const LoginForm = () => {
             </form>
             <Divider message='or continue with' />
             <GoogleButton />
-            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400]'>
+            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400] mt-[20px]'>
                 If you don&apos;t have an account, 
                 <Link href='/signup' className='text-black'> sign up here.</Link>
             </div>
+            <div className='text-[#828282] text-center font-sans text-[16px]/[24px] font-[400] mt-[20px]'>
+                <Link href='/forget_password' className='text-black'>Forgot Password?</Link>
+            </div>
+            
         </Form>
     )
 }

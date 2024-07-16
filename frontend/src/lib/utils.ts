@@ -11,4 +11,6 @@ export function cn(...inputs: ClassValue[]) {
 const DEV: string | undefined = process.env.DEVELOPMENT_BACKEND_URL;
 const PROD: string | undefined = process.env.PRODUCTION_BACKEND_URL;
 
+export const NUSMODS_URL: string | undefined = process.env.NUSMODS_API;
+
 export const API_URL: string | undefined = PROD;

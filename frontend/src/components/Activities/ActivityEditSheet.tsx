@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/sheet"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { format, parseISO } from "date-fns"
+import { toZonedTime } from "date-fns-tz"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Textarea } from "../ui/textarea"
@@ -41,6 +42,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Calendar } from "../ui/calendar"
+import { editActivity } from "@/lib/activityActions";
+import { useState, useEffect } from "react"
+import { Spinner } from "../ui/spinner";
+import { LuCheck } from "react-icons/lu";
+import { NumberInput } from "../ui/number-input";
 
 const formSchema = z.object({
     title: z.string().min(1, 'Required'),
@@ -74,14 +80,22 @@ const formSchema = z.object({
 
 const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfParticipants, category, location}: Activity) => {
     const router = useRouter();
+    const [open, setOpen] = useState(false);
+    const [editing, setEditing] = useState("");
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        // This code will run only in the browser
+        setIsMobile(window.screen.width < 640);
+    }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: title ?? '',
             description: description ?? '',
-            startTime: format(startTime, "HH:mm"),
-            endTime: format(endTime, "HH:mm"),
+            startTime: format(toZonedTime(startTime, Intl.DateTimeFormat().resolvedOptions().timeZone), "HH:mm"),
+            endTime: format(toZonedTime(endTime, Intl.DateTimeFormat().resolvedOptions().timeZone), "HH:mm"),
             date: {
                 from: parseISO(startTime),
                 to: parseISO(endTime)
@@ -93,23 +107,37 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
-        
+        setEditing("editing");
+        try {
+            await editActivity(id, values);
+            setEditing("edited");
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setOpen(false);
+            router.refresh();
+        } catch (error) {
+            const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
+            setError('category', formError)
+            console.error(error)
+        } finally {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            setEditing("");
+        }
     }
 
     const { setError } = form;
     return (
-        <Sheet>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-center">
-                    <SheetTrigger asChild>
-                        <Button variant="outline">
-                            <div className="flex flex-row items-center">
-                                <LuPencil className="mr-1"/>
-                                Edit Activity
-                            </div>
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent>
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <Button variant="outline">
+                    <div className="flex flex-row items-center">
+                        <LuPencil className="mr-1"/>
+                        Edit Activity
+                    </div>
+                </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[vw] sm:w-[540px]">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-center">
                         <SheetHeader>
                             <SheetTitle>
 
@@ -135,7 +163,7 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem className="w-full mt-3">
+                                <FormItem className="w-full sm:mt-3">
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
                                         <Textarea className="w-full" placeholder="Description of the activity (optional)" {...field} />
@@ -148,7 +176,7 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                             control={form.control}
                             name='date'
                             render={({ field }) => (
-                                <FormItem className="flex flex-col w-full mt-3">
+                                <FormItem className="flex flex-col w-full mt-1 sm:mt-3">
                                     <FormLabel>Event Duration</FormLabel>
                                     <FormControl>
                                         <Popover>
@@ -175,14 +203,14 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                                             </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
+                                                <Calendar
                                                 initialFocus
                                                 mode="range"
                                                 defaultMonth={field.value?.from}
                                                 selected={field.value}
                                                 onSelect={field.onChange}
-                                                numberOfMonths={2}
-                                            />
+                                                numberOfMonths={isMobile ? 1 : 2}
+                                                />
                                             </PopoverContent>
                                         </Popover>
                                     </FormControl>
@@ -191,7 +219,7 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                                                 )}
                         />
 
-                        <div className='flex flex-row w-full gap-[20px] mt-3'>
+                        <div className='flex flex-row w-full gap-[20px] sm:mt-3'>
                             <FormField
                                 control={form.control}
                                 name="startTime"
@@ -224,16 +252,16 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                             control={form.control}
                             name="numOfParticipants"
                             render={({ field }) => (
-                                <FormItem className="w-full mt-3">
-                                    <FormLabel>Number of Participants {"(Default: 4)"}</FormLabel>
+                                <FormItem className="w-full sm:mt-3">
+                                    <FormLabel>Number of Participants</FormLabel>
                                     <FormControl>
-                                        <Input className="w-full" placeholder="Maximum number of participants" {...field} />
+                                        <NumberInput className="w-full" placeholder="Maximum number of participants" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <div className="flex flex-col w-full gap-3 mt-3">
+                        <div className="flex flex-col w-full gap-0 sm:mt-3 gap-3">
                             <FormField
                                 control={form.control}
                                 name="location"
@@ -254,7 +282,7 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                                             </Select>
                                         <FormMessage />
                                     </FormItem>
-                                    )}
+                                )}
                             />
 
                             <FormField
@@ -277,17 +305,25 @@ const ActivityEditSheet = ({id, title, description, startTime, endTime, numOfPar
                                             </Select>
                                         <FormMessage />
                                     </FormItem>
-                                    )}
+                                )}
                             />
                         </div>
-                        <SheetFooter>
-                            <SheetClose asChild>
-                            <Button type="submit" className="w-full">Save Changes!</Button>
-                            </SheetClose>
-                        </SheetFooter>
-                    </SheetContent>
-                </form>
-            </Form>
+                        <Button variant={editing === "edited" ? "success" : "default"} type="submit" className="mt-3">
+                            {editing === "edited" 
+                            ? (<div className="flex flex-row items-center">
+                                <div>Successfully Changed!</div>
+                                <LuCheck className="ml-1" />
+                            </div>) 
+                            : editing === "editing"
+                            ? (<div className="flex flex-row">
+                                <Spinner/>
+                                <div>Editing...</div>
+                            </div>)
+                            : "Save Changes!"}
+                        </Button>
+                    </form>
+                </Form>
+            </SheetContent>
         </Sheet>
     )
 }

@@ -5,9 +5,10 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface SelectFilterProps {
-    onValueChange: (value: string) => void;
+    urlParamName: string;
     filterName: string
     filterOptions: {
         value: string,
@@ -16,7 +17,21 @@ interface SelectFilterProps {
     className: string;
 }
 
-const SelectFilter: React.FC<SelectFilterProps> = ({onValueChange, filterName, filterOptions, className}: SelectFilterProps) => {
+const SelectFilter: React.FC<SelectFilterProps> = ({urlParamName, filterName, filterOptions, className}: SelectFilterProps) => {
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const { replace, refresh } = useRouter();
+
+    const onValueChange = (value: string) => {
+        const params = new URLSearchParams(searchParams);
+        if (value) {
+            params.set(urlParamName, value);
+        } else {
+            params.delete(urlParamName);
+        }
+        replace(`${pathname}?${params.toString()}`);
+        refresh();
+    }
     return (
         <Select onValueChange={onValueChange}>
             <SelectTrigger className={className}>

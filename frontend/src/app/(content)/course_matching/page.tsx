@@ -1,24 +1,38 @@
-import CourseHeading from "@/components/CourseMatching/CourseHeading"
-import ProfileDisplay from "@/components/User/ProfileDisplay"
-import CourseCard from "@/components/CourseMatching/CourseCard"
+import CourseMatching from "@/components/CourseMatching/CourseMatchingPage";
+import LinkAdder from "@/components/CourseMatching/LinkAdder";
+import Timetable from "@/components/CourseMatching/Timetable";
+import { getNUSModsURLs } from "@/lib/courseActions";
+import { Friend, getFriends } from "@/lib/friendsActions";
+import { getUserDetails, getUserId, UserDetails } from "@/lib/generalActions";
+import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
 
-const courseMatching = () => {
-    return(
+export default async function Page({ searchParams }: { searchParams: { name?: string, url?: string }}) {
+    let me: UserDetails | null = null;
+    let friends: Friend[] = [];
+    try {
+        const session = cookies().get('session')?.value;
+        const jwt = session ? JSON.parse(session).JWT : undefined;
+        let id: string = '';
+        if(jwt !== undefined) {
+            const decoded = jwtDecode(jwt);
+            id = decoded.sub ?? '';
+            me = await getUserDetails(id);
+            friends = await getFriends();
+        }
+    } catch (error) {
+        console.error(error);
+        return <div>{(error as Error).message}</div>
+    }
+    const url = searchParams.url ? decodeURIComponent(searchParams.url) : "";
+
+    return (
         <div>
-            <div className="text-black font-sans text-[64px] font-[700] tracking-[-1.28px] mt-[56px] ml-[80px] mb-[80px]">
-                Course Matching
-            </div>
-            <div className='flex bg-[#DEDEDE] justify-evenly items-center h-[650px]'>
-                <CourseCard>
-                    <CourseHeading>MA1522</CourseHeading>
-                    <ProfileDisplay name='Xan' image='' />
-                </CourseCard>
-                <CourseCard />
-                <CourseCard />
-                <CourseCard />
-            </div>
+            {<CourseMatching isLoggedIn={!!me} friends={friends}/>}
+            <LinkAdder />
+            <Timetable NUSModsURLs={!!me ? [
+                {name: me.name, url: me.timetableUrl ?? "", isFriend: true}
+            ].concat(await getNUSModsURLs()) : await getNUSModsURLs()}/>
         </div>
-    )
+    );
 }
-
-export default courseMatching

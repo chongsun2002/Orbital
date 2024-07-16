@@ -9,7 +9,7 @@ import { countActivities, getActivities } from "@/lib/activityActions"
 import ActivitiesFilter from "@/components/Activities/ActivitiesFilter"
 import { Logo } from "@/components/ui/logo"
 
-const activities = async ({
+const Page = async ({
     searchParams,
 }: {
     searchParams?: {
@@ -50,22 +50,22 @@ const activities = async ({
 
     if (!activitiesData) {
         return (
-            <div>
-                <div className='flex flex-row justify-between mx-[80px] my-14'>
+            <div className="overflow-y-auto">
+                <div className='flex flex-row justify-between mx-[80px] mb-5 mt-10'>
                     <h1 className="text-4xl font-bold">Explore Activities</h1>
-                    <Button>
-                        <Link href="/activities/create">
-                            <div className='flex flex-row content-center'>
-                                <h2>Create Activity</h2>
-                                <LuPlus className="mx-1 my-0.5"/>
-                            </div>
-                        </Link>
-                    </Button>
+                    <Button className="px-0 py-0">
+                    <Link href="/activities/create">
+                        <div className='flex flex-row content-center mx-4 my-2'>
+                            <h2>Create Activity</h2>
+                            <LuPlus className="mx-1 my-0.5"/>
+                        </div>
+                    </Link>
+                </Button>
                 </div>
 
                 <div className='flex flex-col w-full items-center gap-[12px] mt-[60vh]'>
                     <Logo/>
-                    <h2>Could not load activitie. Try again later.</h2>
+                    <h2>Could not load activities. Try again later.</h2>
                     <Button>
                         <Link href="/">Return Home</Link>
                     </Button>
@@ -75,12 +75,12 @@ const activities = async ({
     }
 
     return (
-        <div>
-            <div className='flex flex-row justify-between mx-[80px] my-14'>
+        <div className="overflow-y-auto">
+            <div className='flex flex-row justify-between mb-5 mt-10 mx-[20px] sm:mx-[80px]'>
                 <h1 className="text-4xl font-bold">Explore Activities</h1>
-                <Button>
+                <Button className="px-0 py-0">
                     <Link href="/activities/create">
-                        <div className='flex flex-row content-center'>
+                        <div className='flex flex-row content-center mx-1 my-2 sm:mx-4'>
                             <h2>Create Activity</h2>
                             <LuPlus className="mx-1 my-0.5"/>
                         </div>
@@ -99,4 +99,4 @@ const activities = async ({
     )
 }
 
-export default activities
+export default Page;
