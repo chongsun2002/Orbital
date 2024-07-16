@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../../api/index.js";
 import type { User } from "@prisma/client"
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 interface Credentials {
     email: string;
@@ -60,6 +60,7 @@ export default class AuthDAO {
     }
 
     static async addPassword(email: string, password: string) : Promise<User> {
+        console.log(`Attempting to update password for email: dao ${email}`);
         const user: User = await prisma.user.update({
             where: {
                 email: email

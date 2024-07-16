@@ -3,7 +3,7 @@ import AuthDAO from "../services/authDAO.js";
 import { User } from "@prisma/client";
 import { RequestHandler, Request, Response, NextFunction } from "express";
 import { createJWT } from "../configs/JWTpassport.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { sendPasswordResetEmail } from "../configs/sendEmail.js";
 
 /**
