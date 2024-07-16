@@ -11,16 +11,14 @@ const Page = async ({
     }
 }) => {
     const query: string = searchParams?.query || '';
-    let users: SearchedUserDetails[] | undefined;
+    let users: SearchedUserDetails[] = [];
     try {
-        users = (await getUsers(query)).users;
+        const searchedUsers = (await getUsers(query)).users;
+        if (!!searchedUsers) {
+            users = searchedUsers;
+        }
     } catch (error) {
         console.error(`There was an error getting users ${error}`);
-    }
-    if (users === undefined) {
-        return (
-            <div>Could not find any users.</div>
-        )
     }
     return (
         <div className="mx-[10px] sm:mx-[80px]">

@@ -184,7 +184,7 @@ export default class AuthController {
                 res.status(404).json({error: "Could not find user with the given email!"});
                 return;
             }
-            sendPasswordResetEmail(email, user);
+            await sendPasswordResetEmail(email, user);
             res.status(200).json({ message: "Link Sent Successfully"});
             return;
         } catch (error) {

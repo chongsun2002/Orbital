@@ -8,7 +8,7 @@ import { createResetPasswordJWT } from './JWTpassport.js';
 
 const clientId = process.env.CLIENT_ID ?? "";
 const clientSecret = process.env.CLIENT_SECRET ?? "";
-const redirect_url = "http://localhost:3001/api/v1/auth/oauth2callback"//"https://developers.google.com/oauthplayground";
+const redirect_url = process.env.BACKEND_URL + "api/v1/auth/oauth2callback";//"https://developers.google.com/oauthplayground";
 
 const oAuth2Client = new google.auth.OAuth2(
     clientId,
@@ -80,7 +80,6 @@ export const sendPasswordResetEmail = async (recipientEmail: string, user: User)
         text: `You requested a password reset. Click the link (valid for 10 minutes) to reset your password: ${resetLink}`,
         html: `<p>You requested a password reset. Click the link (valid for 10 minutes) to reset your password:</p><a href="${resetLink}">Reset Password</a>`,
       };
-  
       await transporter.sendMail(mailOptions);
       console.log('Password reset email sent');
     } catch (error) {
