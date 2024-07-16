@@ -58,9 +58,9 @@ export default class AuthController {
                     res.status(500).json({error: (error as Error).message});
                     return;
                 }
-            } else {
-                console.error(`Unexpected Error authenticating User ${error}`);
-                res.status(500).json({error: (error as Error).message});
+            } else if ((error as Error).message === 'No password') {
+                console.error(`User has no password`);
+                res.status(503).json({error: 'User has no password'});
                 return;
             }
         }

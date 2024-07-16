@@ -20,6 +20,7 @@ import Divider from "../ui/divider"
 import GoogleButton from "./googleButton"
 import { login } from "../../lib/authActions"
 import { useRouter } from "next/navigation"
+import { useToast } from "../ui/use-toast"
 
 const formSchema = z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
@@ -38,6 +39,7 @@ const LoginForm = () => {
     })
 
     const { setError } = form;
+    const { toast } = useToast();
 
     async function onSubmit(values: z.infer<typeof formSchema>) : Promise<void> {
         try {
@@ -50,6 +52,13 @@ const LoginForm = () => {
                     router.push('/');
                     // router.refresh(); Test the robustness of redirecting to home. If the login button does not get refreshed, call this.
                     break;
+                case 503:
+                    setError('password', { type: '503', message: `Email isn't registered with an account.`});
+                    toast({
+                        title: 'Email not registered',
+                        description: `You've signed in with this email previously using Google. Either sign in using Google again or click
+                                     the Forgot Password button to set a password for this email.`
+                    }) 
                 default:
                     setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
             }
