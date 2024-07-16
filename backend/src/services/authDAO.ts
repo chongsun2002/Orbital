@@ -31,7 +31,7 @@ export default class AuthDAO {
             }
         });
         if (!user.password) {
-            throw new Error("User has no password. User may be linked with Google");
+            throw new Error("No password");
         }
         const match: boolean = await bcrypt.compare(credentials.password, user.password.toString());
         if (!match) {
