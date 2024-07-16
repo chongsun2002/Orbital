@@ -28,6 +28,9 @@ const formSchema = z.object({
     bio: z.string().optional(),
     birthday: z.string().date().optional(),
     timetableUrl: z.string().optional()
+}).refine(schema => schema.birthday ? new Date(schema.birthday) < new Date() : true, {
+    message: "Birthday cannot be in the future!",
+    path: ['birthday']
 });
 
 interface FormProps {
@@ -68,9 +71,9 @@ const EditProfileForm = ({name, bio, birthday, timetableUrl}: FormProps) => {
             toast({
                 variant: "success",
                 title: "Successfully Saved!",
-                description: "You will be redirected home soon.",
+                // description: "You will be redirected home soon.",
             })
-            router.push('/')
+            // router.push('/')
         } catch (error) {
             const formError = { type: "other", message: "Oops, something went wrong! Try again later." }
             setError('timetableUrl', formError)

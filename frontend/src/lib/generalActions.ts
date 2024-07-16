@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { API_URL } from "./utils";
-import { endSession } from "./session";
+import { createSession, endSession } from "./session";
 import { getColorAssignments, setColorAssignments } from "./courseActions";
 import { assignColorsToModules, parseNUSModsURL } from "./courseUtils";
 
@@ -125,5 +125,11 @@ export async function updateUserDetails(data: UpdateUserDetails) {
     if (!response.ok) {
         throw new Error(response.status + responseBody.error)
     }
+    const oldSession = JSON.parse(cookies().get('session')?.value ?? '');
+    createSession({
+        name: data.name,
+        image: oldSession.image,
+        token: oldSession.JWT, 
+    })
     return responseBody;
 }

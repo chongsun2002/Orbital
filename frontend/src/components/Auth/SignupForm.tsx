@@ -47,7 +47,7 @@ const SignupForm = () => {
             const responseCode: number = await signup(values);
             switch(responseCode) {
                 case 400:
-                    setError('verifyPassword', { type: "400", message: "Email has already been taken." });
+                    setError('email', { type: "400", message: "This account already exists." });
                     break;
                 case 200:
                     router.push('/');
