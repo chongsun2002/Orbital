@@ -9,7 +9,7 @@ describe('Profile', () => {
         const timestamp = Math.floor(Math.random() * Date.now()); 
         const bday = new Date(timestamp).toISOString().substring(0,10);
         cy.get('input[name="name"]').clear().type(name);
-        cy.get('textarea[name="bio"]').type(name);
+        cy.get('textarea[name="bio"]').clear().type(name);
         cy.get('input[name="birthday"]').type(bday);
         cy.get('button[type="submit"]').click();
         cy.wait('@req');

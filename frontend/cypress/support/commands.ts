@@ -97,3 +97,32 @@ Cypress.Commands.add('login', () => {
     cy.get('button[type="submit"]').click();
     cy.wait('@apiLogin');
 })
+
+Cypress.Commands.add('loginWith', (email: string) => {
+    cy.request({
+      method: 'POST', 
+      url: Cypress.env('API_URL') + 'api/v1/auth/signup', 
+      body: {
+        email: email,
+        name: email,
+        password: "loginTest",
+        verifyPassword: "loginTest"
+      },
+      failOnStatusCode: false
+    });
+
+    cy.intercept('POST', '/login').as('apiLogin');
+
+    cy.visit('/login');
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"').type('loginTest');
+
+    cy.get('button[type="submit"]').click();
+    cy.wait('@apiLogin');
+})
+
+Cypress.Commands.add('logout', () => {
+    cy.getCookie('session').should('exist');
+    cy.clearCookie('session');
+    cy.getCookie('session').should('not.exist');
+})

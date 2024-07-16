@@ -14,6 +14,8 @@ declare namespace Cypress {
     interface Chainable<Subject = any> {
       loginByGoogleApi(): Chainable<any>;
       login(): Chainable<any>;
+      loginWith(email: string): Chainable<any>;
+      logout(): Chainable<any>;
     }
     interface JQuery{
         body: any
