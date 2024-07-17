@@ -9,7 +9,12 @@ export default class FriendsDAO {
      * @param isSecret boolean indicating if the friend request is visible or anonymous 
      * @returns the new friend request
      */
-    static async sendFriendRequest(requesterId: string, recipientId: string, isSecret: boolean): Promise<FriendRequest> {
+    static async sendFriendRequest(requesterId: string, recipientId: string, isSecret: boolean): Promise<FriendRequest | void> {
+        const existingRequest: boolean = await this.checkHasRequested(recipientId, requesterId);
+        if (existingRequest) {
+            await this.acceptFriendRequest(recipientId, requesterId); 
+            return;
+        } 
         const friendRequest = await prisma.friendRequest.create({
             data: {
                 user1: {
@@ -20,7 +25,7 @@ export default class FriendsDAO {
                 },
                 isSecret: isSecret
             }
-        })
+        });
         return friendRequest;
     } 
 
@@ -201,7 +206,7 @@ export default class FriendsDAO {
     }
 
     /**
-     * This function removes a pending friend request.
+     * This function checks if a friend request exists.
      * @param requesterId The first user's id
      * @param recipientId The second user's id
      */
