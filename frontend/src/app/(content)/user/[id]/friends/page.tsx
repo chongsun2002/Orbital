@@ -25,7 +25,7 @@ const Page = async ({params}: { params: { id: string }}) => {
                         :   <ProfileListLarge friends={friends} />        
                 }
             </div>
-            <div className="flex flex-col w-full col-start-3 col-span-1">
+            <div className="flex flex-col w-full col-start-3 col-span-1 px-[20px]">
                 <div className='font-sans text-2xl self-start font-semibold my-[20px]'>Incoming friend requests</div>
                 {
                     pending.length === 0

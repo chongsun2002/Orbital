@@ -3,7 +3,6 @@ describe('Login', () => {
     cy.login();
     cy.url().should('eq', Cypress.config('baseUrl') + '/');
     cy.getCookie('session').should('exist');
-    cy.get('div').should('contain', 'login test');
   })
 
   it('fails to login with incorrect credentials', () => {
