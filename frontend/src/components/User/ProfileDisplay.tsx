@@ -9,12 +9,12 @@ interface Props {
 
 const ProfileDisplay = ({ className, name, image=''}: Props) => {
     return (
-        <div className={cn('flex justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
+        <div className={cn('flex flex-initial justify-left items-center max-w-14 sm:max-w-none w-full', className)}>
             <Avatar className="size-12">
                 <AvatarImage src={ image } />
                 <AvatarFallback>{ name[0] }</AvatarFallback> 
             </Avatar>
-            <div className='ml-[10px] font-sans'>{ name }</div>
+            <div className='ml-[10px] truncate font-sans'>{ name }</div>
         </div>
     )
 }

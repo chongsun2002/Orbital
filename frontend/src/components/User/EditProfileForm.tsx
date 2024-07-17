@@ -26,7 +26,7 @@ import { Spinner } from "../ui/spinner"
 const formSchema = z.object({
     name: z.string().min(1, 'Required'),
     bio: z.string().optional(),
-    birthday: z.string().date().optional(),
+    birthday: z.string().optional(),
     timetableUrl: z.string().optional()
 }).refine(schema => schema.birthday ? new Date(schema.birthday) < new Date() : true, {
     message: "Birthday cannot be in the future!",
