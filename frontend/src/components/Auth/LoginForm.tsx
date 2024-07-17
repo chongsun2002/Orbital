@@ -59,6 +59,7 @@ const LoginForm = () => {
                         description: `You've signed in with this email previously using Google. Either sign in using Google again or click
                                      the Forgot Password button to set a password for this email.`
                     }) 
+                    break;
                 default:
                     setError('password', { type: "500", message: "Oops, something went wrong! Try again later." });
             }

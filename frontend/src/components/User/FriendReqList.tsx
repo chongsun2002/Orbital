@@ -16,7 +16,7 @@ const FriendReqList = ({friends}: { friends: Friend[] }) => {
             {friends.map((friend) => {
                 return (
                     <div className='flex flex-row gap-x-10 items-center' key={friend.user1.id}>
-                        <Link href={'/user/'+friend.user1.id}>
+                        <Link className='max-w-full truncate flex-initial' href={'/user/'+friend.user1.id}>
                             <ProfileDisplay name={friend.user1.name} image={friend.user1.image}/>
                         </Link>
                         <AcceptFriendButton id={friend.user1.id}/>

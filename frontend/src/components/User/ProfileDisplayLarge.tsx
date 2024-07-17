@@ -14,7 +14,7 @@ const ProfileDisplayLarge = ({ className, name, image=''}: Props) => {
                 <AvatarImage src={ image } />
                 <AvatarFallback>{ name[0] }</AvatarFallback> 
             </Avatar>
-            <div className='ml-[20px] text-2xl font-sans '>{ name }</div>
+            <div className='ml-[20px] text-2xl font-sans truncate'>{ name }</div>
         </div>
  
     ) 
