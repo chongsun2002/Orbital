@@ -2,7 +2,7 @@ import CourseMatching from "@/components/CourseMatching/CourseMatchingPage";
 import Timetable from "@/components/CourseMatching/Timetable";
 import { getNUSModsURLs } from "@/lib/courseActions";
 import { Friend, getFriends } from "@/lib/friendsActions";
-import { getUserDetails, getUserId, UserDetails } from "@/lib/generalActions";
+import { getUserDetails, UserDetails } from "@/lib/userActions";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 

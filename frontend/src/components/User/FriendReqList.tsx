@@ -1,6 +1,6 @@
 import Link from "next/link"
 import ProfileDisplay from "./ProfileDisplay"
-import AcceptFriendButton from "../ui/AcceptFriendButton"
+import AcceptFriendButton from "../Friends/AcceptFriendButton"
 
 interface Friend {
     user1: {

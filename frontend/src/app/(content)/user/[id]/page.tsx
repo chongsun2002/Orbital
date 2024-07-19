@@ -5,7 +5,8 @@ import { checkHasRequested, Friend, getFriends, isFriend } from "@/lib/friendsAc
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import ImageForm from "@/components/ui/ImageForm"
-import { getUserDetails, getUserId, UserDetails, userIsPublic } from "@/lib/generalActions";
+import { getUserId } from "@/lib/generalActions";
+import { getUserDetails, UserDetails, userIsPublic } from "@/lib/userActions";
 import EditProfileForm from "@/components/User/EditProfileForm";
 import OwnProfile from "@/components/User/OwnProfile";
 import PublicProfile from "@/components/User/PublicProfile";

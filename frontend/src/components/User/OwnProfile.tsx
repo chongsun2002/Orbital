@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { UserDetails, getUserDetails } from "@/lib/generalActions";
+import { UserDetails, getUserDetails } from "@/lib/userActions";
 import EditProfileForm from "./EditProfileForm"
 
 const OwnProfile = async ({user}: {user: UserDetails}) => {

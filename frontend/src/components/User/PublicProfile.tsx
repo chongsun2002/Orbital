@@ -1,9 +1,7 @@
 "use client"
 
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { UserDetails, getUserDetails } from "@/lib/generalActions";
-import { sendFriendRequest } from "@/lib/friendsActions";
-import SendFriendRequestButton from "../ui/SendFriendReqButton";
+import { UserDetails } from "@/lib/userActions";
 import RemoveFriendButton from "../Friends/RemoveFriendButton";
 import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
 import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";

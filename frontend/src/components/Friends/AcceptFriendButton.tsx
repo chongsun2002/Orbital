@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "./button"
+import { Button } from "../ui/button"
 import { acceptFriendRequest } from "@/lib/friendsActions"
-import { useToast } from "./use-toast"
+import { useToast } from "../ui/use-toast"
 
 const AcceptFriendButton = ({id}: {id: string}) => {
     const [success, setSuccess] = useState(false);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SendFriendRequestButton from "../ui/SendFriendReqButton";
+import SendFriendRequestButton from "./SendFriendReqButton";
 
 type SendFriendRequestButtonGroupProps = {
     className?: string;

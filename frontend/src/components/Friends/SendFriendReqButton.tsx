@@ -1,11 +1,11 @@
 "use client"
 
-import { Button } from "./button"
+import { Button } from "@/components/ui/button"
 import { sendFriendRequest } from "@/lib/friendsActions"
-import { useToast } from "./use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { LuCheck } from "react-icons/lu"
-import { Spinner } from "./spinner"
+import { Spinner } from "@/components/ui/spinner"
 import { Dispatch, SetStateAction } from "react"
 
 type SendFriendRequestButtonProps = {
