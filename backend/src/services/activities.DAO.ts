@@ -270,7 +270,7 @@ export default class ActivitiesDAO {
      * @param activityId id of the activity
      * @returns true if the activity is not full, false if it is full 
      */
-    static async getActivityParticipants(activityId: string) : Promise<string[]> {
+    static async getActivityParticipants(activityId: string, getId: boolean) : Promise<string[]> { // if getId is true returns id instead of name
         const activity = await prisma.activity.findUnique({ 
             where: {
                 id: activityId
@@ -278,12 +278,13 @@ export default class ActivitiesDAO {
             select: {
                 participants: {
                     select: {
-                        name: true
+                        name: true,
+                        id: true
                     }
                 }
             }
         })
-        return activity?.participants.map((participant: {name: string}) => participant.name) ?? [];
+        return activity?.participants.map((participant: {name: string, id: string}) => getId ? participant.id : participant.name) ?? [];
     }
 
     /**

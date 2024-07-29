@@ -147,7 +147,6 @@ export async function forgetPassword(email: string) {
 
 export async function resetPassword(newPassword: string) {
     const jwt = cookies().get('tempsession')?.value;
-    console.log(jwt)
     const url = new URL(`api/v1/auth/resetpassword`, API_URL)
     const response: Response = await fetch(url.toString(), {
         method: 'POST',

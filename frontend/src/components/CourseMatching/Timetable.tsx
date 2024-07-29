@@ -1,4 +1,5 @@
-import { NUSModsURLToLessonDays, assignColorsToModules } from "@/lib/courseUtils";
+"use client"
+import { NUSModsURLToLessonDays } from "@/lib/courseUtils";
 import TimetableRow
  from "./TimetableRow";
 import { daysShortform, DaysOfWeek, daysMapping } from "@/lib/constants/courseConstants";
@@ -6,31 +7,53 @@ import { TimetableLesson } from "@/lib/types/courseTypes";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { LuTrash2 } from "react-icons/lu";
-import { deleteNUSModsURL, getColorAssignments, resetTimetable, setColorAssignments } from "@/lib/courseActions";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import {  getColorAssignments, resetTimetable } from "@/lib/courseActions";
 import DeleteTimetableUserButton from "./DeleteTimetableUserButton";
 import EditTimetableUserButton from "./EditTimetableLinkButton";
+import { useEffect, useState } from "react";
+import { updateUserTimetableColors } from "@/lib/generalActions";
 
 type TimetableProps = {
     NUSModsURLs: {name: string, url: string, isFriend: boolean}[];
+    currentUserName?: string;
 }
 
-const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetableProps) => {
-    const timetableColorAssignments = await getColorAssignments();
-    const assignments = timetableColorAssignments.colorAssignments;
-    const promises = NUSModsURLs.map(async (urlNamePair) => {
-        const lessonsAndModuleCodes = await NUSModsURLToLessonDays(urlNamePair.url);
-        return {
-            name: urlNamePair.name,
-            isFriend: urlNamePair.isFriend,
-            lessonsByDay: lessonsAndModuleCodes.lessonsByDay,
+const Timetable: React.FC<TimetableProps> = ({ NUSModsURLs, currentUserName }: TimetableProps) => {
+    const [assignments, setAssignments] = useState<Record<string, string>>({});
+    const [lessons, setLessons] = useState<{ name: string, isFriend: boolean, lessonsByDay: Record<DaysOfWeek, TimetableLesson[]> }[]>([]);
+    
+    useEffect(() => {
+        const fetchColorAssignments = async () => {
+            try {
+                updateUserTimetableColors(NUSModsURLs.filter(url => url.name === currentUserName)[0].url)
+                const timetableColorAssignments = await getColorAssignments();
+                setAssignments(timetableColorAssignments.colorAssignments);
+            } catch (error) {
+                console.error('Error fetching color assignments:', error);
+            }
         };
-    });
-    const lessons: { name: string, isFriend: boolean, lessonsByDay: Record<DaysOfWeek, TimetableLesson[]> }[] = await Promise.all(promises);
-    const session = cookies().get('session')?.value;
-    const currentUserName = session ? JSON.parse(session).name : "";
 
+        fetchColorAssignments();
+    }, []);
+
+    useEffect(() => {
+        const fetchLessons = async () => {
+            const lessonsPromises = NUSModsURLs.map(async (urlNamePair) => {
+                const lessonsAndModuleCodes = await NUSModsURLToLessonDays(urlNamePair.url);
+                return {
+                    name: urlNamePair.name,
+                    isFriend: urlNamePair.isFriend,
+                    lessonsByDay: lessonsAndModuleCodes.lessonsByDay,
+                };
+            });
+
+            const lessonsData = await Promise.all(lessonsPromises);
+            setLessons(lessonsData);
+        };
+
+        fetchLessons();
+    }, [NUSModsURLs]);
+    
     return (
         <div className="mb-10 mt-[30px] sm:mx-[20px] lg:mx-[80px]">
             <div className="flex flex-row flex-wrap gap-4 mx-[20px] sm:mx-0">
@@ -53,11 +76,7 @@ const Timetable: React.FC<TimetableProps> = async ({ NUSModsURLs }: TimetablePro
                     </Badge>)
                 })}
             </div>
-            <form action={async () => {
-                "use server"
-                await resetTimetable();
-                redirect("/course_matching");
-            }} className="mt-4">
+            <form action={resetTimetable} className="mt-4">
                 <Button variant="destructive" className="h-6 w-auto px-2 py-1 flex items-center justify-center mx-[20px] sm:mx-0">
                     <div className="flex flex-row items-center">
                         <div>Reset Timetable</div>

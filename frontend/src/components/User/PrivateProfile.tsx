@@ -5,6 +5,7 @@ import { UserDetails, getUserDetails } from "@/lib/generalActions";
 import RemoveFriendButton from "../Friends/RemoveFriendButton";
 import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
 import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";
+import SendMessage from "../Friends/SendMessage";
 
 const PrivateProfile = ({id, user, isFriends, hasRequested }: {isFriends: boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
     const s3Url = 'https://adventus-orbital.s3.ap-southeast-1.amazonaws.com/user-images/';

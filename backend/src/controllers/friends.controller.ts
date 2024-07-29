@@ -1,5 +1,6 @@
 import FriendsDAO from "../services/friends.DAO.js";
 import { RequestHandler, Request, Response, NextFunction } from "express";
+import UserDAO from "../services/user.DAO.js";
 
 export default class FriendsController {
     /**
@@ -18,6 +19,10 @@ export default class FriendsController {
         const recipientId : string = req.body.recipientId;
         const isSecret : boolean = req.body.isSecret;
         try {
+            if (!isSecret) {
+                const notificationType = "FRIENDREQUEST";
+                await UserDAO.createNotification(recipientId, notificationType, requester.id);
+            }
             const friendRequest = await FriendsDAO.sendFriendRequest(requester.id, recipientId, isSecret);
             res.status(200).json({friendRequest: friendRequest});
             return; 

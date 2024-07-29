@@ -94,4 +94,83 @@ export default class UserController {
             return;
         }
     }
+
+    static apiGetNotifications: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        try {
+            const notifications = await UserDAO.getNotifications(user.id);
+            res.status(200).json(notifications)
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiDeleteNotification: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const notificationIds: string[] = req.body.notifications;
+        const user: Express.User | undefined = req.user;
+        
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+    
+        if (!Array.isArray(notificationIds) || notificationIds.some(id => typeof id !== 'string')) {
+            res.status(400).json({error: "Invalid request format"});
+            return;
+        }
+        try {
+            const notification = await UserDAO.deleteNotifications(notificationIds, user.id);
+            res.status(200).json({deleted: true});
+            return;
+        } catch (error) {
+            console.error(`Unexpected error deleting notification ${error}`);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiViewNotification: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const rawId: any = req.params.id;
+        const notificationId: string = typeof rawId === 'string' ? rawId : "";
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        try {
+            await UserDAO.viewNotification(notificationId, user.id);
+            res.status(200).json({viewed: true});
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
+
+    static apiSendMessage: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const receipientId: string = req.body.receipientId;
+        const content: string = req.body.content;
+        const user: Express.User | undefined = req.user;
+        if (!user) {
+            res.status(401).json({error: "Unauthorized"});
+            return;
+        }
+        try {
+            UserDAO.createNotification(receipientId, "MESSAGE", user.id, content);
+            res.status(200).json({viewed: true});
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
 }

@@ -7,6 +7,7 @@ import SendFriendRequestButton from "../ui/SendFriendReqButton";
 import RemoveFriendButton from "../Friends/RemoveFriendButton";
 import UnsendFriendRequestButton from "../Friends/UnsendFriendRequestButton";
 import SendFriendRequestButtonGroup from "../Friends/SendFriendRequestButtonGroup";
+import SendMessage from "../Friends/SendMessage";
 
 const PublicProfile = ({isFriends, hasRequested, id, user}: {isFriends: Boolean, hasRequested: boolean, id: string, user: UserDetails}) => {
     return (
@@ -29,7 +30,10 @@ const PublicProfile = ({isFriends, hasRequested, id, user}: {isFriends: Boolean,
                 }
                 {    
                     isFriends
-                        ? <RemoveFriendButton friendId={id} friendName={user.name}/>
+                        ? <div>
+                            <RemoveFriendButton friendId={id} friendName={user.name}/>
+                            <SendMessage receipientId={id}></SendMessage>
+                        </div>
                         : hasRequested
                         ? <UnsendFriendRequestButton recipientId={id}/>
                         : <SendFriendRequestButtonGroup id={id}/>

@@ -3,7 +3,7 @@ import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
-import { addNUSModsURLToCookies, getColorAssignments, getNUSModsURLs, setColorAssignments } from "@/lib/courseActions"
+import { addColorAssignments, addNUSModsURLToCookies, getColorAssignments, getNUSModsURLs } from "@/lib/courseActions"
 import { assignColorsToModules, parseNUSModsURL } from "@/lib/courseUtils"
 
 const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLoggedIn: boolean}) => {
@@ -28,14 +28,7 @@ const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLogge
             const courseColorAssignment = await getColorAssignments();
             let currIndex = courseColorAssignment.currentColorIndex;
             const colorAssignment = courseColorAssignment.colorAssignments;
-            for (const course in courses) {
-                if (colorAssignment[course] === undefined) {
-                    const color = assignColorsToModules(currIndex);
-                    currIndex = color.newIndex;
-                    colorAssignment[course] = color.assignedColor;
-                }
-            }
-            await setColorAssignments(currIndex,colorAssignment);
+            await addColorAssignments(courses, colorAssignment, currIndex);
         } catch (error) {
             console.error("Failed to add friend to timetable.");
         }

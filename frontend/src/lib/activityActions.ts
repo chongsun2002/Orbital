@@ -146,7 +146,6 @@ export async function unjoinActivity(id: string): Promise<{activities: Activity 
 export async function checkActivityEnrollment(id: string) : Promise<{ enrolled: boolean }> {
     const session = cookies().get('session')?.value;
     const jwt = session ? JSON.parse(session).JWT : undefined;
-    console.log(jwt)
     const url = new URL(`api/v1/activities/checkenrollment/${id}`, API_URL)
     const response: Response = await fetch(url, {
         method: 'GET',

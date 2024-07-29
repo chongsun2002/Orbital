@@ -2,6 +2,7 @@
  * This file contains prisma queries for getting information of users.
  */
 
+import { Notification, NotificationCategory } from "@prisma/client";
 import { prisma } from "../../api/index.js";
 
 interface UpdateUserDetails {
@@ -93,5 +94,54 @@ export default class UserDAO {
             }
         })
         return user;
+    }
+
+    static async createNotification(userId: string, notificationType: string, additionalId?: string, content?: string) { 
+        const notification = await prisma.notification.create({
+            data: {
+                userId: userId,
+                notificationType: notificationType as NotificationCategory,
+                additionalContentId: additionalId,
+                content: content,
+            }
+        })
+        return notification
+    }
+
+    static async getNotifications(userId: string): Promise<Notification[]> {
+        const notifications = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                notifications: true,
+            }
+        })
+        return notifications?.notifications || [];
+    }
+
+    static async deleteNotifications(notificationIds: string[], userId: string) {
+        const del = await prisma.notification.deleteMany({
+            where: {
+                id: {
+                    in: notificationIds
+                },
+                userId: userId
+            }
+        });
+        return del;
+    }
+
+    static async viewNotification(notificationId: string, userId: string) {
+        const update = await prisma.notification.updateMany({
+            where: {
+                id: notificationId,
+                userId: userId,
+            },
+            data: {
+                seen: true,
+            }
+        })
+        return update;
     }
 }

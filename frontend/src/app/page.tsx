@@ -14,6 +14,8 @@ import {
     NavigationMenuViewport,
   } from "@/components/ui/navigation-menu"
 import Navbar from "@/components/ui/navbarNew";
+import { deleteNotifications, getNotifications, viewNotification } from "@/lib/userActions";
+import { Notification } from "@/lib/types/userTypes";
 
 export default async function Home() {
     const session = cookies().get('session')?.value;
@@ -21,14 +23,17 @@ export default async function Home() {
     const image = session ? JSON.parse(session).image : "";
     const jwt = session ? JSON.parse(session).JWT : undefined;
     let id: string = '';
+    let notifications: Notification[] = [];
+  
     if(jwt !== undefined) {
+        notifications = await getNotifications();
         const decoded = jwtDecode(jwt);
         id = decoded.sub ?? '';
     }
 
     return (
         <div>
-            <Navbar user={{id: id, name: username, image: image}}/>
+            <Navbar notifications={notifications} user={{id: id, name: username, image: image}} viewNotification={viewNotification} deleteNotifications={deleteNotifications}/>
             <div className="flex flex-col content-center gap-5 mt-20">
                 <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl text-center">Spice up your social life</h1>
                 <p className="text-xl text-muted-foreground text-center">

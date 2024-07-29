@@ -85,7 +85,6 @@ export async function userIsPublic(id: string) {
 }
 
 export async function updateUserTimetableColors(url: string) {
-    "use server"
     const courses = parseNUSModsURL(url);
     const courseColorAssignment = await getColorAssignments();
     let currIndex = courseColorAssignment.currentColorIndex;

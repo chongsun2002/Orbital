@@ -1,0 +1,1 @@
+export const NUSMODS_URL: string | undefined = "https://api.nusmods.com/v2/"

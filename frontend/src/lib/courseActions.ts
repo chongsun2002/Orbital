@@ -1,8 +1,11 @@
 "use server"
 
-import { NUSMODS_URL } from "./utils";
+import { NUSMODS_URL } from "./constants/generalConstants";
 import { acadYear } from "./constants/courseConstants";
 import { cookies } from "next/headers";
+import { ParsedResult } from "./types/courseTypes";
+import { assignColorsToModules } from "./courseUtils";
+import { redirect } from "next/navigation";
 
 export async function addNUSModsURLToCookies({ name, url, isFriend } : {name: string, url: string, isFriend: boolean}) {
     const cookie = cookies().get('NUSModsURLs');
@@ -44,7 +47,7 @@ export async function getNUSModsURLs(): Promise<{name: string, url: string, isFr
         }
     }
     return [];
-}
+}//
 
 export async function deleteNUSModsURL(name: string) {
     const cookie = cookies().get('NUSModsURLs');
@@ -62,6 +65,7 @@ export async function deleteNUSModsURL(name: string) {
             throw new Error("Unable to get URLs from cookie.")
         }
     }
+    
 }
 
 export async function editNUSModsURL(name: string, newURL: string) {
@@ -89,6 +93,7 @@ export async function editNUSModsURL(name: string, newURL: string) {
 
 export async function resetTimetable() {
     cookies().set('NUSModsURLs', JSON.stringify([]));
+    redirect("/course_matching");
 }
 
 export async function getModuleCodes(): Promise<Set<string>> {
@@ -102,6 +107,17 @@ export async function getModuleCodes(): Promise<Set<string>> {
         }
     }
     return new Set();
+}
+
+export async function addColorAssignments(courses: ParsedResult, currentAssignments: Record<string, string>, currIndex: number) {
+    for (const course in courses) {
+        if (currentAssignments[course] === undefined) {
+            const color = assignColorsToModules(currIndex);
+            currIndex = color.newIndex;
+            currentAssignments[course] = color.assignedColor;
+        }
+    }
+    await setColorAssignments(currIndex, currentAssignments);
 }
 
 export async function getColorAssignments(): Promise<{ currentColorIndex: number, colorAssignments: Record<string, string> }> {

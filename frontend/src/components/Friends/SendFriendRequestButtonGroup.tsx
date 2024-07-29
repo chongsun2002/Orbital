@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SendFriendRequestButton from "../ui/SendFriendReqButton";
+import SendMessage from "./SendMessage";
 
 type SendFriendRequestButtonGroupProps = {
     className?: string;
@@ -13,6 +14,7 @@ const SendFriendRequestButtonGroup: React.FC<SendFriendRequestButtonGroupProps> 
         <div className="flex flex-row gap-5">
             <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={false} sending={sending} setSending={setSending}/>
             <SendFriendRequestButton className="font-sans text-xl" id={id} isSecret={true} sending={sending} setSending={setSending}/>
+            <SendMessage receipientId={id}/>
         </div>
     )
 }

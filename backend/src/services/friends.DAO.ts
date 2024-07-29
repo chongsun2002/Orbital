@@ -1,5 +1,6 @@
 import { prisma } from '../../api/index.js'
 import { FriendRequest } from '@prisma/client'
+import UserDAO from './user.DAO.js';
 
 export default class FriendsDAO {
     /**
@@ -13,6 +14,8 @@ export default class FriendsDAO {
         const existingRequest: boolean = await this.checkHasRequested(recipientId, requesterId);
         if (existingRequest) {
             await this.acceptFriendRequest(recipientId, requesterId); 
+            UserDAO.createNotification(recipientId, "ANONFRIENDREQUEST", requesterId);
+            await UserDAO.createNotification(requesterId, "ANONFRIENDREQUEST", recipientId);
             return;
         } 
         const friendRequest = await prisma.friendRequest.create({

@@ -1,3 +1,4 @@
+"use client"
 import { deleteNUSModsURL } from "@/lib/courseActions";
 import { redirect } from "next/navigation";
 import { Button } from "../ui/button";
@@ -12,7 +13,6 @@ type DeleteTimetableUserButtonProps = {
 const DeleteTimetableUserButton: React.FC<DeleteTimetableUserButtonProps> = ({ name, className }: DeleteTimetableUserButtonProps) => {
     return (
         <form action={async () => {
-            "use server"
             await deleteNUSModsURL(name);
             redirect("/course_matching");
         }}>

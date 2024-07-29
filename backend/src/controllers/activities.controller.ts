@@ -1,6 +1,8 @@
 import ActivitiesDAO from "../services/activities.DAO.js";
 import { Activity } from "@prisma/client";
 import { RequestHandler, Request , Response, NextFunction } from "express";
+import UserDAO from "../services/user.DAO.js";
+import { format } from 'date-fns'
 
 export default class ActivitiesController {
     /**
@@ -189,7 +191,7 @@ export default class ActivitiesController {
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         try {
-            const enrolledNames: string[] = await ActivitiesDAO.getActivityParticipants(activityId);
+            const enrolledNames: string[] = await ActivitiesDAO.getActivityParticipants(activityId, false);
             res.status(200).json({enrolledNames: enrolledNames});
             return;
         } catch (error) {
@@ -283,7 +285,12 @@ export default class ActivitiesController {
             return;
         }    
         try {
-            const activity: Activity = await ActivitiesDAO.deleteActivity(activityId);
+            const participants = await ActivitiesDAO.getActivityParticipants(activityId, true);
+            const activity = await ActivitiesDAO.getActivity(activityId);
+            await ActivitiesDAO.deleteActivity(activityId);
+            participants.forEach(participant => {
+                UserDAO.createNotification(participant, "ACTIVITYCHANGE", activityId, `The activity ${activity?.title} has been cancelled by the organiser`);
+            })
             res.status(200).json({activities: activity});            
             return;
         } catch (error) {
@@ -294,11 +301,32 @@ export default class ActivitiesController {
     }
 
     /**
-     * This function allows the owner of an existing activity to edit its details.
+     * This function allows the owner of an existing activity to edit its    details.
      * @param req Holds the new details of the activity in its body
      * @returns The edited activity in the body of the response
      */
     static apiEditActivity: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        function notificationPrettier(key: string, value: any): string {
+            switch (key) {
+                case 'title':
+                    return `Title changed to ${value}`;
+                case 'description':
+                    return `Description changed to ${value}`;
+                case 'startTime':
+                    return `Start time changed to ${format(value, "d MMMM yy, h:mm a")}`;
+                case 'endTime':
+                    return `End time changed to ${format(value, "d MMMM yy, h:mm a")}`;
+                case 'numOfParticipants':
+                    return `Number of Participants changed to ${value}`;
+                case 'category':
+                    return `Activity Category changed to ${value}`;
+                case 'location':
+                    return `Activity Location changed to ${value}`;
+                default:
+                    return `Property changed to ${value}`;
+            }
+        }
+
         const rawId: any = req.params.id;
         const activityId: string = typeof rawId === 'string' ? rawId : "";
         const user: Express.User | undefined = req.user;
@@ -312,8 +340,48 @@ export default class ActivitiesController {
             return;
         }
         try {
-            const activity: Activity = await ActivitiesDAO.editActivity(activityId, req.body);
-            res.status(200).json({activity: activity});
+            const existingActivity: Activity | null = await ActivitiesDAO.getActivity(activityId);
+            if (!existingActivity) {
+                throw new Error("Could not find such an activity");
+            }
+            const updatedActivity: Activity = await ActivitiesDAO.editActivity(activityId, req.body);
+            const participants = await ActivitiesDAO.getActivityParticipants(activityId, true);
+            const updateData: Partial<Activity> = req.body;
+            
+            // Compare existing activity with updated activity to find changes
+            let changes: Partial<Activity> = {};
+            for (const key in updateData) {
+                if (updateData.hasOwnProperty(key)) {
+                    const existingValue = existingActivity[key as keyof Activity];
+                    const updatedValue = updateData[key as keyof Activity];
+                    if (existingValue instanceof Date) {
+                        // Convert updatedValue to Date if it is a string
+                        const updatedValueDate = new Date(updatedValue as string);
+            
+                        // Check if both are dates and compare their timestamps
+                        if (existingValue.getTime() !== updatedValueDate.getTime()) {
+                            changes[key as keyof Activity] = updatedValueDate as any;
+                        }
+                    } else {
+                        // Non-date comparison
+                        if (existingValue !== updatedValue) {
+                            changes[key as keyof Activity] = updatedValue as any;
+                        }
+                    }
+                }
+            }
+
+            const changeMessage = Object.entries(changes)
+                .map(([key, value]) => notificationPrettier(key, value))
+                .join(", ");
+            
+            
+            if (changeMessage !== "") {
+                for (const participant of participants) {
+                    UserDAO.createNotification(participant, "ACTIVITYCHANGE", updatedActivity.id, changeMessage);
+                }
+            }
+            res.status(200).json({activity: updatedActivity});
             return;
         } catch (error) {
             console.error(`Unexpected error editing activity ${error}`);

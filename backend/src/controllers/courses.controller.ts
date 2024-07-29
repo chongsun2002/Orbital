@@ -46,4 +46,16 @@ export default class CoursesController {
             return;
         }
     }
+
+    static apiCreateSharingLink: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+        const links = req.body.links
+        try {
+            const sharingLink = CourseDAO.createSharingLink(links);
+            res.status(200).json({link: (await sharingLink).id});
+        } catch (error) {
+            console.error((error as Error).message);
+            res.status(500).json({error: (error as Error).message});
+            return;
+        }
+    }
 }
