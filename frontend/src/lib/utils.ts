@@ -13,4 +13,4 @@ const PROD: string | undefined = process.env.PRODUCTION_BACKEND_URL;
 
 //process.env.NUSMODS_API;
 
-export const API_URL: string | undefined = DEV;
+export const API_URL: string | undefined = PROD;
