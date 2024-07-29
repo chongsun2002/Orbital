@@ -7,7 +7,6 @@ import { Friend, getFriends } from "@/lib/friendsActions";
 import { getUserDetails, getUserId, updateUserTimetableColors, UserDetails } from "@/lib/generalActions";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { useEffect } from "react";
 
 export default async function Page({ searchParams }: { searchParams: { name?: string, url?: string }}) {
     let me: UserDetails | null = null;
