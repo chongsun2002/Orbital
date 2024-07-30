@@ -26,9 +26,13 @@ export default async function Home() {
     let notifications: Notification[] = [];
   
     if(jwt !== undefined) {
-        notifications = await getNotifications();
         const decoded = jwtDecode(jwt);
         id = decoded.sub ?? '';
+        try {
+            notifications = await getNotifications();
+        } catch (error) {
+            id='';
+        }
     }
 
     return (

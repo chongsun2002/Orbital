@@ -1,10 +1,7 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getUserDetails, UserDetails } from './lib/generalActions';
-import { jwtDecode } from 'jwt-decode';
-import { parseNUSModsURL } from './lib/courseUtils';
-import { addColorAssignments, getColorAssignments } from './lib/courseActions';
+
 
 export async function middleware(req: NextRequest) {
     const cookieStore: RequestCookies = req.cookies;

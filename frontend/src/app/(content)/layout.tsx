@@ -1,4 +1,5 @@
 import Navbar from "@/components/ui/navbarNew";
+import { getUserDetails } from "@/lib/generalActions";
 import { Notification } from "@/lib/types/userTypes";
 import { deleteNotifications, getNotifications, viewNotification } from "@/lib/userActions";
 import { jwtDecode } from "jwt-decode";
@@ -16,10 +17,14 @@ export default async function ContentLayout({
   let id: string = '';
   let notifications: Notification[] = [];
 
-  if(jwt !== undefined) {
-      notifications = await getNotifications();
+  if(jwt !== undefined ) {
       const decoded = jwtDecode(jwt);
       id = decoded.sub ?? '';
+      try {
+        notifications = await getNotifications();
+      } catch (error) {
+        id='';
+      }
   }
 
   return (
