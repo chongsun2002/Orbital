@@ -69,13 +69,13 @@ const Page = async ({ params }: {params: {id: string}}) => {
     if (resn.status !== 200) {
         return <div>{resBodyn.error}</div>
     }
-    const joinedActivities: SearchedActivity[] = resBody.joinedActivities; 
+    const joinedActivities: SearchedActivity[] = resBodyn.joinedActivities; 
     const activities: SearchedActivity[] = sActivities.concat(joinedActivities);
     return (
         <div className='flex flex-col w-full'>
             <div className='font-sans text-4xl font-semibold mx-[80px] my-[20px]'>Your Activities</div>
             {
-                !activities || !activities[0]
+                !activities || activities.length === 0
                     ?   <div className='flex w-full font-sans justify-center items-center text-xl'>
                             Looks like you're not in any activities yet.
                             Click <Link href='/activities' className='text-blue-500 mx-[5px] underline underline-offset-2 hover:text-blue-400'>here</Link> to get started.
