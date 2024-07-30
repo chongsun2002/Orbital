@@ -1,11 +1,24 @@
 import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getUserDetails } from './lib/generalActions';
 
 
 export async function middleware(req: NextRequest) {
     const cookieStore: RequestCookies = req.cookies;
     const url = req.nextUrl;
+
+    if (cookieStore.get('session')) {
+        const session = cookieStore.get('session')?.value;
+        const id = session ? JSON.parse(session).id : undefined;
+        try {
+            await getUserDetails(id || "");
+        } catch (error) {
+            const response = NextResponse.next();
+            response.cookies.delete('session');
+            return response;
+        }
+    }
 
     if (url.pathname.startsWith('/signup') && cookieStore.get('session')) {
       return NextResponse.redirect(new URL('/', req.url))
