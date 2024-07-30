@@ -16,6 +16,7 @@ import {
 import Navbar from "@/components/ui/navbarNew";
 import { deleteNotifications, getNotifications, viewNotification } from "@/lib/userActions";
 import { Notification } from "@/lib/types/userTypes";
+import { endSession } from "@/lib/session";
 
 export default async function Home() {
     const session = cookies().get('session')?.value;

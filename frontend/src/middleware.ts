@@ -6,28 +6,7 @@ import { getUserDetails } from './lib/generalActions';
 
 export async function middleware(req: NextRequest) {
     const cookieStore: RequestCookies = req.cookies;
-    const url = req.nextUrl;
-
-    if (cookieStore.get('session')) {
-        const session = cookieStore.get('session')?.value;
-        const id = session ? JSON.parse(session).id : undefined;
-        try {
-            await getUserDetails(id || "");
-        } catch (error) {
-            const response = NextResponse.next();
-            response.cookies.delete('session');
-            return response;
-        }
-    }
-
-    if (url.pathname.startsWith('/signup') && cookieStore.get('session')) {
-      return NextResponse.redirect(new URL('/', req.url))
-    }
-
-    if (url.pathname.startsWith('/login') && cookieStore.get('session')) {
-        return NextResponse.redirect(new URL('/', req.url))
-    }
-
+    const url = req.nextUrl
     if (url.pathname.startsWith('/activity/create') && !cookieStore.get('session')) {
         return NextResponse.redirect(new URL('/login', req.url))
     }
