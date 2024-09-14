@@ -1,10 +1,10 @@
 import CourseMatching from "@/components/CourseMatching/CourseMatchingPage";
 import LinkAdder from "@/components/CourseMatching/LinkAdder";
 import Timetable from "@/components/CourseMatching/Timetable";
-import { addColorAssignments, getColorAssignments, getNUSModsURLs } from "@/lib/courseActions";
+import { getNUSModsURLs } from "@/lib/courseActions";
 import { parseNUSModsURL } from "@/lib/courseUtils";
 import { Friend, getFriends } from "@/lib/friendsActions";
-import { getUserDetails, getUserId, updateUserTimetableColors, UserDetails } from "@/lib/generalActions";
+import { getUserDetails, UserDetails } from "@/lib/generalActions";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
@@ -29,7 +29,6 @@ export default async function Page({ searchParams }: { searchParams: { name?: st
     return (
         <div>
             {<CourseMatching isLoggedIn={!!me} friends={friends}/>}
-            <LinkAdder />
             <Timetable NUSModsURLs={!!me ? [
                 {name: me.name, url: me.timetableUrl ?? "", isFriend: true}
             ].concat(await getNUSModsURLs()) : await getNUSModsURLs()} currentUserName={me?.name}/>

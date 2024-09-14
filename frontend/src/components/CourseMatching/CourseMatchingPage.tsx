@@ -3,7 +3,8 @@ import { useTransition } from "react"
 import { Friend } from "@/lib/friendsActions"
 import { useRouter } from "next/navigation"
 import { usePathname, useSearchParams } from "next/navigation"
-import { addColorAssignments, addNUSModsURLToCookies, getColorAssignments, getNUSModsURLs } from "@/lib/courseActions"
+import {  addNUSModsURLToCookies, getNUSModsURLs } from "@/lib/courseActions"
+import { addColorAssignments, getColorAssignments, updateUserTimetableColors, } from "@/lib/courseUtils"
 import { assignColorsToModules, parseNUSModsURL } from "@/lib/courseUtils"
 
 const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLoggedIn: boolean}) => {
@@ -24,11 +25,13 @@ const CourseMatching = async ({friends, isLoggedIn}: {friends: Friend[], isLogge
         try {
             const selectedFriend: {name: string, url: string, isFriend: boolean,}  = { ...JSON.parse(value), isFriend: true };
             addNUSModsURLToCookies(selectedFriend);
-            const courses = parseNUSModsURL(selectedFriend.url);
-            const courseColorAssignment = await getColorAssignments();
-            let currIndex = courseColorAssignment.currentColorIndex;
-            const colorAssignment = courseColorAssignment.colorAssignments;
-            await addColorAssignments(courses, colorAssignment, currIndex);
+            // Old code:
+            // const courses = parseNUSModsURL(selectedFriend.url);
+            // const courseColorAssignment = await getColorAssignments();
+            // let currIndex = courseColorAssignment.currentColorIndex;
+            // const colorAssignment = courseColorAssignment.colorAssignments;
+            // addColorAssignments(courses, colorAssignment, currIndex);
+            updateUserTimetableColors(selectedFriend.url)
         } catch (error) {
             console.error("Failed to add friend to timetable.");
         }

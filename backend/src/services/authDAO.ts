@@ -59,17 +59,22 @@ export default class AuthDAO {
         return user;
     }
 
-    static async addPassword(email: string, password: string) : Promise<User> {
-        console.log(`Attempting to update password for email: dao ${email}`);
-        const user: User = await prisma.user.update({
-            where: {
-                email: email
-            },
-            data: {
-                password: Buffer.from(password)
-            }
-        });
-        return user;
+    static async addPassword(email: string, password: string) : Promise<User | undefined> {
+        console.log(`Attempting to update password for email: dao ${email}, ${password}`);
+        try {
+            let user: User = await prisma.user.update({
+                where: {
+                    email: email
+                },
+                data: {
+                    password: Buffer.from(password)
+                }
+            });
+            return user;
+        } catch (error) {
+            console.error(`cant update ${error}`)
+        }
+        return;
     }
 
     static async changePassword(userId: string, newPassword: string) : Promise<void> {

@@ -17,7 +17,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "../ui/use-toast"
 import { addNUSModsURLToCookies } from "@/lib/courseActions"
-import { updateUserTimetableColors } from "@/lib/generalActions"
+import { getColorAssignments, updateUserTimetableColors } from "@/lib/courseUtils"
+import { redirect, useRouter } from "next/navigation"
+import { Dispatch } from "react"
 
 
 const formSchema = z.object({
@@ -25,8 +27,13 @@ const formSchema = z.object({
     link: z.string().min(1, 'Required').url('Invalid link'),
 });
 
-const LinkAdder = () => {
+type LinkAdderProps = {
+    changeColorAssignmentState: Dispatch<Record<string, string>>;
+}
+
+const LinkAdder: React.FC<LinkAdderProps> = ({changeColorAssignmentState}: LinkAdderProps) => {
     const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -45,6 +52,8 @@ const LinkAdder = () => {
                 isFriend: false,
             });
             await updateUserTimetableColors(values.link);
+            changeColorAssignmentState((await getColorAssignments()).colorAssignments)
+            router.refresh();
         }
         catch (error) {
             toast({

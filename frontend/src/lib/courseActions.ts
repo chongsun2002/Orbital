@@ -109,46 +109,7 @@ export async function getModuleCodes(): Promise<Set<string>> {
     return new Set();
 }
 
-export async function addColorAssignments(courses: ParsedResult, currentAssignments: Record<string, string>, currIndex: number) {
-    for (const course in courses) {
-        if (currentAssignments[course] === undefined) {
-            const color = assignColorsToModules(currIndex);
-            currIndex = color.newIndex;
-            currentAssignments[course] = color.assignedColor;
-        }
-    }
-    await setColorAssignments(currIndex, currentAssignments);
-}
 
-export async function getColorAssignments(): Promise<{ currentColorIndex: number, colorAssignments: Record<string, string> }> {
-    const cookie = cookies().get('timetableColorAssignments');
-    if (cookie) {
-        try {
-            const timetableColorAssignments = JSON.parse(cookie.value);
-            return {
-                currentColorIndex: timetableColorAssignments.currentColorIndex,
-                colorAssignments: timetableColorAssignments.colorAssignments,
-            };
-        } catch (error) {
-            console.error('Error parsing color data from cookies:', error);
-        }
-    }
-    return { currentColorIndex: 0, colorAssignments: {} };
-}
-
-export async function setColorAssignments(currentColorIndex: number, colorAssignments: Record<string, string>): Promise<void> {
-    const timetableColorAssignments = {
-        currentColorIndex,
-        colorAssignments,
-    };
-    
-    cookies().set('timetableColorAssignments', JSON.stringify(timetableColorAssignments), {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        path: '/',
-    });
-}
 
 export async function getCourseData(moduleCode: string) {
     const url = new URL(`${acadYear}/modules/${moduleCode}.json`, NUSMODS_URL);

@@ -79,3 +79,73 @@ export const assignColorsToModules = (currentColorIndex: number): { assignedColo
     const chosenColor = colors[currentColorIndex];
     return { assignedColor: chosenColor, newIndex: (currentColorIndex + 1) % colors.length}
 };
+
+export function addColorAssignments(courses: ParsedResult, 
+                                    colorAssignments: Record<string, string>,
+                                    currentColorIndex: number) : { currentColorIndex: number, colorAssignments: Record<string, string> } {
+    for (const course in courses) {
+        if (colorAssignments[course] === undefined) {
+            const color = assignColorsToModules(currentColorIndex);
+            currentColorIndex = color.newIndex;
+            colorAssignments[course] = color.assignedColor;
+        }
+    }
+
+    localStorage.setItem('timetableColorAssignments', JSON.stringify({
+        currentColorIndex,
+        colorAssignments,
+    }))
+
+    return {
+        currentColorIndex,
+        colorAssignments
+    }
+}
+
+export async function getColorAssignments(): Promise<{ currentColorIndex: number, colorAssignments: Record<string, string>}> {
+    const assignments: string | null = localStorage.getItem('timetableColorAssignments');
+    if (assignments && assignments !== "") {
+        try {
+            const timetableColorAssignments = await JSON.parse(assignments);
+            return {
+                currentColorIndex: timetableColorAssignments.currentColorIndex,
+                colorAssignments: timetableColorAssignments.colorAssignments,
+            };
+        } catch (error) {
+            console.error('Error parsing color data from localstorage:', error);
+        }
+    }
+    return { currentColorIndex: 0, colorAssignments: {} };
+}
+
+export async function updateUserTimetableColors(url: string) {
+    const courses = parseNUSModsURL(url);
+    const courseColorAssignment = await getColorAssignments();
+    let currentColorIndex = courseColorAssignment.currentColorIndex;
+    const colorAssignments= courseColorAssignment.colorAssignments;
+    for (const course in courses) {
+        if (colorAssignments[course] === undefined) {
+            const color = assignColorsToModules(currentColorIndex);
+            currentColorIndex = color.newIndex;
+            colorAssignments[course] = color.assignedColor;
+        }
+    }
+    localStorage.setItem('timetableColorAssignments', JSON.stringify({
+        currentColorIndex,
+        colorAssignments,
+    }))
+}
+
+// export function setColorAssignments(currentColorIndex: number, colorAssignments: Record<string, string>): Promise<void> {
+//     const timetableColorAssignments = {
+//         currentColorIndex,
+//         colorAssignments,
+//     };
+    
+//     cookies().set('timetableColorAssignments', JSON.stringify(timetableColorAssignments), {
+//         httpOnly: true,
+//         secure: true,
+//         sameSite: 'lax',
+//         path: '/',
+//     });
+// }

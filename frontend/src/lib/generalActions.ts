@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { API_URL } from "./utils";
 import { createSession, endSession } from "./session";
-import { getColorAssignments, setColorAssignments } from "./courseActions";
 import { assignColorsToModules, parseNUSModsURL } from "./courseUtils";
 
 export interface UserDetails {
@@ -84,29 +83,12 @@ export async function userIsPublic(id: string) {
     return responseBody.isPublic;
 }
 
-export async function updateUserTimetableColors(url: string) {
-    const courses = parseNUSModsURL(url);
-    const courseColorAssignment = await getColorAssignments();
-    let currIndex = courseColorAssignment.currentColorIndex;
-    const colorAssignment = courseColorAssignment.colorAssignments;
-    for (const course in courses) {
-        if (colorAssignment[course] === undefined) {
-            const color = assignColorsToModules(currIndex);
-            currIndex = color.newIndex;
-            colorAssignment[course] = color.assignedColor;
-        }
-    }
-    await setColorAssignments(currIndex,colorAssignment);
-}
 
 export async function updateUserDetails(data: UpdateUserDetails) {
     const session = cookies().get('session')?.value;
     const jwt = session ? JSON.parse(session).JWT : undefined;    
     if (jwt === undefined) {
         redirect('/login');
-    }
-    if (data.timetableUrl) {
-        updateUserTimetableColors(data.timetableUrl);
     }
     const url = new URL(`api/v1/user/update/`, API_URL);
     const response = await fetch(url.toString(), {

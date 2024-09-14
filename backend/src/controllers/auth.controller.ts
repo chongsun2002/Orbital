@@ -89,14 +89,8 @@ export default class AuthController {
         */
         try {
             const user: User = await AuthDAO.createUser({name: name, email: email});
-            bcrypt.hash(password, saltRounds, (err, hash) => {
-                if (err) {
-                    console.error(`Unexpected error hashing password ${err}`);
-                    res.status(500).json({error: err.message});
-                    return;
-                }
-                AuthDAO.addPassword(email, hash);
-            });
+            const hash = bcrypt.hashSync(password, saltRounds);
+            await AuthDAO.addPassword(email, hash);
             const token = createJWT(user);
             res.status(200).json({user: this.sanitizeUser(user), token: token});
             return;

@@ -1,3 +1,5 @@
+"use client"
+
 import { TimetableLesson } from "@/lib/types/courseTypes";
 import TimetableCell from "./TimetableCell";
 
@@ -12,7 +14,7 @@ type TimetableRowProps = {
 
 const TimetableRow: React.FC<TimetableRowProps> = ({ isEven, isFirst, isLast, name, lessons, moduleColorAssignments }: TimetableRowProps) => {
     // To render the grid cells and make them different color, similar to the NUSMods interface.
-    const gridCells = Array.from({ length: 12 }, (_, index) => {
+    const gridCells = Array.from({ length: 14 }, (_, index) => {
         const lesson = lessons.find(lesson => {
             const startIndex = parseInt(lesson.startTime.substring(0, 2), 10) - 8;
             return startIndex === index;
@@ -52,11 +54,10 @@ const TimetableRow: React.FC<TimetableRowProps> = ({ isEven, isFirst, isLast, na
             />
         );
     });
-
     
     return (
         <div className="grid" style={{ 
-            gridTemplateColumns: 'repeat(13, minmax(0, 1fr))',
+            gridTemplateColumns: 'repeat(15, minmax(0, 1fr))',
             borderRight: '1px solid #e0e0e0',
             borderLeft: '1px solid #e0e0e0',
             ...(isFirst && { borderTop: '1px solid #e0e0e0' }),

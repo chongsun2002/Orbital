@@ -26,7 +26,7 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { editNUSModsURL } from "@/lib/courseActions"
-import { updateUserDetails, updateUserTimetableColors } from "@/lib/generalActions"
+import { updateUserDetails } from "@/lib/generalActions"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -59,7 +59,6 @@ const EditTimetableUserButton: React.FC<EditTimetableUserButtonProps> = ({ name,
     const currUserSubmit = async (values: z.infer<typeof formSchema>) : Promise<void> => {
         setEditing("editing");
         try {
-            await updateUserTimetableColors(values.link);
             await editNUSModsURL(name, values.link);
             await updateUserDetails({name: name, timetableUrl: values.link});
             setEditing("edited")
@@ -82,7 +81,6 @@ const EditTimetableUserButton: React.FC<EditTimetableUserButtonProps> = ({ name,
         setEditing("editing");
         try {
             await editNUSModsURL(name, values.link);
-            await updateUserTimetableColors(values.link);
             setEditing("edited")
             setTimeout(() => {
                 setOpen(false);

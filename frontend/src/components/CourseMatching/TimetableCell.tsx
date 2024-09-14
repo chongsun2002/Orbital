@@ -65,7 +65,7 @@ const TimetableCell: React.FC<TimetableCellProps> = ({startIndex, endIndex, less
                                 <TimetableCellDetails header="Day" content={lesson.day} />
                                 <TimetableCellDetails header="Start Time" content={lesson.startTime + "hrs"} />
                                 <TimetableCellDetails header="End Time" content={lesson.endTime + "hrs"} />
-                                <TimetableCellDetails header="Weeks" content={lesson.weeks.join(', ')} />
+                                {(Array.isArray(lesson.weeks)) ? <TimetableCellDetails header="Weeks" content={lesson.weeks.join(', ')} /> : null}
                                 
                                 <Collapsible className="mt-4">
                                     <CollapsibleTrigger className="flex flex-row items-center">
